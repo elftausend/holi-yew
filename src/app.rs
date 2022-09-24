@@ -43,7 +43,7 @@ impl Component for App {
             <div class="hero">
                 <div class="hero-body container pb-0">
                     <div class="login">
-                        <img alt="Holi Logo" src="./holi-logo.png" />
+                    <img src="./assets/images/holi.svg" alt="Holi Logo" loading="lazy"/>
                         <TextInput input_type="text" on_change={on_user_change} value={self.user.clone()} maxlength="128" placeholder="HTLHL UserID" />
                         <TextInput input_type="password" on_change={on_pw_change} value={self.password.clone()} maxlength="1024" placeholder="Password" />
                         <button onclick={onlogin} class="button is-primary">
@@ -51,32 +51,7 @@ impl Component for App {
                         </button>
                     </div>
                 </div>
-            </div>
-
-                /*
-                <div class="login-form">
-                    <div class="">
-                        <div class="row">
-                            <TextInput input_type="text" on_change={on_user_change} value={self.user.clone()} maxlength="128" placeholder="HTLHL UserID" />
-                        </div>
-                        <div class="row">
-                            <TextInput input_type="password" on_change={on_pw_change} value={self.password.clone()} maxlength="1024" placeholder="Password" />
-                            <button onclick={onlogin} class="btn btn-secondary">
-                                {"Login"}
-                            </button>
-                        </div>
-                    </div>
-                </div>    
-                */
-                /*<div class="login">
-                    <div>
-                        <TextInput on_change={on_user_change} value={self.user.clone()} />
-                    </div>
-                    <div>
-                        <TextInput on_change={on_pw_change} value={self.user.clone()} />
-                    </div>
-                </div>*/
-            
+            </div>            
         }
     }
 }
