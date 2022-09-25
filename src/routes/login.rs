@@ -2,12 +2,14 @@ use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use yew_hooks::prelude::*;
 use yew_router::prelude::{use_history, History};
 
-use crate::{api::request, hooks::use_user_context};
+use crate::api::request;
+use crate::hooks::use_user_context;
 
-use super::Route;
+use super::{Route, is_logged_in};
+
+
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LoginInfo {
@@ -21,11 +23,6 @@ pub struct UserInfo {
     pub token: String,
 }
 
-impl UserInfo {
-    pub fn is_auth(&self) -> bool {
-        !self.token.is_empty()
-    }
-}
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
 pub struct JWT {
@@ -39,35 +36,31 @@ pub fn login() -> Html {
 
     let history = use_history().unwrap();
 
-    if user_ctx.is_auth() {
-    //    history.push(Route::Entries);
-    }
-
-    let token = {
-        let login_info = (*login_info).clone();
-        use_async(async move { request::<_, JWT>(Method::POST, "auth", login_info).await })
-    };
-
-    {
-        let login_info = login_info.clone();
-        use_effect_with_deps(
-            move |token| {
-                if let Some(token) = &token.data {
-                    user_ctx.login(UserInfo {
-                        user_id: login_info.username.clone(),
-                        token: token.access_token.clone(),
-                    });
-                }
-                || ()
-            },
-            token.clone(),
-        );
-    }
+    use_effect_with_deps(move |_| {
+        wasm_bindgen_futures::spawn_local(async move {
+            if is_logged_in().await {   
+                history.push(Route::Entries);
+            }
+        });
+        || ()
+    }, ());
 
     let onlogin = {
+        let login_info = login_info.clone();
         Callback::from(move |e: MouseEvent| {
+            let user_ctx = user_ctx.clone();
+            let login_info = (*login_info).clone();
             e.prevent_default();
-            token.run()
+
+            wasm_bindgen_futures::spawn_local(async move {
+                if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", login_info.clone()).await {
+                    user_ctx.login(UserInfo {
+                        user_id: login_info.username.clone(),
+                        token: jwt.access_token.clone(),
+                    });
+                }
+            });
+            
         })
     };
 
@@ -92,18 +85,20 @@ pub fn login() -> Html {
     };
 
     html! {
-        <div class="hero">
-            <div class="hero-body container pb-0">
-                <div class="login">
-                <img src="./assets/images/holi.svg" alt="Holi Logo" loading="lazy"/>
+        <div class="vertical-center">
+            <div class="container-fluid">
+                <div class="login-form">
+                    <div class="row">
+                        <img src="./assets/images/holi.svg" alt="Holi Logo" loading="lazy"/>
+                        
+                    </div>
                     <input class="input" type="text" oninput={on_user_change} value={login_info.username.clone()}
                         maxlength="128" placeholder="HTLHL UserID"
                     />
-
                     <input class="input" type="password" oninput={on_pw_change} value={login_info.password.clone()}
                         maxlength="128" placeholder="Password"
                     />
-                    <button onclick={onlogin} class="button is-danger">
+                    <button onclick={onlogin} class="btn btn-danger">
                         {"Login"}
                     </button>
                 </div>

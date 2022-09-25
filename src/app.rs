@@ -5,7 +5,7 @@ use yew::prelude::*;
 use lazy_static::lazy_static;
 use yew_router::prelude::*;
 
-use crate::routes::{login::UserInfo, switch, Route};
+use crate::routes::{switch, Route};
 use crate::components::UserContextProvider;
 
 const TOKEN_KEY: &str = "access_token";
@@ -40,9 +40,10 @@ pub fn get_jwt() -> Option<String> {
 
 #[function_component(App)]
 pub fn app() -> Html {
+
     html! {
         <UserContextProvider>
-            <BrowserRouter>
+            <BrowserRouter>        
                 <Switch<Route> render={Switch::render(switch)} />
             </BrowserRouter>
         </UserContextProvider>

@@ -1,11 +1,9 @@
 use std::ops::Deref;
 
-use reqwest::Method;
 use yew::prelude::*;
-use yew_hooks::use_async;
 use yew_router::prelude::*;
 
-use crate::api::request;
+//use crate::api::request;
 use crate::app::set_jwt;
 use crate::routes::login::UserInfo;
 use crate::routes::Route;
