@@ -1,31 +1,44 @@
+use reqwest::Method;
+use serde::{Serialize, Deserialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+use yew_hooks::prelude::*;
 use yew_router::prelude::*;
+
+use crate::api::request;
 
 use super::Route;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LoginInfo {
     pub user_id: String,
     pub password: String
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct UserInfo {
+    pub user_id: String,
+    pub token: String,
 }
 
 #[function_component(Login)]
 pub fn login() -> Html {
     let login_info = use_state(LoginInfo::default);
 
-    let history = use_history().unwrap();
-
-    let onlogin= Callback::once(move |_| history.push(Route::Entries));
-
-    /* 
-    let onlogin = {
-        Callback::from(move |e: MouseEvent| {
-            e.prevent_default(); /* Prevent event propagation */
-            // login
+    let user_login = {
+        let login_info = (*login_info).clone();
+        use_async(async move {
+            request::<_, UserInfo>(Method::POST, "login".into(), login_info).await
         })
     };
-    */
+    
+    let onlogin = {
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            user_login.run()
+        })
+    };
+
 
     let on_user_change = {
         let login_info = login_info.clone();
