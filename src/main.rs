@@ -1,11 +1,12 @@
 use app::App;
 use dotenv_codegen::dotenv;
 
-mod routes;
-mod app;
 mod api;
-mod error;
+mod app;
 mod components;
+mod error;
+mod hooks;
+mod routes;
 
 const API_ROOT: &str = dotenv!("API_ROOT");
 

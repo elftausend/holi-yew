@@ -1,13 +1,18 @@
-pub mod login;
 pub mod entries;
+pub mod login;
 pub mod upload;
 
-pub use login::Login;
 pub use entries::Entries;
+pub use login::Login;
 //pub use upload::Upload;
 
-use yew_router::prelude::*;
+use reqwest::Method;
 use yew::prelude::*;
+use yew_router::prelude::*;
+
+use crate::{api::request, error::HoliError};
+
+use self::login::UserInfo;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -30,3 +35,6 @@ pub fn switch(routes: &Route) -> Html {
     }
 }
 
+pub async fn current_user() -> Result<UserInfo, HoliError>{
+    request::<(), UserInfo>(Method::GET, "user", ()).await
+}
