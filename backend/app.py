@@ -32,6 +32,8 @@ class User(Resource):
     @jwt_required()
     def get(self):
         token = request.headers["Authorization"][4:]
+        x = {"user_id" : current_identity.id, "token" : token}
+        print(f"user get: {x}")
         return jsonify({"user_id" : current_identity.id, "token" : token})
 
 class Entry(Resource):

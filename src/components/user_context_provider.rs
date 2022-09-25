@@ -1,12 +1,13 @@
 use reqwest::Method;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
+use yew_router::prelude::{use_history, History};
 
 use crate::{
     api::request,
     app::{get_jwt, set_jwt},
     error::HoliError,
-    routes::{login::UserInfo, current_user},
+    routes::{login::UserInfo, current_user, Route},
 };
 
 #[derive(Properties, Clone, PartialEq)]
@@ -37,7 +38,7 @@ pub fn user_context_provider(props: &Props) -> Html {
                 if let Some(user_info) = &current_user.data {
                     user_ctx.set(user_info.clone());
                 }
-
+                
                 if let Some(error) = &current_user.error {
                     match error {
                         HoliError::Unauthorized | HoliError::Forbidden => set_jwt(None),

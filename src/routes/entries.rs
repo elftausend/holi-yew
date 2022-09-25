@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_hooks::{use_async, use_async_with_options, UseAsyncOptions};
+use yew_hooks::{use_async, use_async_with_options, UseAsyncOptions, use_mount};
 use yew_router::prelude::*;
 
 use crate::{api::request, hooks::use_user_context};
@@ -12,26 +12,22 @@ pub struct EntryInfo {
 
 #[function_component(Entries)]
 pub fn entries() -> Html {
+
     let user_ctx = use_user_context();
 
     let history = use_history().unwrap();
-
-    let user_info = use_async_with_options(
-        async move { current_user().await },
-        UseAsyncOptions::enable_auto(),
-    );
-
-    let x = use_state(|| 0);
-
-    let state =
-        use_async(async move { request::<_, UserInfo>(reqwest::Method::GET, "entry", ()).await });
-
+    
+    let history1 = history.clone();
+    let user = user_ctx.clone();
     use_effect_with_deps(
         move |_| {
-            state.run();
+            if !user.is_auth() {
+                history1.push(Route::Login)
+            }
+            //}        
             || ()
         },
-        x.clone(),
+        user_ctx.clone(),
     );
 
     let onclick = Callback::once(move |_| history.push(Route::Login));
