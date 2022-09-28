@@ -43,10 +43,15 @@ pub fn app() -> Html {
     html! {
         <UserContextProvider>
             <BrowserRouter>
+<<<<<<< HEAD
                 <Auth>
                     <NavBar />
                     <Switch<Route> render={Switch::render(switch)} />
                 </Auth>
+=======
+                <NavBar />                
+                <Switch<Route> render={Switch::render(switch)} />
+>>>>>>> f9c2480 (Add auth comp, searchbar,)
             </BrowserRouter>
         </UserContextProvider>
     }

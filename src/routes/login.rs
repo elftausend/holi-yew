@@ -38,6 +38,7 @@ pub fn login() -> Html {
     let user_ctx = use_user_context();
     let login_info = use_state(LoginInfo::default);
 
+<<<<<<< HEAD
     let history = use_history().unwrap();
     
     use_effect_with_deps(
@@ -52,6 +53,8 @@ pub fn login() -> Html {
         (),
     );
 
+=======
+>>>>>>> f9c2480 (Add auth comp, searchbar,)
     let onlogin = {
         let login_info = login_info.clone();
         Callback::from(move |e: MouseEvent| {
@@ -65,6 +68,8 @@ pub fn login() -> Html {
                         user_id: login_info.username,
                         token: jwt.access_token,
                     });
+                    let history = use_history().unwrap();
+                    history.push(Route::Entries);
                 }
             });
         })

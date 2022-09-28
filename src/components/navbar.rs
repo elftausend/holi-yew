@@ -14,11 +14,22 @@ pub fn navbar() -> Html {
         use_effect_with_deps(
             move |_| {
                 wasm_bindgen_futures::spawn_local(async move {
+<<<<<<< HEAD
                     logged_in.set(is_logged_in().await)
                 });
                 || ()
             },
             user_ctx.clone(),
+=======
+                    if is_logged_in().await {
+                        logged_in.set(true); 
+                    }
+
+                });
+                || ()
+            },
+            user_ctx,
+>>>>>>> f9c2480 (Add auth comp, searchbar,)
         );
     }
 
