@@ -2,6 +2,7 @@ use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::console;
 use yew::prelude::*;
+use yew_hooks::use_mount;
 use yew_router::prelude::*;
 
 <<<<<<< HEAD
@@ -65,8 +66,10 @@ pub fn entries() -> Html {
 
     let entries = use_state(Vec::<EntryInfo>::new);
 
+
 	{
 		let entries = entries.clone();
+<<<<<<< HEAD
 <<<<<<< HEAD
 		let search_info1 = search_info.clone();		
 		
@@ -113,6 +116,18 @@ pub fn entries() -> Html {
 			(),
 		);
 >>>>>>> f9c2480 (Add auth comp, searchbar,)
+=======
+		use_mount(|| {
+			
+			wasm_bindgen_futures::spawn_local(async move {
+				if let Ok(api_entries) = get_entries().await {
+					//log::info!("{api_entries:?}");
+					entries.set(api_entries);
+				}
+			});
+		});
+		
+>>>>>>> a74e52c (Add logout button)
 	}
 	let card = move |title: String| -> Html {
 		html! {
@@ -123,9 +138,12 @@ pub fn entries() -> Html {
     html! {
         <div>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			<Auth>
 >>>>>>> f9c2480 (Add auth comp, searchbar,)
+=======
+>>>>>>> a74e52c (Add logout button)
             <div class="container-fluid">
                 <div class="row highlight">
                     <a href="/et" class="col et_bg_color card square">
@@ -223,6 +241,7 @@ pub fn entries() -> Html {
 				}
 			}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 			<Pagination
 				search_info={SearchQuery {
@@ -237,6 +256,9 @@ pub fn entries() -> Html {
 =======
 			</Auth>
 >>>>>>> f9c2480 (Add auth comp, searchbar,)
+=======
+
+>>>>>>> a74e52c (Add logout button)
         </div>
 			
     }
