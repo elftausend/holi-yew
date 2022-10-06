@@ -7,8 +7,17 @@ main {
     max-width: 200px;
 }
 
+.input-field {
+    min-width: 200px;
+    
+}
+
+#search_field {
+    max-width: 320px;
+}
+
 #navbar-holi {
-    max-width: 200px;
+    max-width: 150px;
 }
 
 .holi-green {
@@ -27,11 +36,6 @@ main {
 
 .it_bg_color {
     background-color: rgba(236,102,8,1);
-    /*
-    border: white;
-    border-style: solid;
-    border-width: 2px;
-    */
 }
 
 .it_color {
@@ -41,38 +45,18 @@ main {
 
 .wi_bg_color {
     background-color: rgba(0,97,160,1);
-    /*
-    border: white;
-    border-style: solid;
-    border-width: 2px;
-    */
 }
 
 .me_bg_color {
     background-color: rgba(147,201,14,1);
-    /*
-    border: white;
-    border-style: solid;
-    border-width: 2px;
-    */
 }
 
 .el_bg_color {
     background-color: rgba(255,209,0,1);
-    /*
-    border: white;
-    border-style: solid;
-    border-width: 2px;
-    */
 }
 
 .mb_bg_color {
     background-color: rgba(0,150,94,1);
-    /*
-    border: white;
-    border-style: solid;
-    border-width: 2px;
-    */
 }
 
 .et_bg_color {
@@ -89,10 +73,6 @@ main {
     height: 10rem;
     min-width: 10rem;
     
-    /*
-    max-width: 15rem;
-    max-height: 15rem;
-    */
     
 }
 
@@ -111,4 +91,30 @@ a, a:focus, a:active {
 
 .highlight-in-use a:hover {
     color: inherit;
+}
+
+.float-left {
+    float: right;
+}
+
+.notfound {
+    width: min-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.notfound img {
+    width: 150px;
+    font-size: 12em;
+}
+
+.carousel-control-size {
+    max-height:21%; 
+    margin-top:21%;
+}
+
+.carousel-image {
+    width: 40%!important; 
+    margin-left: auto; 
+    margin-right: auto;
 }

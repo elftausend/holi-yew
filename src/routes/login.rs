@@ -1,15 +1,13 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
-use web_sys::HtmlInputElement;
+use web_sys::{HtmlInputElement};
 use yew::prelude::*;
 use yew_router::prelude::{use_history, History};
 
 use crate::api::request;
 use crate::hooks::use_user_context;
 
-use super::{Route, is_logged_in};
-
-
+use super::{is_logged_in, Route};
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LoginInfo {
@@ -23,6 +21,12 @@ pub struct UserInfo {
     pub token: String,
 }
 
+impl UserInfo {
+    pub fn is_auth(&self) -> bool {
+        log::info!("auth {}", !self.token.is_empty());
+        !self.token.is_empty()
+    }
+}
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
 pub struct JWT {
@@ -35,15 +39,18 @@ pub fn login() -> Html {
     let login_info = use_state(LoginInfo::default);
 
     let history = use_history().unwrap();
-
-    use_effect_with_deps(move |_| {
-        wasm_bindgen_futures::spawn_local(async move {
-            if is_logged_in().await {   
-                history.push(Route::Entries);
-            }
-        });
-        || ()
-    }, ());
+    
+    use_effect_with_deps(
+        move |_| {
+            wasm_bindgen_futures::spawn_local(async move {
+                if is_logged_in().await {
+                    history.push(Route::Entries);
+                }
+            });
+            || ()
+        },
+        (),
+    );
 
     let onlogin = {
         let login_info = login_info.clone();
@@ -53,14 +60,13 @@ pub fn login() -> Html {
             e.prevent_default();
 
             wasm_bindgen_futures::spawn_local(async move {
-                if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", login_info.clone()).await {
+                if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", login_info.clone(), true).await {
                     user_ctx.login(UserInfo {
-                        user_id: login_info.username.clone(),
-                        token: jwt.access_token.clone(),
+                        user_id: login_info.username,
+                        token: jwt.access_token,
                     });
                 }
             });
-            
         })
     };
 
@@ -85,23 +91,21 @@ pub fn login() -> Html {
     };
 
     html! {
-        <div class="vertical-center">
-            <div class="container-fluid">
-                <div class="login-form">
-                    <div class="row">
-                        <img src="./assets/images/holi.svg" alt="Holi Logo" loading="lazy"/>
-                        
-                    </div>
-                    <input class="input" type="text" oninput={on_user_change} value={login_info.username.clone()}
-                        maxlength="128" placeholder="HTLHL UserID"
-                    />
-                    <input class="input" type="password" oninput={on_pw_change} value={login_info.password.clone()}
-                        maxlength="128" placeholder="Password"
-                    />
-                    <button onclick={onlogin} class="btn btn-danger">
-                        {"Login"}
-                    </button>
+        <div class="container-fluid">
+            <div class="login-form">
+                <div class="row">
+                    <img src="./assets/images/holi.svg" alt="Holi Logo" loading="lazy"/>
+
                 </div>
+                <input class="form-control input-field" type="text" oninput={on_user_change} value={login_info.username.clone()}
+                    maxlength="128" placeholder="HTLHL UserID"
+                />
+                <input class="form-control input-field" type="password" oninput={on_pw_change} value={login_info.password.clone()}
+                    maxlength="128" placeholder="Password"
+                />
+                <button onclick={onlogin} class="btn btn-danger">
+                    {"Login"}
+                </button>
             </div>
         </div>
     }

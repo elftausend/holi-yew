@@ -1,10 +1,18 @@
 pub mod entries;
 pub mod login;
 pub mod upload;
+pub mod logout;
+pub mod user_panel;
+pub mod page_not_found;
+pub mod show_upload;
 
 pub use entries::Entries;
-use crate::components::NavBar;
 pub use login::Login;
+pub use upload::Upload;
+pub use logout::Logout;
+pub use user_panel::UserPanel;
+pub use page_not_found::NotFound;
+pub use show_upload::ShowUpload;
 //pub use upload::Upload;
 
 use reqwest::Method;
@@ -15,14 +23,20 @@ use crate::api::request;
 
 use self::login::UserInfo;
 
-#[derive(Clone, Routable, PartialEq)]
+#[derive(Routable, PartialEq, Eq, Clone, Debug)]
 pub enum Route {
-    #[at("/")]
+    #[at("/login")]
     Login,
-    #[at("/entries")]
+    #[at("/logout")]
+    Logout,
+    #[at("/")]
     Entries,
     #[at("/user_panel")]
     UserPanel,
+    #[at("/upload")]
+    Upload,
+    #[at("/show_upload")]
+    ShowUpload,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -31,23 +45,21 @@ pub enum Route {
 pub fn switch(routes: &Route) -> Html {
     match routes {
         Route::Login => html! { <Login /> },
+        Route::Logout => html! { <Logout /> },
         Route::Entries => html! {
             <Entries />
         },
-        Route::UserPanel => html! {
-            <div>
-                <NavBar />
-                {"HI"}
-            </div>
-            
-            
-        },
-        Route::NotFound => html! { <h1>{ "404" }</h1> },
+        Route::UserPanel => html! { <UserPanel /> },
+        Route::Upload => html! { <Upload /> },
+        Route::ShowUpload => html! { <ShowUpload />},
+        Route::NotFound => html! { <NotFound /> },
     }
 }
 
 pub async fn is_logged_in() -> bool {
-    request::<_, UserInfo>(Method::GET, "user", ()).await.is_ok()
+    request::<_, UserInfo>(Method::GET, "user", (), true)
+        .await
+        .is_ok()
 }
 
 //pub async fn current_user() -> Result<UserInfo, HoliError>{

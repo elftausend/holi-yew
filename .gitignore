@@ -1,2 +1,6 @@
 /target
 .DS_Store
+dist
+/backend/static/images
+/backend/static/pdfs
+/backend/static/uploaded

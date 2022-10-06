@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -10,7 +8,7 @@ use crate::routes::Route;
 
 /// State handle for the [`use_user_context`] hook.
 pub struct UseUserContextHandle {
-    inner: UseStateHandle<UserInfo>,
+    pub inner: UseStateHandle<UserInfo>,
     history: AnyHistory,
 }
 
@@ -29,14 +27,6 @@ impl UseUserContextHandle {
         self.inner.set(UserInfo::default());
         // Redirect to login
         self.history.push(Route::Login);
-    }
-}
-
-impl Deref for UseUserContextHandle {
-    type Target = UserInfo;
-
-    fn deref(&self) -> &Self::Target {
-        &(*self.inner)
     }
 }
 
