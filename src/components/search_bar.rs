@@ -38,6 +38,7 @@ pub fn search_bar(props: &Props) -> Html {
     let history = use_history().unwrap();
 
     let on_search = {
+        let history = history.clone();
         let tag_input = tag_input.clone();
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -49,12 +50,33 @@ pub fn search_bar(props: &Props) -> Html {
     };
 
     let on_input_change = {
+        let history = history.clone();
         let tag_input = tag_input.clone();
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             let mut info = (*tag_input).clone();
             info.tags = input.value();
+            
+            history.push_with_query(Route::Entries, SearchQuery {
+                page,
+                tags: info.tags.clone()
+            }).unwrap();
+
             tag_input.set(info);
+        })
+    };
+
+    let onkeypress = {
+        Callback::from(move |e: KeyboardEvent| {
+            // check for enter key
+            if e.key_code() != 13 {
+                return;
+            }
+
+            history.push_with_query(Route::Entries, SearchQuery {
+                page,
+                tags: tag_input.tags.clone(),
+            }).unwrap();
         })
     };
 
@@ -63,7 +85,7 @@ pub fn search_bar(props: &Props) -> Html {
           <div class="d-flex mt-4 mb-4">
             
          //   <div class="autocomplete">
-              <input autocomplete="off" oninput={on_input_change} id="search_field" class="form-control input-field" type="search" placeholder="Tags oder Titel eingeben" name="tags" />              
+              <input autocomplete="off" onkeypress={onkeypress} oninput={on_input_change} id="search_field" class="form-control input-field" type="search" placeholder="Tags oder Titel eingeben" name="tags" />              
         //    </div>
               <button style="width: 80px;" onclick={on_search} id="search_button" class="btn btn-secondary ms-2">{"Suchen"}</button>
                   
