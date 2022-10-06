@@ -1,17 +1,10 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
-use web_sys::console;
 use yew::prelude::*;
-use yew_hooks::use_mount;
 use yew_router::prelude::*;
 
-<<<<<<< HEAD
 use crate::components::{CardGroup, SearchBar, PageQuery, Pagination, Footer, SearchQuery};
 use crate::{image_path, ENTRIES_ON_PAGE};
-=======
-use crate::components::{NavBar, CardGroup, Auth};
-use crate::image_path;
->>>>>>> f9c2480 (Add auth comp, searchbar,)
 use crate::{api::request, error::HoliError, hooks::use_user_context};
 
 use super::Route;
@@ -51,7 +44,6 @@ pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliEr
 
 #[function_component(Entries)]
 pub fn entries() -> Html {
-<<<<<<< HEAD
 	//let page = use_state(|| 1);
 	let search_info = use_state(SearchQuery::default);
 	
@@ -59,18 +51,11 @@ pub fn entries() -> Html {
 
 	let user_ctx = use_user_context();
     let location = use_location().unwrap();
-=======
-	let user_ctx = use_user_context();
-    let history = use_history().unwrap();
->>>>>>> f9c2480 (Add auth comp, searchbar,)
 
     let entries = use_state(Vec::<EntryInfo>::new);
 
-
 	{
 		let entries = entries.clone();
-<<<<<<< HEAD
-<<<<<<< HEAD
 		let search_info1 = search_info.clone();		
 		
 		let location_inner = location.clone();
@@ -102,32 +87,6 @@ pub fn entries() -> Html {
 
 		
 		
-=======
-		use_effect_with_deps(
-			move |_| {
-				wasm_bindgen_futures::spawn_local(async move {
-					if let Ok(api_entries) = get_entries().await {
-						//log::info!("{api_entries:?}");
-						entries.set(api_entries);
-					}
-				});
-				|| ()
-			},
-			(),
-		);
->>>>>>> f9c2480 (Add auth comp, searchbar,)
-=======
-		use_mount(|| {
-			
-			wasm_bindgen_futures::spawn_local(async move {
-				if let Ok(api_entries) = get_entries().await {
-					//log::info!("{api_entries:?}");
-					entries.set(api_entries);
-				}
-			});
-		});
-		
->>>>>>> a74e52c (Add logout button)
 	}
 	let card = move |title: String| -> Html {
 		html! {
@@ -137,13 +96,6 @@ pub fn entries() -> Html {
 	
     html! {
         <div>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-			<Auth>
->>>>>>> f9c2480 (Add auth comp, searchbar,)
-=======
->>>>>>> a74e52c (Add logout button)
             <div class="container-fluid">
                 <div class="row highlight">
                     <a href="/et" class="col et_bg_color card square">
@@ -240,8 +192,6 @@ pub fn entries() -> Html {
 					
 				}
 			}
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 			<Pagination
 				search_info={SearchQuery {
@@ -253,12 +203,6 @@ pub fn entries() -> Html {
 			/>
 
 			<Footer />
-=======
-			</Auth>
->>>>>>> f9c2480 (Add auth comp, searchbar,)
-=======
-
->>>>>>> a74e52c (Add logout button)
         </div>
 			
     }

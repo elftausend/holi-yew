@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 use serde::{Serialize, Deserialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
@@ -71,14 +70,5 @@ pub fn search_bar(props: &Props) -> Html {
           </div>
 
       </div>
-=======
-use yew::prelude::*;
-
-
-#[function_component(SearchBar)]
-pub fn search_bar() -> Html {
-    html! {
-
->>>>>>> f9c2480 (Add auth comp, searchbar,)
     }
 }

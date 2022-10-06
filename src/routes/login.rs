@@ -38,13 +38,8 @@ pub fn login() -> Html {
     let user_ctx = use_user_context();
     let login_info = use_state(LoginInfo::default);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     let history = use_history().unwrap();
     
-=======
-    let history = use_history().unwrap();
->>>>>>> a74e52c (Add logout button)
     use_effect_with_deps(
         move |_| {
             wasm_bindgen_futures::spawn_local(async move {
@@ -57,11 +52,6 @@ pub fn login() -> Html {
         (),
     );
 
-<<<<<<< HEAD
-=======
->>>>>>> f9c2480 (Add auth comp, searchbar,)
-=======
->>>>>>> a74e52c (Add logout button)
     let onlogin = {
         let login_info = login_info.clone();
         Callback::from(move |e: MouseEvent| {

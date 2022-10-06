@@ -14,30 +14,11 @@ pub fn navbar() -> Html {
         use_effect_with_deps(
             move |_| {
                 wasm_bindgen_futures::spawn_local(async move {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     logged_in.set(is_logged_in().await)
                 });
                 || ()
             },
             user_ctx.clone(),
-=======
-                    if is_logged_in().await {
-                        logged_in.set(true); 
-                    }
-
-                });
-                || ()
-            },
-            user_ctx,
->>>>>>> f9c2480 (Add auth comp, searchbar,)
-=======
-                    logged_in.set(is_logged_in().await)
-                });
-                || ()
-            },
-            user_ctx.clone(),
->>>>>>> a74e52c (Add logout button)
         );
     }
 

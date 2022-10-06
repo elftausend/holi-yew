@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-use std::ops::{Deref, DerefMut};
-
->>>>>>> f9c2480 (Add auth comp, searchbar,)
 use yew::prelude::*;
 use yew_router::prelude::*;
 

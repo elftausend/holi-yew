@@ -2,24 +2,17 @@ pub mod entries;
 pub mod login;
 pub mod upload;
 pub mod logout;
-<<<<<<< HEAD
 pub mod user_panel;
 pub mod page_not_found;
 pub mod show_upload;
-=======
->>>>>>> a74e52c (Add logout button)
 
 pub use entries::Entries;
 pub use login::Login;
-<<<<<<< HEAD
 pub use upload::Upload;
 pub use logout::Logout;
 pub use user_panel::UserPanel;
 pub use page_not_found::NotFound;
 pub use show_upload::ShowUpload;
-=======
-pub use logout::Logout;
->>>>>>> a74e52c (Add logout button)
 //pub use upload::Upload;
 
 use reqwest::Method;
@@ -56,20 +49,10 @@ pub fn switch(routes: &Route) -> Html {
         Route::Entries => html! {
             <Entries />
         },
-<<<<<<< HEAD
         Route::UserPanel => html! { <UserPanel /> },
         Route::Upload => html! { <Upload /> },
         Route::ShowUpload => html! { <ShowUpload />},
         Route::NotFound => html! { <NotFound /> },
-=======
-        Route::UserPanel => html! {
-            <div>
-                //<NavBar />
-                {"HI"}
-            </div>
-        },
-        Route::NotFound => html! { <h1>{ "404" }</h1> },
->>>>>>> a74e52c (Add logout button)
     }
 }
 
