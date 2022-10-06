@@ -1,6 +1,9 @@
 /target
 .DS_Store
 dist
-/backend/static/images
+# to ignore all uploaded entries
+/backend/static/images/*.*
 /backend/static/pdfs
 /backend/static/uploaded
+
+__pycache__
