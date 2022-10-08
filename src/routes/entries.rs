@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{CardGroup, SearchBar, PageQuery, Pagination, Footer, SearchQuery};
+use crate::components::{CardGroup, SearchBar, Pagination, Footer, SearchQuery};
 use crate::{image_path, ENTRIES_ON_PAGE};
 use crate::{api::request, error::HoliError, hooks::use_user_context};
 

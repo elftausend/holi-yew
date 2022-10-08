@@ -65,13 +65,8 @@ pub fn show_upload() -> Html {
         <div>
             <div>
                 <div class="container-fluid mt-3">
-                    
-                
-                
+                         
                     <div style="font-weight: bold; font-size: x-large;" class="mt-3">
-                        
-                        
-
                         <div style="float: left;" class="mb-3">
                             <button onclick={onback} class="btn btn-primary">
                                 {"Zurück"}
