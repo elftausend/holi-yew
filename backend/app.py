@@ -99,4 +99,6 @@ api.add_resource(EntryCount, '/entry_count')
 api.add_resource(Entry, '/entry/<string:hash>')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8011)
+    from waitress import serve
+    serve(app, host="127.0.0.1", port=82, threads=16)
+    #app.run(debug=True, port=82)
