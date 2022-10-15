@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_hooks::use_mount;
-use yew_router::prelude::{use_history, History, Location, use_location};
+use yew_router::prelude::{use_history, use_location, History, Location};
 
-use crate::{pdf_path, image_path};
+use crate::{image_path, pdf_path};
 
-use super::entries::{EntryInfo, get_entry};
+use super::entries::{get_entry, EntryInfo};
 
 #[derive(Debug, Default, PartialEq, Deserialize, Clone, Serialize)]
 pub struct HashQuery {
@@ -17,7 +17,7 @@ pub fn show_upload() -> Html {
     let entry_info = use_state(EntryInfo::default);
     let hash_query = use_state(HashQuery::default);
     let history = use_history().unwrap();
-    
+
     let onback = {
         let history = history.clone();
         Callback::from(move |e: MouseEvent| {
@@ -45,10 +45,9 @@ pub fn show_upload() -> Html {
         }, history.location().query::<HashQuery>().unwrap_or_default());
     }*/
 
-    
     {
         let location = location.clone();
-        let entry_info = entry_info.clone();    
+        let entry_info = entry_info.clone();
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
                 let hash = location.query::<HashQuery>().unwrap_or_default();
@@ -65,7 +64,7 @@ pub fn show_upload() -> Html {
         <div>
             <div>
                 <div class="container-fluid mt-3">
-                         
+
                     <div style="font-weight: bold; font-size: x-large;" class="mt-3">
                         <div style="float: left;" class="mb-3">
                             <button onclick={onback} class="btn btn-primary">
@@ -82,21 +81,21 @@ pub fn show_upload() -> Html {
                                 {"PDF anzeigen"}
                             </a>
                             </button>
-                            
+
                             <br/>
-                        
+
                             {
                                 entry_info.tags.iter().map(|tag| {
                                     html! {
                                         <span class="badge me-1 bg-secondary tag">{tag}</span>
                                         //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
                                     }
-                                }).collect::<Html>()       
+                                }).collect::<Html>()
                             }
-                        
+
                         </div>
                     </div>
-                </div>        
+                </div>
             </div>
             <br />
             <div class="container">
@@ -105,21 +104,21 @@ pub fn show_upload() -> Html {
                     <div class="carousel-item active">
                         <img class="d-block carousel-image" src={image_path(entry_info.path.first().unwrap_or(&"".into()))} alt="Slide picture" />
                     </div>
-                    {    
+                    {
                         if entry_info.path.len() >= 1 {
                             entry_info.path[1..].iter().map(|path| {
-                                html!{           
+                                html!{
                                     <div class="carousel-item">
                                         <img class="d-block carousel-image" src={image_path(path)} alt="Slide picture" />
                                     </div>
-                                }                
+                                }
                             }).collect::<Html>()
                         } else {
                             html!()
                         }
-                        
+
                     }
-                    
+
                 </div>
                 <button class="carousel-control-prev carousel-control-size" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon it_bg_color" aria-hidden="true"></span>

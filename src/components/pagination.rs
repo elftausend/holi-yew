@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -8,7 +8,7 @@ use super::SearchQuery;
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 pub struct PageQuery {
-    // TODO: pub tags: String 
+    // TODO: pub tags: String
     pub page: u64,
 }
 
@@ -21,7 +21,6 @@ pub struct Props {
 
 #[function_component(Pagination)]
 pub fn pagination(props: &Props) -> Html {
-
     let Props {
         search_info,
         total_pages,
@@ -35,7 +34,7 @@ pub fn pagination(props: &Props) -> Html {
                     {
                         if search_info.page == 1 {
                             html!{
-                                <button style="width: 37.5px; height: 38px;" class="btn btn-danger"></button>                        
+                                <button style="width: 37.5px; height: 38px;" class="btn btn-danger"></button>
                             }
                         } else {
                             html!{
@@ -50,8 +49,8 @@ pub fn pagination(props: &Props) -> Html {
                             }
                         }
                     }
-                    
-                
+
+
                 </li>
                 <li class="page-item">
                     {
@@ -75,7 +74,7 @@ pub fn pagination(props: &Props) -> Html {
                         }
                     }
 
-                    
+
                 </li>
             </ul>
         </div>

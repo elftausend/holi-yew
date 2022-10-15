@@ -1,18 +1,18 @@
 pub mod entries;
 pub mod login;
-pub mod upload;
 pub mod logout;
-pub mod user_panel;
 pub mod page_not_found;
 pub mod show_upload;
+pub mod upload;
+pub mod user_panel;
 
 pub use entries::Entries;
 pub use login::Login;
-pub use upload::Upload;
 pub use logout::Logout;
-pub use user_panel::UserPanel;
 pub use page_not_found::NotFound;
 pub use show_upload::ShowUpload;
+pub use upload::Upload;
+pub use user_panel::UserPanel;
 //pub use upload::Upload;
 
 use reqwest::Method;

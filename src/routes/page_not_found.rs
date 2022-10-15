@@ -3,9 +3,8 @@ use yew_router::prelude::{use_history, History};
 
 #[function_component(NotFound)]
 pub fn not_found() -> Html {
-
     let history = use_history().unwrap();
-    
+
     let onback = {
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();

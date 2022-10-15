@@ -1,7 +1,10 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::{routes::{Route, is_logged_in}, hooks::use_user_context};
+use crate::{
+    hooks::use_user_context,
+    routes::{is_logged_in, Route},
+};
 
 #[function_component(NavBar)]
 pub fn navbar() -> Html {
@@ -13,9 +16,9 @@ pub fn navbar() -> Html {
         let logged_in = logged_in.clone();
         use_effect_with_deps(
             move |_| {
-                wasm_bindgen_futures::spawn_local(async move {
-                    logged_in.set(is_logged_in().await)
-                });
+                wasm_bindgen_futures::spawn_local(
+                    async move { logged_in.set(is_logged_in().await) },
+                );
                 || ()
             },
             user_ctx.clone(),
@@ -44,22 +47,21 @@ pub fn navbar() -> Html {
                     </Link<Route>>
                 </ul>
 
-        
-                
-                    
+
+
+
                 </div>
                 <span class="grey">{format!("logged in as {}", &user_ctx.inner.user_id)}</span><br/>
                 <Link<Route> classes={classes!("badge", "bg-danger", "ms-1")} to={Route::Logout}>
                     { "logout" }
                 </Link<Route>>
-            
+
         </div>
     </nav>
             }
         } else {
             html!{}
-        }} 
+        }}
 
     }
-
 }

@@ -1,17 +1,17 @@
-mod navbar;
-mod user_context_provider;
-mod card_group;
-mod search_bar;
 mod auth;
-mod pagination;
+mod card_group;
 mod footer;
+mod navbar;
+mod pagination;
+mod search_bar;
+mod user_context_provider;
 //mod pagination2;
 
-pub use navbar::*;
-pub use user_context_provider::*;
-pub use card_group::*;
-pub use search_bar::*;
 pub use auth::*;
-pub use pagination::*;
+pub use card_group::*;
 pub use footer::*;
+pub use navbar::*;
+pub use pagination::*;
+pub use search_bar::*;
+pub use user_context_provider::*;
 //pub use pagination2::*;

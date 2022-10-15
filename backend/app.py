@@ -14,6 +14,7 @@ path = os.path.dirname(os.path.realpath(__file__))
 api = Api(app)
 app.secret_key = os.urandom(32)
 
+# can be disabled for HTL HL (due to trunk proxy config)
 CORS(app)
 #app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -83,7 +84,7 @@ class EntryCount(Resource):
         return {"entry_count": len(entries)}
 
 class Entry(Resource):
-    #@jwt_required
+    @jwt_required()
     def get(self, hash: str):
         upload = hash + ".json"
     
@@ -92,13 +93,27 @@ class Entry(Resource):
             return json.load(file)
         
 
+class FileDetails:
+    pass
+    
+class Upload(Resource):
+    @jwt_required()
+    def post(self):
+    #    date = request.form["date"]
+     #   tags = request.form["tags"]
+        title = request.form["title"]
+      #  file = request.form["file"]
+        
+        print(f"title {title}")
+
         
 api.add_resource(User, '/user')
 api.add_resource(Entries, '/entries')
 api.add_resource(EntryCount, '/entry_count')
 api.add_resource(Entry, '/entry/<string:hash>')
+api.add_resource(Upload, '/upload')
 
 if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host="127.0.0.1", port=82, threads=16)
-    #app.run(debug=True, port=82)
+    #from waitress import serve
+    #serve(app, host="127.0.0.1", port=82, threads=16)
+    app.run(debug=True, port=82)

@@ -1,6 +1,6 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
-use web_sys::{HtmlInputElement};
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::prelude::{use_history, History};
 
@@ -39,7 +39,7 @@ pub fn login() -> Html {
     let login_info = use_state(LoginInfo::default);
 
     let history = use_history().unwrap();
-    
+
     use_effect_with_deps(
         move |_| {
             wasm_bindgen_futures::spawn_local(async move {
@@ -60,7 +60,9 @@ pub fn login() -> Html {
             e.prevent_default();
 
             wasm_bindgen_futures::spawn_local(async move {
-                if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", login_info.clone(), true).await {
+                if let Ok(jwt) =
+                    request::<_, JWT>(Method::POST, "auth", login_info.clone(), true).await
+                {
                     user_ctx.login(UserInfo {
                         user_id: login_info.username,
                         token: jwt.access_token,
