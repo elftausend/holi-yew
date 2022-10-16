@@ -8,6 +8,7 @@ from flask_jwt import JWT, jwt_required, current_identity
 import utils
 import json
 import filter_tags
+from upload import *
 
 app = Flask(__name__)
 path = os.path.dirname(os.path.realpath(__file__))
@@ -93,20 +94,6 @@ class Entry(Resource):
             return json.load(file)
         
 
-class FileDetails:
-    pass
-    
-class Upload(Resource):
-    @jwt_required()
-    def post(self):
-    #    date = request.form["date"]
-     #   tags = request.form["tags"]
-        title = request.form["title"]
-      #  file = request.form["file"]
-        
-        print(f"title {title}")
-
-        
 api.add_resource(User, '/user')
 api.add_resource(Entries, '/entries')
 api.add_resource(EntryCount, '/entry_count')
