@@ -10,6 +10,7 @@ import json
 import filter_tags
 from upload import *
 from user import *
+from utils import entries
 
 app = Flask(__name__)
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -19,9 +20,6 @@ app.secret_key = os.urandom(32)
 # can be disabled for HTL HL (due to trunk proxy config)
 CORS(app)
 #app.config['CORS_HEADERS'] = 'Content-Type'
-
-global entries
-entries = utils.get_upload_entries([])
 
 app.config["JWT_EXPIRATION_DELTA"] = datetime.timedelta(minutes=24*60*7)
 #app.config["JWT_AUTH_URL_RULE"] = "/api/auth"

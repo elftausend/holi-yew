@@ -4,6 +4,8 @@ dist
 # to ignore all uploaded entries
 /backend/static/images/*.*
 /backend/static/pdfs
+/backend/static/files
 /backend/static/uploaded
+*old*
 
 __pycache__

@@ -72,12 +72,12 @@ pub fn show_upload() -> Html {
                             </button>
                             <span class="ms-2">{entry_info.title.clone()}</span>
                             // download does not work because the link to the download is not the same origin
-                            <a class="ms-2 me-2" href={pdf_path(&entry_info.pdf.clone())} download={"true"}>
+                            <a class="ms-2 me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={"true"}>
                                 <button class="btn btn-primary">{"download"}</button>
                             </a>
 
                             <button class="btn btn-danger">
-                            <a href={pdf_path(&entry_info.pdf.clone())}>
+                            <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
                                 {"PDF anzeigen"}
                             </a>
                             </button>
@@ -102,14 +102,14 @@ pub fn show_upload() -> Html {
             <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-interval="false">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img class="d-block carousel-image" src={image_path(entry_info.path.first().unwrap_or(&"".into()))} alt="Slide picture" />
+                        <img class="d-block carousel-image" src={image_path(&format!("{}_0.{}", &entry_info.hash, entry_info.img_exts.first().unwrap_or(&"".into())))} alt="Slide picture" />
                     </div>
                     {
-                        if entry_info.path.len() >= 1 {
-                            entry_info.path[1..].iter().map(|path| {
+                        if entry_info.img_exts.len() >= 1 {
+                            (1..entry_info.img_exts.len()).into_iter().map(|idx| {
                                 html!{
                                     <div class="carousel-item">
-                                        <img class="d-block carousel-image" src={image_path(path)} alt="Slide picture" />
+                                        <img class="d-block carousel-image" src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))} alt="Slide picture" />
                                     </div>
                                 }
                             }).collect::<Html>()

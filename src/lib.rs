@@ -22,5 +22,5 @@ pub fn image_path(image: &str) -> String {
 }
 
 pub fn pdf_path(pdf: &str) -> String {
-    format!("{API_ROOT}static/pdfs/{pdf}")
+    format!("{API_ROOT}static/files/{pdf}")
 }

@@ -7,14 +7,17 @@ import utils
 from typing import List
 import os
 from user import User
+from pdf_save import save_imgs_from_pdf
 import json
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+PDF_LOGO_PATH = "logos/pdf_logo/pdf.png"
 
 MISSING_FILE = "Es wurde keine Datei ausgewählt."
 MISSING_TITLE = "Der Titel wurde nicht angegeben."
-MISSING_TAGS = "Die Tags müssen noch hinzugefügt werden."
+MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
+
 
 class UploadMsgs():
     missing_file = ""
@@ -47,8 +50,8 @@ class FileDetails:
     def __init__(self, file_name: str, data: List[int]):
         self.file_name = file_name
         self.ext = file_ext(file_name)
-        self.data = data
-        self.hash = hashlib.sha256(bytearray(self.data)).hexdigest()[0:32]
+        self.data = bytearray(data)
+        self.hash = hashlib.sha256(self.data).hexdigest()[0:32]
         self.save_path = f"{PATH}/static/files/{self.hash}.{self.ext}"
 
     def save_to_disk(self):
@@ -58,7 +61,7 @@ class FileDetails:
 class UploadDetails:
     def __init__(self, file: FileDetails, title: str, date: str, tags: str, user: User):
         self.file = file
-        self.pdf_picture_count = 0
+        self.img_exts = []
         
         self.title = title
         self.date = date
@@ -67,17 +70,16 @@ class UploadDetails:
         split_tags.append(date)
         # append division of user
         # split_tags.append(user.division)
-
         self.tags = split_tags
 
         self.uploader = str(user.id)
         self.view = ""
         
     def save_pdfs(self):
-        self.pdf_picture_count = utils.save_imgs_from_pdf(self.file.save_path, self.file.hash)
+        self.img_exts = save_imgs_from_pdf(self.file.save_path, self.file.hash)
 
-        if self.pdf_picture_count == 0:
-            self.view = "pdf_logo/pdf.png"
+        if not self.img_exts:
+            self.view = PDF_LOGO_PATH
 
         if "pdf" not in self.tags:
             self.tags.append("pdf")
@@ -97,9 +99,11 @@ class UploadDetails:
                 "date": self.date,
                 "tags": self.tags,
                 "view": self.view,
-                "pdf_pc": self.pdf_picture_count,
+                "img_exts": self.img_exts,
                 "usid": self.uploader,
-                "ut": upload_type
+                "ut": upload_type,
+                "ext": self.file.ext,
+                "hash": self.file.hash
             }
             json.dump(upload_info, file)
     
@@ -144,6 +148,10 @@ class Upload(Resource):
 
         file = FileDetails(file_name, file_data)
 
+        # remove later
+        if file.ext != "pdf":
+            return
+
         upload = UploadDetails(
             file, title, current_date, 
             tags, current_identity
@@ -154,6 +162,6 @@ class Upload(Resource):
         return msg.as_json()
     
     def handle_upload(self, upload: UploadDetails):
-        
+        upload.save_to_disk()
         pass
         

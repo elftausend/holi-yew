@@ -1,3 +1,4 @@
+from typing import List
 import fitz
 import io
 import os
@@ -5,8 +6,9 @@ from PIL import Image
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
-def save_imgs_from_pdf(path, hexdigest) -> int:
+def save_imgs_from_pdf(path, hexdigest) -> List[str]:
     uploaded_pdf = fitz.open(path)
+    img_exts = []
     picture_count = 0
 
     for page in uploaded_pdf:
@@ -20,12 +22,12 @@ def save_imgs_from_pdf(path, hexdigest) -> int:
 
             # get the image extension
             image_ext = base_image["ext"]
+            img_exts.append(image_ext)
 
             img = Image.open(io.BytesIO(image_bytes))
 
             picture_path = f"{hexdigest}_{picture_count}.{image_ext}"
 
             img.save(f"{PATH}/static/images/{picture_path}")
-
             picture_count+=1
-    return picture_count
+    return img_exts

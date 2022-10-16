@@ -15,13 +15,12 @@ pub struct EntryInfo {
     pub title: String,
     pub date: String,
     pub tags: Vec<String>,
-    pub path: Vec<String>,
-    pub pdf: String,
-    // mind rename from type to upload_type
-    pub r#type: String,
-    pub file_type: String,
+    pub view: String,
+    pub img_exts: Vec<String>,
     // mind 'anonymous' upload etc
-    pub uploader: String,
+    pub usid: String,
+    pub ut: String,
+    pub ext: String,
     pub hash: String,
 }
 
@@ -160,21 +159,43 @@ pub fn entries() -> Html {
                         html! {
                             <CardGroup>
                             {
-                            chunk.iter().map(|name| {
-                                html! {
-                                    <div class="card">
-                                        <Link<Route, HashQuery>
-                                            to={Route::ShowUpload}
-                                            query={Some(HashQuery{hash: name.hash.clone()})}
-                                        >
-                                            <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&name.path[0])} alt="picture" />
+                            chunk.iter().map(|entry| {
+                                if entry.img_exts.len() > 0 {
+                                    html! {
+                                        <div class="card">
+                                            <Link<Route, HashQuery>
+                                                to={Route::ShowUpload}
+                                                query={Some(HashQuery{hash: entry.hash.clone()})}
+                                            >
+                                                <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
+                                                <div class="card-body">
+                                                    <h5 class="card-title">
+                                                        {entry.title.clone()}
+                                                    </h5>
+                                                    <p class="card-text">
+                                                        {
+                                                            entry.tags.iter().map(|tag| {
+                                                                html! {
+                                                                    <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                                }
+                                                            }).collect::<Html>()
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </Link<Route, HashQuery>>
+                                        </div>
+                                    }
+                                } else {
+                                    html! {
+                                        <div class="card">
+                                            <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
                                             <div class="card-body">
                                                 <h5 class="card-title">
-                                                    {name.title.clone()}
+                                                    {entry.title.clone()}
                                                 </h5>
                                                 <p class="card-text">
                                                     {
-                                                        name.tags.iter().map(|tag| {
+                                                        entry.tags.iter().map(|tag| {
                                                             html! {
                                                                 <span class="badge me-1 bg-secondary tag">{tag}</span>
                                                             }
@@ -182,9 +203,10 @@ pub fn entries() -> Html {
                                                     }
                                                 </p>
                                             </div>
-                                        </Link<Route, HashQuery>>
-                                    </div>
+                                        </div>
+                                    }
                                 }
+                                
                             }).collect::<Html>()
                         }
                         </CardGroup>

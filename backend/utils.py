@@ -29,12 +29,14 @@ def get_upload_entries(lookup_tags, user="admin"):
         with open(entry, mode="r") as file:
             x = json.load(file)
 
-            if x["uploader"] == user or user == "admin":
-
+            if x["usid"] == user or user == "admin":
                 if check_if_tags_found(lookup_tags, entry):
                     files_data.append(x)
         
     return sorted(files_data, key=sorting, reverse=True)
+
+global entries
+entries = get_upload_entries([])
 
 def check_date(today, returned_date):
     if len(returned_date) == 0:
