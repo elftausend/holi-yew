@@ -88,14 +88,16 @@ pub fn upload() -> Html {
             handle.set(None);
             //log::info!("{:?}", upload_info.file);
 
-            let upload_info = (*upload_info).clone();
+            let upload_info = upload_info.clone();
             let upload_msgs = upload_msgs.clone();
+            
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(err_msgs) =
-                    request::<UploadInfo, UploadMsgs>(Method::POST, "upload", upload_info, false).await
+                    request::<UploadInfo, UploadMsgs>(Method::POST, "upload", (*upload_info).clone(), false).await
                 {
                     log::info!("err_msgs!!!!!!!!!!!!!!: {err_msgs:?}");
                     upload_msgs.set(err_msgs);
+                    upload_info.set(UploadInfo::default())
                 }
             });
         })

@@ -106,7 +106,7 @@ pub fn entries() -> Html {
                         </div>
                     </a>
 
-                    <a href="/?page=0&tags=IT#search_field" class="col it_bg_color card square">
+                    <a href="/?page=1&tags=IT#search_field" class="col it_bg_color card square">
                       <div class="">
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"IT"}</h1>
                       </div>

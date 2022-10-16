@@ -99,7 +99,16 @@ pub fn search_bar(props: &Props) -> Html {
           <div class="d-flex mt-4 mb-4">
 
          //   <div class="autocomplete">
-              <input autocomplete="off" onkeypress={onkeypress} oninput={on_input_change} id="search_field" class="form-control input-field" type="search" placeholder="Tags oder Titel eingeben" name="tags" />
+              <input autocomplete="off" 
+                    value={props.search_info.tags.clone()} 
+                    onkeypress={onkeypress} 
+                    oninput={on_input_change} 
+                    id="search_field" 
+                    class="form-control input-field" 
+                    type="search" 
+                    placeholder="Tags oder Titel eingeben" 
+                    name="tags" 
+                />
         //    </div>
               <button style="width: 80px;" onclick={on_search} id="search_button" class="btn btn-secondary ms-2">{"Suchen"}</button>
 

@@ -9,6 +9,7 @@ import os
 from user import User
 from pdf_save import save_imgs_from_pdf
 import json
+from utils import entries
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 PDF_LOGO_PATH = "logos/pdf_logo/pdf.png"
@@ -105,6 +106,9 @@ class UploadDetails:
                 "ext": self.file.ext,
                 "hash": self.file.hash
             }
+            global entries
+            entries.append(upload_info)
+
             json.dump(upload_info, file)
     
 class Upload(Resource):
