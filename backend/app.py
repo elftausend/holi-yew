@@ -9,9 +9,10 @@ import utils
 import json
 import filter_tags
 from upload import *
+from user import *
 
 app = Flask(__name__)
-path = os.path.dirname(os.path.realpath(__file__))
+PATH = os.path.dirname(os.path.realpath(__file__))
 api = Api(app)
 app.secret_key = os.urandom(32)
 
@@ -25,25 +26,10 @@ entries = utils.get_upload_entries([])
 app.config["JWT_EXPIRATION_DELTA"] = datetime.timedelta(minutes=24*60*7)
 #app.config["JWT_AUTH_URL_RULE"] = "/api/auth"
 
-class User(object):
-    def __init__(self, id):
-        self.id = id
-
-def authenticate(username, password):
-    # auth with htlhl
-    user = User()
-    user.id = username
-    return user
-
-def identity(payload):
-    user_id = payload['identity']
-    user = User()
-    user.id = user_id
-    return user
 
 jwt = JWT(app, authenticate, identity)
 
-class User(Resource):
+class UserRoute(Resource):
     @jwt_required()
     def get(self):
         token = request.headers["Authorization"][4:]
@@ -90,11 +76,11 @@ class Entry(Resource):
         upload = hash + ".json"
     
         # check if exists?
-        with open(f"{path}/static/uploaded/{upload}", mode='r') as file:
+        with open(f"{PATH}/static/uploaded/{upload}", mode='r') as file:
             return json.load(file)
         
 
-api.add_resource(User, '/user')
+api.add_resource(UserRoute, '/user')
 api.add_resource(Entries, '/entries')
 api.add_resource(EntryCount, '/entry_count')
 api.add_resource(Entry, '/entry/<string:hash>')

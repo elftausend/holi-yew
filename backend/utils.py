@@ -3,6 +3,7 @@ from typing import Tuple
 import json
 from pathlib import Path
 from filter_tags import check_if_tags_found
+import re
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -34,3 +35,15 @@ def get_upload_entries(lookup_tags, user="admin"):
                     files_data.append(x)
         
     return sorted(files_data, key=sorting, reverse=True)
+
+def check_date(today, returned_date):
+    if len(returned_date) == 0:
+        return (today, "")
+
+    x = re.search("^([0-2][0-9]|(3)[0-1])(\.)(((0)[0-9])|((1)[0-2]))(\.)\d{4}$", returned_date)
+    
+    if x == None:
+        return (today, "Das eingegebene Datum ist inkorrekt.")
+        
+    today = str(returned_date[0:2]) + "." + str(returned_date[3:5]) + "." + str(returned_date[6:10])
+    return (today, "")

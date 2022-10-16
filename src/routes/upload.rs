@@ -8,12 +8,13 @@ use yew_router::prelude::{use_history, History};
 use crate::request;
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
-struct UploadError {
+struct UploadMsgs {
     missing_file: String,
     missing_title: String,
     erroneous_date: String,
     missing_tags: String,
     no_user_terms: String,
+    successful_upload: String,
 }
 
 
@@ -38,7 +39,7 @@ pub struct UploadInfo {
 pub fn upload() -> Html {
     let history = use_history().unwrap();
     let upload_info = use_state(UploadInfo::default);
-    let error_msgs = use_state(UploadError::default);
+    let upload_msgs = use_state(UploadMsgs::default);
     let handle = use_state(|| None);
 
     let on_file_change = {
@@ -80,7 +81,7 @@ pub fn upload() -> Html {
     };
 
     let on_click_upload = {
-        let error_msgs = error_msgs.clone();
+        let upload_msgs = upload_msgs.clone();
         let upload_info = upload_info.clone();
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -88,13 +89,13 @@ pub fn upload() -> Html {
             //log::info!("{:?}", upload_info.file);
 
             let upload_info = (*upload_info).clone();
-            let error_msgs = error_msgs.clone();
+            let upload_msgs = upload_msgs.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(err_msgs) =
-                    request::<UploadInfo, UploadError>(Method::POST, "upload", upload_info, false).await
+                    request::<UploadInfo, UploadMsgs>(Method::POST, "upload", upload_info, false).await
                 {
                     log::info!("err_msgs!!!!!!!!!!!!!!: {err_msgs:?}");
-                    error_msgs.set(err_msgs);
+                    upload_msgs.set(err_msgs);
                 }
             });
         })
@@ -128,6 +129,15 @@ pub fn upload() -> Html {
         })
     };
 
+    let ondatepress = {
+        Callback::from(move |e: KeyboardEvent| {
+            let k = e.key_code();
+            if !(k >= 48 && k <= 57 || k == 46) {
+                e.prevent_default();
+            }
+        })
+    };
+
     html! {
         <div>
             <div class="container-fluid mt-3">
@@ -137,7 +147,7 @@ pub fn upload() -> Html {
 
                 <form>
 
-                    <span style="color: red;">{ error_msgs.missing_file.clone() }</span>
+                    <span style="color: red;">{ upload_msgs.missing_file.clone() }</span>
                     <br />                    
                     <label for="file-upload">{"PDF oder Source File hochladen"}</label>
                     <br />
@@ -151,7 +161,7 @@ pub fn upload() -> Html {
                     />
                     <div class="mb-3">
                         <h3>{"Füge einen passenden Titel hinzu"}</h3>
-                        <span style="color: red;">{ error_msgs.missing_title.clone() }</span>
+                        <span style="color: red;">{ upload_msgs.missing_title.clone() }</span>
                         <textarea
                             oninput={on_title_input}
                             class="form-control"
@@ -166,7 +176,7 @@ pub fn upload() -> Html {
 
                     <div class="mb-3">
                         <h3>{"Füge Tags hinzu"}</h3>
-                        <span style="color: red;">{ error_msgs.missing_tags.clone() }</span>
+                        <span style="color: red;">{ upload_msgs.missing_tags.clone() }</span>
                         <textarea
                             oninput={on_tag_input}
                             class="form-control"
@@ -180,6 +190,22 @@ pub fn upload() -> Html {
                     </div>
 
                     <div class="mb-3">
+                        <input autocomplete="off" 
+                                id="dateinput" 
+                                onkeypress={ondatepress} 
+                                class="form-control" 
+                                style="width: 120px; height: 50px;" 
+                                maxlength="10" 
+                                type="text" 
+                                placeholder="{{ date }}" 
+                                name="date"
+                            />
+                    </div>
+
+                    <div class="mb-3">
+                        <p>
+                            <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
+                        </p>
                         <button onclick={on_click_upload} class="btn btn-primary">
                             {"Upload"}
                         </button>
