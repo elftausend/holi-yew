@@ -7,6 +7,7 @@ import utils
 from typing import List
 import os
 from user import User
+import json
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -48,17 +49,16 @@ class FileDetails:
         self.ext = file_ext(file_name)
         self.data = data
         self.hash = hashlib.sha256(bytearray(self.data)).hexdigest()[0:32]
-    
-    def save_to_disk(self):
-        save_path = f"{PATH}/static/files/{self.hash}.{self.ext}"
+        self.save_path = f"{PATH}/static/files/{self.hash}.{self.ext}"
 
-        with open(save_path, "wb") as f:
+    def save_to_disk(self):
+        with open(self.save_path, "wb") as f:
             f.write(self.data)
 
 class UploadDetails:
     def __init__(self, file: FileDetails, title: str, date: str, tags: str, user: User):
         self.file = file
-        self.hash = file.hash
+        self.pdf_picture_count = 0
         
         self.title = title
         self.date = date
@@ -71,11 +71,38 @@ class UploadDetails:
         self.tags = split_tags
 
         self.uploader = str(user.id)
+        self.view = ""
         
+    def save_pdfs(self):
+        self.pdf_picture_count = utils.save_imgs_from_pdf(self.file.save_path, self.file.hash)
+
+        if self.pdf_picture_count == 0:
+            self.view = "pdf_logo/pdf.png"
+
+        if "pdf" not in self.tags:
+            self.tags.append("pdf")
 
     def save_to_disk(self):
-        pass
+        self.file.save_to_disk()
+        
+        upload_type = "prog"
 
+        if self.file.ext == "pdf":
+            self.save_pdfs()
+            upload_type = "pdf"
+
+        with open(f"{PATH}/static/uploaded/{self.file.hash}.json", mode="w") as file:
+            upload_info = {
+                "title": self.title,
+                "date": self.date,
+                "tags": self.tags,
+                "view": self.view,
+                "pdf_pc": self.pdf_picture_count,
+                "usid": self.uploader,
+                "ut": upload_type
+            }
+            json.dump(upload_info, file)
+    
 class Upload(Resource):
     @jwt_required()
     def post(self):
@@ -119,7 +146,7 @@ class Upload(Resource):
 
         upload = UploadDetails(
             file, title, current_date, 
-            tags, str(current_identity.id)
+            tags, current_identity
         )
 
         self.handle_upload(upload)
@@ -127,6 +154,6 @@ class Upload(Resource):
         return msg.as_json()
     
     def handle_upload(self, upload: UploadDetails):
-
+        
         pass
         
