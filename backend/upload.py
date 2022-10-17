@@ -34,13 +34,13 @@ class UploadMsgs():
             or self.missing_tags != "" or self.no_user_terms != ""
 
     def as_json(self):
-        return jsonify({"missing_file": self.missing_file, 
+        return {"missing_file": self.missing_file, 
                     "missing_title": self.missing_title,
                     "erroneous_date": self.erroneous_date,
                     "missing_tags": self.missing_tags,
                     "no_user_terms": self.no_user_terms,
                     "successful_upload": self.successful_upload
-    })
+    }
 
 def file_ext(file_name: str):
     splitted_ct = file_name.split(".")
@@ -75,10 +75,16 @@ class UploadDetails:
 
         self.uploader = str(user.id)
         self.view = ""
-        
+
+    # TODO
+    def save_prog(self):
+        self.view = utils.get_proglogo_from_file_type(self.file.ext)
+        if self.file.ext not in self.tags:
+            self.tags.append(self.file.ext)
+         
     def save_pdfs(self):
         self.img_exts = save_imgs_from_pdf(self.file.save_path, self.file.hash)
-
+        
         if not self.img_exts:
             self.view = PDF_LOGO_PATH
 
@@ -88,11 +94,14 @@ class UploadDetails:
     def save_to_disk(self):
         self.file.save_to_disk()
         
-        upload_type = "prog"
+        upload_type = "pdf"
 
         if self.file.ext == "pdf":
             self.save_pdfs()
-            upload_type = "pdf"
+        # this works as only pdfs and some source files can be selected
+        else:
+            self.save_prog()
+            upload_type = "prog"
 
         with open(f"{PATH}/static/uploaded/{self.file.hash}.json", mode="w") as file:
             upload_info = {
@@ -107,7 +116,7 @@ class UploadDetails:
                 "hash": self.file.hash
             }
             global entries
-            entries.append(upload_info)
+            entries.insert(0, upload_info)
 
             json.dump(upload_info, file)
     
@@ -144,17 +153,11 @@ class Upload(Resource):
         (current_date, date_error) = utils.check_date(today, returned_date)
         msg.erroneous_date = date_error
         
-
         # check date errors
-
         if msg.has_errors():
             return msg.as_json()
 
         file = FileDetails(file_name, file_data)
-
-        # remove later
-        if file.ext != "pdf":
-            return
 
         upload = UploadDetails(
             file, title, current_date, 
@@ -166,6 +169,6 @@ class Upload(Resource):
         return msg.as_json()
     
     def handle_upload(self, upload: UploadDetails):
-        upload.save_to_disk()
+        #upload.save_to_disk()
         pass
         

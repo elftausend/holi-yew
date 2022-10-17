@@ -40,14 +40,20 @@ pub fn upload() -> Html {
     let history = use_history().unwrap();
     let upload_info = use_state(UploadInfo::default);
     let upload_msgs = use_state(UploadMsgs::default);
+
+    let file_select = use_state(|| None);
+
+    let disable_upload = use_state(|| false);
     let handle = use_state(|| None);
 
     let on_file_change = {
         let handle = handle.clone();
         let upload_info = upload_info.clone();
+        let file_select = file_select.clone();
 
         Callback::from(move |e: Event| {
             let input: HtmlInputElement = e.target_unchecked_into();
+            
             if let Some(files) = input.files() {
                 let files = js_sys::try_iter(&files)
                     .unwrap()
@@ -77,27 +83,45 @@ pub fn upload() -> Html {
                     handle.set(Some(task));
                 }
             }
+            file_select.set(Some(input));
         })
     };
 
     let on_click_upload = {
         let upload_msgs = upload_msgs.clone();
         let upload_info = upload_info.clone();
+        let file_select = file_select.clone();
+
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
+            if *disable_upload {
+                return;
+            }
             handle.set(None);
             //log::info!("{:?}", upload_info.file);
 
             let upload_info = upload_info.clone();
             let upload_msgs = upload_msgs.clone();
+            let file_select = file_select.clone();
+
+            disable_upload.set(true);
+
+            let disable_upload = disable_upload.clone();
             
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(err_msgs) =
                     request::<UploadInfo, UploadMsgs>(Method::POST, "upload", (*upload_info).clone(), false).await
                 {
                     log::info!("err_msgs!!!!!!!!!!!!!!: {err_msgs:?}");
+                    
+                    if &err_msgs.successful_upload != "" {
+                        // unselect file
+                        (*file_select).as_ref().unwrap().set_value("");
+                        upload_info.set(UploadInfo::default())
+                    }
+                    disable_upload.set(false);
                     upload_msgs.set(err_msgs);
-                    upload_info.set(UploadInfo::default())
+                    
                 }
             });
         })
@@ -169,6 +193,7 @@ pub fn upload() -> Html {
                             class="form-control"
                             autocomplete="off"
                             style="width: 300px; height: 70px;"
+                            value={upload_info.title.clone()}
                             type="text"
                             placeholder="z.B.: Lineare Funktion"
                             name="title">
@@ -185,6 +210,7 @@ pub fn upload() -> Html {
                             autocomplete="off"
                             style="width: 300px; height: 70px;"
                             type="text"
+                            value={upload_info.tags.clone()}
                             placeholder="z.B.: 2BHITS Mathematik Funktionen Steigung-zwei-Punkte"
                             name="title">
                             {"Input"}

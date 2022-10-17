@@ -5,7 +5,7 @@ use yew_router::prelude::*;
 
 use crate::components::{CardGroup, Footer, Pagination, SearchBar, SearchQuery};
 use crate::{api::request, error::HoliError, hooks::use_user_context};
-use crate::{image_path, ENTRIES_ON_PAGE};
+use crate::{image_path, ENTRIES_ON_PAGE, pdf_path};
 
 use super::show_upload::HashQuery;
 use super::Route;
@@ -188,21 +188,23 @@ pub fn entries() -> Html {
                                 } else {
                                     html! {
                                         <div class="card">
-                                            <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    {entry.title.clone()}
-                                                </h5>
-                                                <p class="card-text">
-                                                    {
-                                                        entry.tags.iter().map(|tag| {
-                                                            html! {
-                                                                <span class="badge me-1 bg-secondary tag">{tag}</span>
-                                                            }
-                                                        }).collect::<Html>()
-                                                    }
-                                                </p>
-                                            </div>
+                                            <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={"true"}>
+                                                <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
+                                                <div class="card-body">
+                                                    <h5 class="card-title">
+                                                        {entry.title.clone()}
+                                                    </h5>
+                                                    <p class="card-text">
+                                                        {
+                                                            entry.tags.iter().map(|tag| {
+                                                                html! {
+                                                                    <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                                }
+                                                            }).collect::<Html>()
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </a>
                                         </div>
                                     }
                                 }

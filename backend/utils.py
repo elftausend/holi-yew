@@ -49,3 +49,20 @@ def check_date(today, returned_date):
         
     today = str(returned_date[0:2]) + "." + str(returned_date[3:5]) + "." + str(returned_date[6:10])
     return (today, "")
+
+
+def get_proglogo_from_file_type(file_ext: str):
+    logo_path = None
+    if file_ext == "rs":
+        logo_path = "logos/prog_lang_logos/rust_logo.png"
+    elif file_ext == "py":
+        logo_path = "logos/prog_lang_logos/python_logo.png"
+    elif file_ext == "js":
+        logo_path = "logos/prog_lang_logos/javascript_logo.png"
+    elif file_ext == "cpp":
+        logo_path = "logos/prog_lang_logos/c_plus_plus_logo.jpeg"
+    elif file_ext == "java":
+        logo_path = "logos/prog_lang_logos/java_logo.jpeg"
+    elif file_ext == "c":
+        logo_path = "logos/prog_lang_logos/c_logo.png"
+    return logo_path
