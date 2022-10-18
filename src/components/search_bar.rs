@@ -65,7 +65,7 @@ pub fn search_bar(props: &Props) -> Html {
             .get_element_by_id("search_field")
             .unwrap()
             .unchecked_into();
-        
+
         let input_callback = {
             let search_field = search_field.clone();
             Closure::wrap(Box::new(move |input: InputEvent| {
@@ -74,9 +74,20 @@ pub fn search_bar(props: &Props) -> Html {
                     return;
                 }
                 let list_div = document().create_element("div").unwrap();
-                list_div.set_attribute("id", &format!("{} autocomplete-list", search_field.id())).unwrap();
-                list_div.set_attribute("class", &format!("{} autocomplete-items", search_field.id())).unwrap();
-                search_field.parent_node().unwrap().append_child(&list_div).unwrap();
+                list_div
+                    .set_attribute("id", &format!("{} autocomplete-list", search_field.id()))
+                    .unwrap();
+                list_div
+                    .set_attribute(
+                        "class",
+                        &format!("{} autocomplete-items", search_field.id()),
+                    )
+                    .unwrap();
+                search_field
+                    .parent_node()
+                    .unwrap()
+                    .append_child(&list_div)
+                    .unwrap();
 
                 for inpt in testing_ipts {
                     if (&inpt[..value.len()]).to_uppercase() == value.to_uppercase() {
@@ -85,24 +96,28 @@ pub fn search_bar(props: &Props) -> Html {
                             "
                                 <strong>{}</strong>
                                 <input type='hidden' value='{}'/>
-                            ", 
-                            &inpt[..value.len()], inpt                            
+                            ",
+                            &inpt[..value.len()],
+                            inpt
                         ));
                         let search_field = search_field.clone();
-                        div.add_event_listener_with_callback("click", Closure::wrap(Box::new(move |e: MouseEvent| {
-                            let list_input: HtmlInputElement = e.target_unchecked_into();
-                            search_field.set_value(&list_input.value());
-                        }) as Box<dyn FnMut(_)>).as_ref().unchecked_ref())
+                        div.add_event_listener_with_callback(
+                            "click",
+                            Closure::wrap(Box::new(move |e: MouseEvent| {
+                                let list_input: HtmlInputElement = e.target_unchecked_into();
+                                search_field.set_value(&list_input.value());
+                            }) as Box<dyn FnMut(_)>)
+                            .as_ref()
+                            .unchecked_ref(),
+                        )
                         .unwrap();
 
                         list_div.append_child(&list_div).unwrap();
                     }
                 }
-
             }) as Box<dyn FnMut(_)>)
         };
-            
-        
+
         search_field
             .add_event_listener_with_callback("input", input_callback.as_ref().unchecked_ref())
             .unwrap();

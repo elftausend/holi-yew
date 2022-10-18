@@ -26,7 +26,7 @@ pub fn auth(props: &Props) -> Html {
                         token: "".into(),
                     });
                     window().unwrap().location().set_href("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri=https://holi.htl-hl.ac.at/authenticated&state=new").unwrap();
-                    history.push(Route::Login);
+                    //history.push(Route::Login);
                 }
             });
             || ()
