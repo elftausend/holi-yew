@@ -5,7 +5,7 @@ use yew_router::prelude::*;
 
 use crate::components::{CardGroup, Footer, Pagination, SearchBar, SearchQuery};
 use crate::{api::request, error::HoliError, hooks::use_user_context};
-use crate::{image_path, ENTRIES_ON_PAGE, pdf_path};
+use crate::{image_path, pdf_path, ENTRIES_ON_PAGE};
 
 use super::show_upload::HashQuery;
 use super::Route;
@@ -208,7 +208,7 @@ pub fn entries() -> Html {
                                         </div>
                                     }
                                 }
-                                
+
                             }).collect::<Html>()
                         }
                         </CardGroup>

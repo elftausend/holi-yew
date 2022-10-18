@@ -17,7 +17,6 @@ struct UploadMsgs {
     successful_upload: String,
 }
 
-
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 struct FileDetails {
     name: String,
@@ -53,7 +52,7 @@ pub fn upload() -> Html {
 
         Callback::from(move |e: Event| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            
+
             if let Some(files) = input.files() {
                 let files = js_sys::try_iter(&files)
                     .unwrap()
@@ -107,13 +106,18 @@ pub fn upload() -> Html {
             disable_upload.set(true);
 
             let disable_upload = disable_upload.clone();
-            
+
             wasm_bindgen_futures::spawn_local(async move {
-                if let Ok(err_msgs) =
-                    request::<UploadInfo, UploadMsgs>(Method::POST, "upload", (*upload_info).clone(), false).await
+                if let Ok(err_msgs) = request::<UploadInfo, UploadMsgs>(
+                    Method::POST,
+                    "upload",
+                    (*upload_info).clone(),
+                    false,
+                )
+                .await
                 {
                     log::info!("err_msgs!!!!!!!!!!!!!!: {err_msgs:?}");
-                    
+
                     if &err_msgs.successful_upload != "" {
                         // unselect file
                         (*file_select).as_ref().unwrap().set_value("");
@@ -121,7 +125,6 @@ pub fn upload() -> Html {
                     }
                     disable_upload.set(false);
                     upload_msgs.set(err_msgs);
-                    
                 }
             });
         })
@@ -174,7 +177,7 @@ pub fn upload() -> Html {
                 <form>
 
                     <span style="color: red;">{ upload_msgs.missing_file.clone() }</span>
-                    <br />                    
+                    <br />
                     <label for="file-upload">{"PDF oder Source File hochladen"}</label>
                     <br />
                     <input
@@ -218,14 +221,14 @@ pub fn upload() -> Html {
                     </div>
 
                     <div class="mb-3">
-                        <input autocomplete="off" 
-                                id="dateinput" 
-                                onkeypress={ondatepress} 
-                                class="form-control" 
-                                style="width: 120px; height: 50px;" 
-                                maxlength="10" 
-                                type="text" 
-                                placeholder="{{ date }}" 
+                        <input autocomplete="off"
+                                id="dateinput"
+                                onkeypress={ondatepress}
+                                class="form-control"
+                                style="width: 120px; height: 50px;"
+                                maxlength="10"
+                                type="text"
+                                placeholder="{{ date }}"
                                 name="date"
                             />
                     </div>

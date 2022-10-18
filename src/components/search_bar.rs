@@ -1,6 +1,9 @@
+use gloo::utils::{document, window};
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, History};
 
 use crate::routes::Route;
@@ -53,11 +56,66 @@ pub fn search_bar(props: &Props) -> Html {
         })
     };
 
+    let current_focus = use_state(|| 0);
+
+    use_mount(|| {
+        let testing_ipts = ["Test", "Hallo", "Spannend", "Alphabet", "Custos"];
+
+        let search_field: HtmlInputElement = document()
+            .get_element_by_id("search_field")
+            .unwrap()
+            .unchecked_into();
+        
+        let input_callback = {
+            let search_field = search_field.clone();
+            Closure::wrap(Box::new(move |input: InputEvent| {
+                let value = search_field.value();
+                if &value == "" {
+                    return;
+                }
+                let list_div = document().create_element("div").unwrap();
+                list_div.set_attribute("id", &format!("{} autocomplete-list", search_field.id())).unwrap();
+                list_div.set_attribute("class", &format!("{} autocomplete-items", search_field.id())).unwrap();
+                search_field.parent_node().unwrap().append_child(&list_div).unwrap();
+
+                for inpt in testing_ipts {
+                    if (&inpt[..value.len()]).to_uppercase() == value.to_uppercase() {
+                        let div = document().create_element("div").unwrap();
+                        div.set_inner_html(&format!(
+                            "
+                                <strong>{}</strong>
+                                <input type='hidden' value='{}'/>
+                            ", 
+                            &inpt[..value.len()], inpt                            
+                        ));
+                        let search_field = search_field.clone();
+                        div.add_event_listener_with_callback("click", Closure::wrap(Box::new(move |e: MouseEvent| {
+                            let list_input: HtmlInputElement = e.target_unchecked_into();
+                            search_field.set_value(&list_input.value());
+                        }) as Box<dyn FnMut(_)>).as_ref().unchecked_ref())
+                        .unwrap();
+
+                        list_div.append_child(&list_div).unwrap();
+                    }
+                }
+
+            }) as Box<dyn FnMut(_)>)
+        };
+            
+        
+        search_field
+            .add_event_listener_with_callback("input", input_callback.as_ref().unchecked_ref())
+            .unwrap();
+    });
+
     let on_input_change = {
         let history = history.clone();
         let tag_input = tag_input.clone();
+        let current_focus = current_focus.clone();
+
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
+
             let mut info = (*tag_input).clone();
             info.tags = input.value();
 
@@ -99,15 +157,15 @@ pub fn search_bar(props: &Props) -> Html {
           <div class="d-flex mt-4 mb-4">
 
          //   <div class="autocomplete">
-              <input autocomplete="off" 
-                    value={props.search_info.tags.clone()} 
-                    onkeypress={onkeypress} 
-                    oninput={on_input_change} 
-                    id="search_field" 
-                    class="form-control input-field" 
-                    type="search" 
-                    placeholder="Tags oder Titel eingeben" 
-                    name="tags" 
+              <input autocomplete="off"
+                    value={props.search_info.tags.clone()}
+                    onkeypress={onkeypress}
+                    oninput={on_input_change}
+                    id="search_field"
+                    class="form-control input-field"
+                    type="search"
+                    placeholder="Tags oder Titel eingeben"
+                    name="tags"
                 />
         //    </div>
               <button style="width: 80px;" onclick={on_search} id="search_button" class="btn btn-secondary ms-2">{"Suchen"}</button>

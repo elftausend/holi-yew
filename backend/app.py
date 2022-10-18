@@ -22,6 +22,7 @@ CORS(app)
 #app.config['CORS_HEADERS'] = 'Content-Type'
 
 app.config["JWT_EXPIRATION_DELTA"] = datetime.timedelta(minutes=24*60*7)
+app.config["JWT_AUTH_PASSWORD_KEY"] = "token"
 #app.config["JWT_AUTH_URL_RULE"] = "/api/auth"
 
 

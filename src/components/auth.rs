@@ -1,3 +1,4 @@
+use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::{use_history, History};
 
@@ -24,6 +25,7 @@ pub fn auth(props: &Props) -> Html {
                         user_id: user_ctx.inner.user_id.clone(),
                         token: "".into(),
                     });
+                    window().unwrap().location().set_href("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri=https://holi.htl-hl.ac.at/authenticated&state=new").unwrap();
                     history.push(Route::Login);
                 }
             });

@@ -5,6 +5,7 @@ pub mod page_not_found;
 pub mod show_upload;
 pub mod upload;
 pub mod user_panel;
+pub mod htl_auth;
 
 pub use entries::Entries;
 pub use login::Login;
@@ -25,6 +26,8 @@ use self::login::UserInfo;
 
 #[derive(Routable, PartialEq, Eq, Clone, Debug)]
 pub enum Route {
+    #[at("/auth")]
+    Auth,
     #[at("/login")]
     Login,
     #[at("/logout")]
@@ -53,6 +56,7 @@ pub fn switch(routes: &Route) -> Html {
         Route::Upload => html! { <Upload /> },
         Route::ShowUpload => html! { <ShowUpload />},
         Route::NotFound => html! { <NotFound /> },
+        Route::Auth => html! {},
     }
 }
 
