@@ -57,6 +57,7 @@ where
             };
         }
         let data: Result<T, _> = data.json::<T>().await;
+        log::info!("data result!: {data:?}");
 
         if let Ok(data) = data {
             return Ok(data);

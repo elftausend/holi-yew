@@ -18,7 +18,7 @@ impl UseUserContextHandle {
         set_jwt(Some(value.token.clone()));
         self.inner.set(value);
         //Redirect to entries
-        self.history.push(Route::Entries);
+        //self.history.push(Route::Entries);
     }
 
     pub fn logout(&self) {

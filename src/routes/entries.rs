@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{CardGroup, Footer, Pagination, SearchBar, SearchQuery};
+use crate::components::{CardGroup, Footer, Pagination, SearchBar, SearchQuery, Auth};
 use crate::{api::request, error::HoliError, hooks::use_user_context};
 use crate::{image_path, pdf_path, ENTRIES_ON_PAGE};
 
@@ -98,6 +98,7 @@ pub fn entries() -> Html {
 
     html! {
         <div>
+            <Auth />
             <div class="container-fluid">
                 <div class="row highlight">
                     <a href="/et" class="col et_bg_color card square">

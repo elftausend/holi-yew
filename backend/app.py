@@ -34,7 +34,7 @@ class UserRoute(Resource):
         token = request.headers["Authorization"][4:]
         x = {"user_id" : current_identity.id, "token" : token}
         #print(f"user get: {x}")
-        return jsonify({"user_id" : current_identity.id, "token" : token})
+        return jsonify({"user_id" : str(current_identity.id), "token" : token})
 
 class Entries(Resource):
     @jwt_required()

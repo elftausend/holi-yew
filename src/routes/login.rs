@@ -23,9 +23,7 @@ pub struct UserInfo {
 
 impl UserInfo {
     pub fn is_auth(&self) -> bool {
-        log::info!("auth {}", !self.token.is_empty());
-        !self.token.is_empty();
-        true
+        !self.token.is_empty()
     }
 }
 
