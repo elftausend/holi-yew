@@ -4,7 +4,7 @@ use yew_router::prelude::{use_history, History};
 
 use crate::{
     hooks::use_user_context,
-    routes::{is_logged_in, Route, login::UserInfo}, app::get_jwt, request,
+    routes::{is_logged_in, Route, login::UserInfo}, app::{get_jwt, set_jwt}, request,
 };
 
 #[derive(Properties, Clone, PartialEq)]
@@ -31,7 +31,7 @@ pub fn auth(props: &Props) -> Html {
                     user_ctx.inner.set(UserInfo {
                         user_id: user_ctx.inner.user_id.clone(),
                         token: String::new()
-                    })
+                    });
                 }
             });
             || ()
@@ -39,7 +39,7 @@ pub fn auth(props: &Props) -> Html {
         (), //user_ctx,
     );*/
 
-    use_mount(move || {
+    /*use_mount(move || {
         wasm_bindgen_futures::spawn_local(async move {
             if is_logged_in().await {
                 user_ctx.login(UserInfo {
@@ -52,10 +52,11 @@ pub fn auth(props: &Props) -> Html {
                 user_ctx.inner.set(UserInfo {
                     user_id: user_ctx.inner.user_id.clone(),
                     token: String::new()
-                })
+                });
+                set_jwt(None);
             }
         });
-    });
+    });*/
 
     html! {
         { for props.children.iter() }

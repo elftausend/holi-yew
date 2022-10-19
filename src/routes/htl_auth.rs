@@ -1,9 +1,10 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
+use yew_hooks::use_mount;
 use yew_router::prelude::{use_location, Location, use_history, History};
 
-use crate::{hooks::use_user_context, request};
+use crate::{hooks::use_user_context, request, app::set_jwt};
 
 use super::{login::{UserInfo, JWT}, Route};
 
@@ -35,6 +36,7 @@ pub fn auth() -> Html {
     let user_ctx = use_user_context();
     {
         let location_inner = location.clone();
+        // try with use_mount
         use_effect_with_deps(
             move |_| {
                 let code_query = location_inner.query::<CodeQuery>().unwrap_or_default();
@@ -44,6 +46,7 @@ pub fn auth() -> Html {
                 wasm_bindgen_futures::spawn_local(async move {
                     if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info, true).await
                     {
+                        //set_jwt(Some(jwt.access_token));
                         user_ctx.login(UserInfo {
                             user_id: "must_get_from_htlhl".into(),
                             token: jwt.access_token,
@@ -58,6 +61,25 @@ pub fn auth() -> Html {
             location.query::<CodeQuery>().unwrap_or_default(),
         );
     }
+
+    /*let location_inner = location.clone();
+    use_mount(move || {
+        let code_query = location_inner.query::<CodeQuery>().unwrap_or_default();
+
+        let code_info = CodeInfo::new(code_query.code);
+
+        wasm_bindgen_futures::spawn_local(async move {
+            if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info, true).await
+            {
+                user_ctx.login(UserInfo {
+                    user_id: "must_get_from_htlhl".into(),
+                    token: jwt.access_token,
+                });
+
+                history.push(Route::Entries);
+            }
+        });        
+    });*/
 
     html! {}
 }
