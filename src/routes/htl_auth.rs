@@ -1,11 +1,11 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-use yew_router::prelude::{use_location, Location};
+use yew_router::prelude::{use_location, Location, use_history, History};
 
 use crate::{hooks::use_user_context, request};
 
-use super::login::{UserInfo, JWT};
+use super::{login::{UserInfo, JWT}, Route};
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
 struct CodeQuery {
@@ -30,6 +30,7 @@ impl CodeInfo {
 
 #[function_component(OAuth2)]
 pub fn auth() -> Html {
+    let history = use_history().unwrap();
     let location = use_location().unwrap();
     let user_ctx = use_user_context();
     {
@@ -47,6 +48,8 @@ pub fn auth() -> Html {
                             user_id: "must_get_from_htlhl".into(),
                             token: jwt.access_token,
                         });
+
+                        history.push(Route::Entries);
                     }
                 });
 
