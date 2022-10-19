@@ -7,9 +7,14 @@ use crate::hooks::use_user_context;
 pub fn auth() -> Html {
     let user_ctx = use_user_context();
 
-    if !user_ctx.inner.is_auth() {
-        window().unwrap().location().set_href("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri=https://holi.htl-hl.ac.at/authenticated&state=new").unwrap();
-    }
+    let user_ctx_check = user_ctx.clone();
+    use_effect_with_deps(move |_| {
+        if !user_ctx.inner.is_auth() {
+            window().unwrap().location().set_href("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri=https://holi.htl-hl.ac.at/authenticated&state=new").unwrap();
+        }
+        || ()
+    }, user_ctx_check);
+    
 
     html!()
 }

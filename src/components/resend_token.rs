@@ -24,7 +24,9 @@ pub fn auth(props: &Props) -> Html {
                         user_id: user_ctx.inner.user_id.clone(),
                         token: get_jwt().unwrap()
                     });
+                    log::info!("logged in !");
                 } else {
+                    log::info!("not logged in !");
                     user_ctx.inner.set(UserInfo {
                         user_id: user_ctx.inner.user_id.clone(),
                         token: String::new()
