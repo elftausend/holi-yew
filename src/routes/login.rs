@@ -12,7 +12,7 @@ use super::{is_logged_in, Route};
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LoginInfo {
     pub username: String,
-    pub password: String,
+    pub code: String,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
@@ -24,7 +24,8 @@ pub struct UserInfo {
 impl UserInfo {
     pub fn is_auth(&self) -> bool {
         log::info!("auth {}", !self.token.is_empty());
-        !self.token.is_empty()
+        !self.token.is_empty();
+        true
     }
 }
 
@@ -87,7 +88,7 @@ pub fn login() -> Html {
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             let mut info = (*login_info).clone();
-            info.password = input.value();
+            info.code = input.value();
             login_info.set(info);
         })
     };
@@ -102,7 +103,7 @@ pub fn login() -> Html {
                 <input class="form-control input-field" type="text" oninput={on_user_change} value={login_info.username.clone()}
                     maxlength="128" placeholder="HTLHL UserID"
                 />
-                <input class="form-control input-field" type="password" oninput={on_pw_change} value={login_info.password.clone()}
+                <input class="form-control input-field" type="password" oninput={on_pw_change} value={login_info.code.clone()}
                     maxlength="128" placeholder="Password"
                 />
                 <button onclick={onlogin} class="btn btn-danger">

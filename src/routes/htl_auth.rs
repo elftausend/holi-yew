@@ -22,8 +22,8 @@ struct CodeInfo {
 impl CodeInfo {
     pub fn new(token: String) -> Self {
         CodeInfo {
-            username: "".into(),
-            code: token,
+            username: "11111".into(),
+            code: token
         }
     }
 }

@@ -10,8 +10,9 @@ use crate::{
 pub fn navbar() -> Html {
     let user_ctx = use_user_context();
 
-    let logged_in = use_state(|| false);
+    let logged_in = use_state(|| true);
 
+    /*
     {
         let logged_in = logged_in.clone();
         use_effect_with_deps(
@@ -24,6 +25,7 @@ pub fn navbar() -> Html {
             user_ctx.clone(),
         );
     }
+    */
 
     html! {
         {if *logged_in {
