@@ -61,6 +61,8 @@ class Entries(Resource):
         if page*16 >= len(entries):
             return {}
         start, end, page_count = utils.limit_end_len(page, len(entries))
+        if page > page_count or page < 0:
+            return 400
         # return page count as well
         return local_entries[start:end]
 

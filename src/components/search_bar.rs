@@ -17,7 +17,7 @@ pub struct SearchQuery {
 impl Default for SearchQuery {
     fn default() -> Self {
         Self {
-            page: 1,
+            page: 0,
             tags: "".into(),
         }
     }

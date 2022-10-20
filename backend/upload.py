@@ -169,6 +169,6 @@ class Upload(Resource):
         return msg.as_json()
     
     def handle_upload(self, upload: UploadDetails):
-        #upload.save_to_disk()
+        upload.save_to_disk()
         pass
         
