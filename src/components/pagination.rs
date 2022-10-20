@@ -32,7 +32,7 @@ pub fn pagination(props: &Props) -> Html {
             <ul class="pagination">
                 <li class="page-item">
                     {
-                        if search_info.page == 1 {
+                        if search_info.page == 0 {
                             html!{
                                 <button style="width: 37.5px; height: 38px;" class="btn btn-danger"></button>
                             }
@@ -54,7 +54,7 @@ pub fn pagination(props: &Props) -> Html {
                 </li>
                 <li class="page-item">
                     {
-                        if search_info.page > total_pages {
+                        if search_info.page >= total_pages {
                             html! {
                                 <button style="width: 37.5px; height: 38px;" class="btn btn-danger"></button>
                             }
