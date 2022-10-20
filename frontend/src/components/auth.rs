@@ -2,7 +2,7 @@ use web_sys::window;
 use yew::prelude::*;
 use yew_hooks::use_mount;
 
-use crate::{hooks::use_user_context, routes::is_logged_in};
+use crate::{hooks::use_user_context, routes::is_logged_in, REDIRECT};
 
 #[derive(Properties, Debug, PartialEq)]
 pub struct Props {
@@ -22,7 +22,8 @@ pub fn auth(props: &Props) -> Html {
                 let is_logged_in = is_logged_in().await;
                 logged_in.set(is_logged_in);
                 if !is_logged_in {
-                    window().unwrap().location().set_href("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri=https://holi.htl-hl.ac.at/authenticated&state=new").unwrap();
+                    let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
+                    window().unwrap().location().set_href(&href).unwrap();
                     //log::info!("-  - - - - - - - would redirect !!!");    
                 }
             });

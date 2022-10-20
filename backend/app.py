@@ -3,6 +3,7 @@ import datetime
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, request
 from flask_cors import CORS, cross_origin
+from flask_sqlalchemy import SQLAlchemy
 from flask_jwt import JWT, jwt_required, current_identity
 #import jwt
 import utils
@@ -13,6 +14,8 @@ from user import *
 from utils import entries
 
 app = Flask(__name__)
+db = SQLAlchemy(app)
+
 PATH = os.path.dirname(os.path.realpath(__file__))
 api = Api(app)
 app.secret_key = os.urandom(32)

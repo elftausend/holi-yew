@@ -44,7 +44,7 @@ where
     }
 
     let response = builder.send().await;
-    log::info!("status: {response:?}",);
+    //log::info!("status: {response:?}",);
 
     if let Ok(data) = response {
         if !data.status().is_success() {
@@ -57,9 +57,9 @@ where
             };
         }
 
-        log::info!("from {data:?} to json: ");
+        //log::info!("from {data:?} to json: ");
         let data: Result<T, _> = data.json::<T>().await;
-        log::info!(".... json {data:?}");
+        //log::info!(".... json {data:?}");
 
         if let Ok(data) = data {
             return Ok(data);

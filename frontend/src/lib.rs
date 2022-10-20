@@ -13,6 +13,8 @@ pub use api::request;
 use lazy_static::lazy_static;
 
 const API_ROOT: &str = dotenv!("API_ROOT");
+pub const REDIRECT: &str = dotenv!("REDIRECT");
+
 lazy_static! {
     static ref ENTRIES_ON_PAGE: u64 = (dotenv!("ENTRIES_ON_PAGE") as &str).parse().unwrap();
 }

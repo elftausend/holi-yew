@@ -66,3 +66,16 @@ def get_proglogo_from_file_type(file_ext: str):
     elif file_ext == "c":
         logo_path = "logos/prog_lang_logos/c_logo.png"
     return logo_path
+
+
+def file_contents(filename):
+    """ Given a filename,
+        return the contents of that file
+    """
+    try:
+        with open(f"{dir_path}/{filename}", 'r') as f:
+            # It's assumed our file contains a single line,
+            # with our API key
+            return f.read().strip()
+    except FileNotFoundError:
+        print(f"{filename} file not found")

@@ -8,5 +8,5 @@ dist
 /backend/static/files
 /backend/static/uploaded
 *old*
-
+*secret*
 __pycache__
