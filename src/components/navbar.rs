@@ -33,7 +33,9 @@ pub fn navbar() -> Html {
                 <nav class="navbar navbar-expand-sm holi-green navbar-dark">
         <div class="container-fluid">
             <div class="navbar-brand">
-                <img id="navbar-holi" src="./assets/images/holi.svg" alt="Holi Logo" loading="lazy"/>
+                <Link<Route> to={Route::Entries}>
+                    <img id="navbar-holi" src="./assets/images/holi.svg" alt="Holi Logo" loading="lazy"/>
+                </Link<Route>>
             </div>
 
             <div class="navbar-collapse ">
@@ -48,9 +50,6 @@ pub fn navbar() -> Html {
                         { "User Panel" }<span class="ms-1 badge bg-secondary">{"User"}</span>
                     </Link<Route>>
                 </ul>
-
-
-
 
                 </div>
                 <span class="grey">{format!("logged in as {}", &user_ctx.inner.user_id)}</span><br/>
