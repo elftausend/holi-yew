@@ -1,5 +1,6 @@
-/target
+target
 .DS_Store
+Cargo.lock
 dist
 # to ignore all uploaded entries
 /backend/static/images/*.*
