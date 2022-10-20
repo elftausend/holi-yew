@@ -47,6 +47,12 @@ def file_ext(file_name: str):
     data_type = splitted_ct[1]
     return data_type
 
+accepted_exts = ["pdf", "rs", "java", "py", "js", "cpp", "c"]
+
+def is_ext_accepted(ext: str) -> bool:
+    return ext in accepted_exts;
+    
+
 class FileDetails:
     def __init__(self, file_name: str, data: List[int]):
         self.file_name = file_name
@@ -143,6 +149,8 @@ class Upload(Resource):
 
         if file_name == "" or file_data == []:
             msg.missing_file = MISSING_FILE
+        elif not is_ext_accepted(file_ext(file_name)):
+            msg.missing_file = "Diese Dateiart wird nicht unterstützt! Unterstützte Dateien: .pdf, .rs, .java, .py, .js, .c, .cpp"
 
         if title == "":
             msg.missing_title = MISSING_TITLE
