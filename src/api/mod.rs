@@ -56,8 +56,10 @@ where
                 _ => Err(HoliError::RequestError),
             };
         }
+
+        log::info!("from {data:?} to json: ");
         let data: Result<T, _> = data.json::<T>().await;
-        log::info!("data result!: {data:?}");
+        log::info!(".... json {data:?}");
 
         if let Ok(data) = data {
             return Ok(data);
