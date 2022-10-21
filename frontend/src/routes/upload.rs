@@ -3,6 +3,7 @@ use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+use crate::components::Auth;
 use yew_router::prelude::{use_history, History};
 
 use crate::request;
@@ -169,83 +170,84 @@ pub fn upload() -> Html {
 
     html! {
         <div>
-            <div class="container-fluid mt-3">
-                <button onclick={onback} class="btn btn-primary">
-                    {"Zurück"}
-                </button>
+            <Auth>
+                <div class="container-fluid mt-3">
+                    <button onclick={onback} class="btn btn-primary">
+                        {"Zurück"}
+                    </button>
 
-                <form>
+                    <form>
 
-                    <span style="color: red;">{ upload_msgs.missing_file.clone() }</span>
-                    <br />
-                    <label for="file-upload">{"PDF oder Source File hochladen"}</label>
-                    <br />
-                    <input
-                        class="mb-3"
-                        id="file-upload"
-                        type="file"
-                        accept=".pdf,.rs,.java,.py,.js,.cpp,.c"
-                        onchange={on_file_change}
-                        multiple={false}
-                    />
-                    <div class="mb-3">
-                        <h3>{"Füge einen passenden Titel hinzu"}</h3>
-                        <span style="color: red;">{ upload_msgs.missing_title.clone() }</span>
-                        <textarea
-                            oninput={on_title_input}
-                            class="form-control"
-                            autocomplete="off"
-                            style="width: 300px; height: 70px;"
-                            value={upload_info.title.clone()}
-                            type="text"
-                            placeholder="z.B.: Lineare Funktion"
-                            name="title">
-                            {"Input"}
-                        </textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <h3>{"Füge Tags hinzu"}</h3>
-                        <span style="color: red;">{ upload_msgs.missing_tags.clone() }</span>
-                        <textarea
-                            oninput={on_tag_input}
-                            class="form-control"
-                            autocomplete="off"
-                            style="width: 300px; height: 70px;"
-                            type="text"
-                            value={upload_info.tags.clone()}
-                            placeholder="z.B.: 2BHITS Mathematik Funktionen Steigung-zwei-Punkte"
-                            name="title">
-                            {"Input"}
-                        </textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <input autocomplete="off"
-                                id="dateinput"
-                                onkeypress={ondatepress}
+                        <span style="color: red;">{ upload_msgs.missing_file.clone() }</span>
+                        <br />
+                        <label for="file-upload">{"PDF oder Source File hochladen"}</label>
+                        <br />
+                        <input
+                            class="mb-3"
+                            id="file-upload"
+                            type="file"
+                            accept=".pdf,.rs,.java,.py,.js,.cpp,.c"
+                            onchange={on_file_change}
+                            multiple={false}
+                        />
+                        <div class="mb-3">
+                            <h3>{"Füge einen passenden Titel hinzu"}</h3>
+                            <span style="color: red;">{ upload_msgs.missing_title.clone() }</span>
+                            <textarea
+                                oninput={on_title_input}
                                 class="form-control"
-                                style="width: 120px; height: 50px;"
-                                maxlength="10"
+                                autocomplete="off"
+                                style="width: 300px; height: 70px;"
+                                value={upload_info.title.clone()}
                                 type="text"
-                                placeholder="{{ date }}"
-                                name="date"
-                            />
-                    </div>
+                                placeholder="z.B.: Lineare Funktion"
+                                name="title">
+                                {"Input"}
+                            </textarea>
+                        </div>
 
-                    <div class="mb-3">
-                        <p>
-                            <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
-                        </p>
-                        <button onclick={on_click_upload} class="btn btn-primary">
-                            {"Upload"}
-                        </button>
-                    </div>
+                        <div class="mb-3">
+                            <h3>{"Füge Tags hinzu"}</h3>
+                            <span style="color: red;">{ upload_msgs.missing_tags.clone() }</span>
+                            <textarea
+                                oninput={on_tag_input}
+                                class="form-control"
+                                autocomplete="off"
+                                style="width: 300px; height: 70px;"
+                                type="text"
+                                value={upload_info.tags.clone()}
+                                placeholder="z.B.: 2BHITS Mathematik Funktionen Steigung-zwei-Punkte"
+                                name="title">
+                                {"Input"}
+                            </textarea>
+                        </div>
 
-                </form>
+                        <div class="mb-3">
+                            <input autocomplete="off"
+                                    id="dateinput"
+                                    onkeypress={ondatepress}
+                                    class="form-control"
+                                    style="width: 120px; height: 50px;"
+                                    maxlength="10"
+                                    type="text"
+                                    placeholder="{{ date }}"
+                                    name="date"
+                                />
+                        </div>
 
-            </div>
+                        <div class="mb-3">
+                            <p>
+                                <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
+                            </p>
+                            <button onclick={on_click_upload} class="btn btn-primary">
+                                {"Upload"}
+                            </button>
+                        </div>
 
+                    </form>
+
+                </div>
+            </Auth>
         </div>
     }
 }

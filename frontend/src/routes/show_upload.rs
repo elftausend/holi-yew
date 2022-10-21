@@ -3,7 +3,7 @@ use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, use_location, History, Location};
 
-use crate::{image_path, pdf_path};
+use crate::{image_path, pdf_path, components::Auth};
 
 use super::entries::{get_entry, EntryInfo};
 
@@ -62,74 +62,76 @@ pub fn show_upload() -> Html {
     }
     html! {
         <div>
-            <div>
-                <div class="container-fluid mt-3">
+            <Auth>
+                <div>
+                    <div class="container-fluid mt-3">
 
-                    <div style="font-weight: bold; font-size: x-large;" class="mt-3">
-                        <div style="float: left;" class="mb-3">
-                            <button onclick={onback} class="btn btn-primary">
-                                {"Zurück"}
-                            </button>
-                            <span class="ms-2">{entry_info.title.clone()}</span>
-                            // download does not work because the link to the download is not the same origin
-                            <a class="ms-2 me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={"true"}>
-                                <button class="btn btn-primary">{"download"}</button>
-                            </a>
+                        <div style="font-weight: bold; font-size: x-large;" class="mt-3">
+                            <div style="float: left;" class="mb-3">
+                                <button onclick={onback} class="btn btn-primary">
+                                    {"Zurück"}
+                                </button>
+                                <span class="ms-2">{entry_info.title.clone()}</span>
+                                // download does not work because the link to the download is not the same origin
+                                <a class="ms-2 me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={"true"}>
+                                    <button class="btn btn-primary">{"download"}</button>
+                                </a>
 
-                            <button class="btn btn-danger">
-                            <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
-                                {"PDF anzeigen"}
-                            </a>
-                            </button>
+                                <button class="btn btn-danger">
+                                <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
+                                    {"PDF anzeigen"}
+                                </a>
+                                </button>
 
-                            <br/>
+                                <br/>
 
-                            {
-                                entry_info.tags.iter().map(|tag| {
-                                    html! {
-                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
-                                        //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
-                                    }
-                                }).collect::<Html>()
-                            }
+                                {
+                                    entry_info.tags.iter().map(|tag| {
+                                        html! {
+                                            <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                            //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
+                                        }
+                                    }).collect::<Html>()
+                                }
 
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <br />
-            <div class="container">
-            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-interval="false">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img class="d-block carousel-image" src={image_path(&format!("{}_0.{}", &entry_info.hash, entry_info.img_exts.first().unwrap_or(&"".into())))} alt="Slide picture" />
-                    </div>
-                    {
-                        if entry_info.img_exts.len() >= 1 {
-                            (1..entry_info.img_exts.len()).into_iter().map(|idx| {
-                                html!{
-                                    <div class="carousel-item">
-                                        <img class="d-block carousel-image" src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))} alt="Slide picture" />
-                                    </div>
-                                }
-                            }).collect::<Html>()
-                        } else {
-                            html!()
+                <br />
+                <div class="container">
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-interval="false">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="d-block carousel-image" src={image_path(&format!("{}_0.{}", &entry_info.hash, entry_info.img_exts.first().unwrap_or(&"".into())))} alt="Slide picture" />
+                        </div>
+                        {
+                            if entry_info.img_exts.len() >= 1 {
+                                (1..entry_info.img_exts.len()).into_iter().map(|idx| {
+                                    html!{
+                                        <div class="carousel-item">
+                                            <img class="d-block carousel-image" src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))} alt="Slide picture" />
+                                        </div>
+                                    }
+                                }).collect::<Html>()
+                            } else {
+                                html!()
+                            }
+
                         }
 
-                    }
-
+                    </div>
+                    <button class="carousel-control-prev carousel-control-size" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon it_bg_color" aria-hidden="true"></span>
+                        <span class="visually-hidden">{"Previous"}</span>
+                    </button>
+                    <button class="carousel-control-next carousel-control-size" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon it_bg_color" aria-hidden="true"></span>
+                        <span class="visually-hidden">{"Next"}</span>
+                    </button>
                 </div>
-                <button class="carousel-control-prev carousel-control-size" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon it_bg_color" aria-hidden="true"></span>
-                    <span class="visually-hidden">{"Previous"}</span>
-                </button>
-                <button class="carousel-control-next carousel-control-size" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                    <span class="carousel-control-next-icon it_bg_color" aria-hidden="true"></span>
-                    <span class="visually-hidden">{"Next"}</span>
-                </button>
-            </div>
-            </div>
+                </div>
+            </Auth>
         </div>
     }
 }

@@ -21,7 +21,7 @@ pub fn not_found() -> Html {
             </div>
             <div class="container mt-5">
                 <div class="notfound">
-                    <img src="./assets/images/questionmark.png" alt="Holi Logo" loading="lazy"/>
+                    <img src="./assets/images/questionmark.png" alt="Question mark" loading="lazy"/>
                         <h1>
                             {"Seite"}<br />
                             {"nicht"}<br />
