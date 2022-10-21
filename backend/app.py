@@ -3,7 +3,6 @@ import datetime
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, request
 from flask_cors import CORS, cross_origin
-from flask_sqlalchemy import SQLAlchemy
 from flask_jwt import JWT, jwt_required, current_identity
 #import jwt
 import utils
@@ -14,7 +13,9 @@ from user import *
 from utils import entries
 
 app = Flask(__name__)
-db = SQLAlchemy(app)
+
+# User database init
+# db.init_app(app)
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 api = Api(app)
@@ -24,6 +25,7 @@ app.secret_key = os.urandom(32)
 CORS(app)
 #app.config['CORS_HEADERS'] = 'Content-Type'
 
+#app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///user.db"
 app.config["JWT_EXPIRATION_DELTA"] = datetime.timedelta(minutes=24*60*7)
 app.config["JWT_AUTH_PASSWORD_KEY"] = "code"
 #app.config["JWT_AUTH_URL_RULE"] = "/api/auth"
@@ -35,9 +37,11 @@ class UserRoute(Resource):
     @jwt_required()
     def get(self):
         token = request.headers["Authorization"][4:]
-        x = {"user_id" : current_identity.id, "token" : token}
-        #print(f"user get: {x}")
-        return jsonify({"user_id" : str(current_identity.id), "token" : token})
+
+        #user_info = requests.get(f"{USER_INFO_URL}{current_identity.id}").json()
+        #username = user_info["0"]["displayname"]["0"]
+        #return user_info
+        return jsonify({"user_id" : current_identity.id["username"], "token" : token})
 
 class Entries(Resource):
     @jwt_required()
