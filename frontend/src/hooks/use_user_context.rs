@@ -1,10 +1,11 @@
+use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
 //use crate::api::request;
 use crate::app::set_jwt;
-use crate::routes::login::UserInfo;
-use crate::routes::Route;
+use crate::REDIRECT;
+use crate::routes::htl_auth::UserInfo;
 
 /// State handle for the [`use_user_context`] hook.
 pub struct UseUserContextHandle {
@@ -26,7 +27,8 @@ impl UseUserContextHandle {
         set_jwt(None);
         self.inner.set(UserInfo::default());
         // Redirect to login
-        self.history.push(Route::Login);
+        let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
+        window().unwrap().location().set_href(&href).unwrap();
     }
 }
 

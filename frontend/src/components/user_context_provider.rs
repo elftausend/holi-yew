@@ -2,7 +2,7 @@ use reqwest::Method;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 
-use crate::{api::request, routes::login::UserInfo};
+use crate::{api::request, routes::htl_auth::UserInfo};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {

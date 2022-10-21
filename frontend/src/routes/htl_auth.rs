@@ -1,17 +1,36 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-use yew_hooks::use_mount;
 use yew_router::prelude::{use_location, Location, use_history, History};
 
-use crate::{hooks::use_user_context, request, app::set_jwt};
+use crate::{hooks::use_user_context, request};
 
-use super::{login::{UserInfo, JWT}, Route};
+use super::{Route};
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
 struct CodeQuery {
     code: String,
 }
+
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+pub struct UserInfo {
+    pub user_id: String,
+    pub token: String,
+}
+
+
+impl UserInfo {
+    pub fn is_auth(&self) -> bool {
+        !self.token.is_empty()
+    }
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+pub struct JWT {
+    pub access_token: String,
+}
+
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
 struct CodeInfo {

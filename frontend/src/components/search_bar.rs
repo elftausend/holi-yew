@@ -1,4 +1,4 @@
-use gloo::utils::{document, window};
+use gloo::utils::document;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::HtmlInputElement;

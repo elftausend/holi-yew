@@ -1,6 +1,5 @@
 pub mod entries;
 pub mod htl_auth;
-pub mod login;
 pub mod logout;
 pub mod page_not_found;
 pub mod show_upload;
@@ -8,7 +7,6 @@ pub mod upload;
 pub mod user_panel;
 
 pub use entries::Entries;
-pub use login::Login;
 pub use logout::Logout;
 pub use page_not_found::NotFound;
 pub use show_upload::ShowUpload;
@@ -23,14 +21,12 @@ use yew_router::prelude::*;
 
 use crate::api::request;
 
-use self::login::UserInfo;
+use self::htl_auth::UserInfo;
 
 #[derive(Routable, PartialEq, Eq, Clone, Debug)]
 pub enum Route {
     #[at("/authenticated")]
     Auth,
-    #[at("/login")]
-    Login,
     #[at("/logout")]
     Logout,
     #[at("/")]
@@ -48,7 +44,6 @@ pub enum Route {
 
 pub fn switch(routes: &Route) -> Html {
     match routes {
-        Route::Login => html! { <Login /> },
         Route::Logout => html! { <Logout /> },
         Route::Entries => html! {
             <Entries />
