@@ -82,6 +82,8 @@ class UploadDetails:
         self.tags = split_tags
 
         self.uploader = user.id["user_id"]
+        global entries
+        self.uid = len(entries)
         self.view = ""
 
     # TODO
@@ -111,8 +113,9 @@ class UploadDetails:
             self.save_prog()
             upload_type = "prog"
 
-        with open(f"{PATH}/static/uploaded/{self.file.hash}.json", mode="w") as file:
+        with open(f"{PATH}/static/uploaded/{self.uid}.json", mode="w") as file:
             upload_info = {
+                "uid": self.uid,
                 "title": self.title,
                 "date": self.date,
                 "tags": self.tags,

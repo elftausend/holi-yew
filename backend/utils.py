@@ -8,7 +8,8 @@ import re
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def sorting(entry):
-    splitup = entry[1]["date"].split('.')
+    # entry[1]: because an entry is a tuple with (hash, <values>)
+    splitup = entry["date"].split('.')
     return (splitup[2], splitup[1], splitup[0])
 
 def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
@@ -22,18 +23,20 @@ def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
     return (start, end, times)
 
 def get_upload_entries(lookup_tags, user="admin"):
-    entries = Path(f"{dir_path}/static/uploaded/").rglob('*.json')
-    files_data = {}
+    entry_path = f"{dir_path}/static/uploaded/"
+    entries = len(os.listdir(entry_path))
+    files_data = []
     
-    for entry in entries:
-        with open(entry, mode="r") as file:
+    for uid in reversed(range(entries)):
+        with open(f"{entry_path}{uid}.json", mode="r") as file:
             upload = json.load(file)
 
             if upload["usid"] == user or user == "admin":
-                if check_if_tags_found(lookup_tags, entry):
-                    files_data[upload["hash"]] = upload
+                if check_if_tags_found(lookup_tags, upload):
+                    files_data.append(upload)
         
-    return dict(sorted(files_data.items(), key=sorting, reverse=True))
+    #return dict(sorted(files_data.items(), key=sorting, reverse=True))
+    return files_data
 
 global entries
 entries = get_upload_entries([])

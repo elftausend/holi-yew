@@ -57,7 +57,7 @@ class UserRoute(Resource):
 api.add_resource(UserRoute, '/user')
 api.add_resource(Entries, '/entries')
 api.add_resource(EntryCount, '/entry_count')
-api.add_resource(Entry, '/entry/<string:hash>')
+api.add_resource(Entry, '/entry/<int:uid>')
 api.add_resource(Upload, '/upload')
 
 if __name__ == '__main__':

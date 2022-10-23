@@ -9,7 +9,7 @@ use super::entries::{get_entry, EntryInfo};
 
 #[derive(Debug, Default, PartialEq, Deserialize, Clone, Serialize)]
 pub struct HashQuery {
-    pub hash: String,
+    pub uid: i32,
 }
 
 #[function_component(ShowUpload)]
@@ -51,11 +51,12 @@ pub fn show_upload() -> Html {
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
                 let hash = location.query::<HashQuery>().unwrap_or_default();
-                if let Ok(entry) = get_entry(&hash.hash).await {
+                if let Ok(entry) = get_entry(hash.uid).await {
                     log::info!("ENTRY {entry:?}");
                     entry_info.set(entry)
                 } else {
-                    entry_info.set(EntryInfo::default())
+                    entry_info.set(EntryInfo::default());
+                    history.back();
                 }
             });
         });

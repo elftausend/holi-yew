@@ -16,10 +16,10 @@ def check_if_tags_found(tags, entry):
     return True
 
 def filter_for_tags(tags, uploads):
-    filtered_uploads = {}
-    for entry in uploads.values():
+    filtered_uploads = []
+    for entry in uploads:
         if not check_if_tags_found(tags, entry):
             continue
-        filtered_uploads[entry["hash"]] = entry
-
+        filtered_uploads.append(entry)
+    
     return filtered_uploads

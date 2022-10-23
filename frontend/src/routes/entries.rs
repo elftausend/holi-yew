@@ -12,6 +12,7 @@ use super::Route;
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
 pub struct EntryInfo {
+    pub uid: i32,
     pub title: String,
     pub date: String,
     pub tags: Vec<String>,
@@ -33,8 +34,8 @@ pub async fn get_entry_count() -> Result<EntryCount, HoliError> {
     request(Method::GET, "entry_count", (), false).await
 }
 
-pub async fn get_entry(hash: &str) -> Result<EntryInfo, HoliError> {
-    request(Method::GET, &format!("entry/{hash}"), (), false).await
+pub async fn get_entry(uid: i32) -> Result<EntryInfo, HoliError> {
+    request(Method::GET, &format!("entry/{uid}"), (), false).await
 }
 
 pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
@@ -166,7 +167,7 @@ pub fn entries() -> Html {
                                             <div class="card">
                                                 <Link<Route, HashQuery>
                                                     to={Route::ShowUpload}
-                                                    query={Some(HashQuery{hash: entry.hash.clone()})}
+                                                    query={Some(HashQuery{uid: entry.uid})}
                                                 >
                                                     <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
                                                     <div class="card-body">

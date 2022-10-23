@@ -33,14 +33,16 @@ class Entries(Resource):
         else:
             tags = ""
 
+        print(local_entries)
         if page*16 >= len(entries):
             return {}
         start, end, page_count = utils.limit_end_len(page, len(entries))
         if page > page_count or page < 0:
             return 400
         
+        
         # return page count as well
-        return list(local_entries.values())[start:end]
+        return local_entries[start:end]
 
 class EntryCount(Resource):
     #@jwt_required()
@@ -51,9 +53,17 @@ class EntryCount(Resource):
 class Entry(Resource):
     #@jwt_required()
     decorators = [jwt_required(), limiter.limit("10/second")]
-    def get(self, hash: str):
-        upload = hash + ".json"
+    def get(self, uid: int):
+        global entries
+
+        # reversing the id with len(entries) - 1 - correct id,
+        # because we also reverse the entries list beforehand
+        entry = entries[len(entries) - 1 - uid]
+        if entry["view"]:
+            return 404
+
+        return entry
     
         # check if exists?
-        with open(f"{PATH}/static/uploaded/{upload}", mode='r') as file:
-            return json.load(file)
+        #with open(f"{PATH}/static/uploaded/{upload}", mode='r') as file:
+        #    return json.load(file)
