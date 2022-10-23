@@ -11,11 +11,15 @@ import filter_tags
 from upload import *
 from user import *
 from utils import entries
+from api_limiter import limiter
 
 app = Flask(__name__)
 
 # User database init
 # db.init_app(app)
+
+# Limiter init
+limiter.init_app(app)
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 api = Api(app)
@@ -34,7 +38,8 @@ app.config["JWT_AUTH_PASSWORD_KEY"] = "code"
 jwt = JWT(app, authenticate, identity)
 
 class UserRoute(Resource):
-    @jwt_required()
+    #@jwt_required()
+    decorators = [jwt_required(), limiter.limit("10/second")]
     def get(self):
         token = request.headers["Authorization"][4:]
 
@@ -44,7 +49,8 @@ class UserRoute(Resource):
         return jsonify({"user_id" : current_identity.id["username"], "token" : token})
 
 class Entries(Resource):
-    @jwt_required()
+    #@jwt_required()
+    decorators = [jwt_required(), limiter.limit("10/second")]
     def get(self):
 
         global entries
@@ -75,12 +81,14 @@ class Entries(Resource):
         return local_entries[start:end]
 
 class EntryCount(Resource):
-    @jwt_required()
+    #@jwt_required()
+    decorators = [jwt_required(), limiter.limit("10/second")]
     def get(self):
         return {"entry_count": len(entries)}
 
 class Entry(Resource):
-    @jwt_required()
+    #@jwt_required()
+    decorators = [jwt_required(), limiter.limit("10/second")]
     def get(self, hash: str):
         upload = hash + ".json"
     

@@ -10,6 +10,7 @@ from user import User
 from pdf_save import save_imgs_from_pdf
 import json
 from utils import entries
+from api_limiter import limiter
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 PDF_LOGO_PATH = "logos/pdf_logo/pdf.png"
@@ -79,7 +80,7 @@ class UploadDetails:
         # split_tags.append(user.division)
         self.tags = split_tags
 
-        self.uploader = str(user.id)
+        self.uploader = user.id["user_id"]
         self.view = ""
 
     # TODO
@@ -127,7 +128,7 @@ class UploadDetails:
             json.dump(upload_info, file)
     
 class Upload(Resource):
-    @jwt_required()
+    decorators = [jwt_required(), limiter.limit("10/second")]
     def post(self):
         msg = UploadMsgs()
 

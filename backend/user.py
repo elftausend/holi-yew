@@ -14,7 +14,7 @@ db = SQLAlchemy()
 
 
 class UserInfo():
-    def __init__(self, access_token: str, username: str, user_id: int, htl_class: str, htl_division: str, htl_type: str):
+    def __init__(self, access_token: str, username: str, user_id: str, htl_class: str, htl_division: str, htl_type: str):
         self.id = access_token
         self.username = username
         self.user_id = user_id
@@ -23,13 +23,17 @@ class UserInfo():
         self.htl_type = htl_type
 
 def get_user_info(access_token: str) -> UserInfo:
-    user_info = requests.get(f"{USER_INFO_URL}{access_token}").json()
+    # TODO: remember
+    #user_info = requests.get(f"{USER_INFO_URL}{access_token}").json()
+
+    user_info = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
+
     # personal name
     username = user_info["0"]["displayname"]["0"]
     htl_related_ids = user_info["0"]["dn"].split(",")
     
     # id (e.g. 101234)
-    user_id = htl_related_ids[0][3:]
+    user_id = str(htl_related_ids[0][3:])
     # 2AHMBT
     htl_class = htl_related_ids[1][3:]
     # abteilung (ME)
@@ -59,25 +63,26 @@ def authenticate(username, code):
     # auth with htlhl
     print(f"received code: {code}")
 
-    payload = {
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "grant_type": GRANT_TYPE,
-        "code": code,
-        "redirect_uri": REDIRECT_URI,
-    }
+    #payload = {
+    #    "client_id": CLIENT_ID,
+    #    "client_secret": CLIENT_SECRET,
+    #    "grant_type": GRANT_TYPE,
+    #    "code": code,
+    #    "redirect_uri": REDIRECT_URI,
+    #}
+#
+    #answer = requests.post(TOKEN_URL, json=payload)
+    #if not answer:
+    #    return
+#
+    #token_info = answer.json()
 
-    answer = requests.post(TOKEN_URL, json=payload)
-    if not answer:
-        return
-
-    token_info = answer.json()
-
-    user_info = get_user_info(token_info["access_token"])
+    # TODO: remember
+    #user_info = get_user_info(token_info["access_token"])
+    user_info = get_user_info("remember")
     return User(user_info)
 
 def identity(payload):
-    print(f"payload: {payload}")
     user_info_dict = payload['identity']
     return User(
         UserInfo(

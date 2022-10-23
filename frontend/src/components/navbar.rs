@@ -3,7 +3,7 @@ use yew_router::prelude::*;
 
 use crate::{
     hooks::use_user_context,
-    routes::{is_logged_in, Route},
+    routes::Route,
 };
 
 #[function_component(NavBar)]
