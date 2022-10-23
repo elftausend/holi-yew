@@ -81,6 +81,11 @@ def authenticate(username, code):
     # TODO: remember
     #user_info = get_user_info(token_info["access_token"])
     user_info = get_user_info("remember")
+
+    # if user is banned, don't authenticate
+    if user_info.user_id in config.banned_ids:
+        return
+
     return User(user_info)
 
 def identity(payload):

@@ -5,12 +5,11 @@ from flask_restful import Resource, Api, request
 from flask_cors import CORS, cross_origin
 from flask_jwt import JWT, jwt_required, current_identity
 #import jwt
-import utils
-import json
-import filter_tags
+
+from entries import *
 from upload import *
 from user import *
-from utils import entries
+
 from api_limiter import limiter
 import config
 
@@ -53,53 +52,6 @@ class UserRoute(Resource):
             "token": token
         })
 
-class Entries(Resource):
-    #@jwt_required()
-    decorators = [jwt_required(), limiter.limit("50/second")]
-    def get(self):
-
-        global entries
-        local_entries = entries
-
-        page = 0
-        if request.args.get("page"):
-            try:
-                page = int(request.args.get("page"))
-            except:
-                pass
-
-        tags = request.args.get("tags")
-        if tags:
-            returned_tags = tags.split()
-            print(returned_tags)
-            local_entries = filter_tags.filter_for_tags(returned_tags, entries)
-        else:
-            tags = ""
-
-        if page*16 >= len(entries):
-            return {}
-        start, end, page_count = utils.limit_end_len(page, len(entries))
-        if page > page_count or page < 0:
-            return 400
-        
-        # return page count as well
-        return local_entries[start:end]
-
-class EntryCount(Resource):
-    #@jwt_required()
-    decorators = [jwt_required(), limiter.limit("50/second")]
-    def get(self):
-        return {"entry_count": len(entries)}
-
-class Entry(Resource):
-    #@jwt_required()
-    decorators = [jwt_required(), limiter.limit("10/second")]
-    def get(self, hash: str):
-        upload = hash + ".json"
-    
-        # check if exists?
-        with open(f"{PATH}/static/uploaded/{upload}", mode='r') as file:
-            return json.load(file)
         
 
 api.add_resource(UserRoute, '/user')

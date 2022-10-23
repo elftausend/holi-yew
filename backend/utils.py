@@ -1,5 +1,5 @@
 import os
-from typing import Tuple
+from typing import Dict, Tuple
 import json
 from pathlib import Path
 from filter_tags import check_if_tags_found
@@ -8,7 +8,7 @@ import re
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def sorting(entry):
-    splitup = entry["date"].split('.')
+    splitup = entry[1]["date"].split('.')
     return (splitup[2], splitup[1], splitup[0])
 
 def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
@@ -23,17 +23,17 @@ def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
 
 def get_upload_entries(lookup_tags, user="admin"):
     entries = Path(f"{dir_path}/static/uploaded/").rglob('*.json')
-    files_data = []
+    files_data = {}
     
     for entry in entries:
         with open(entry, mode="r") as file:
-            x = json.load(file)
+            upload = json.load(file)
 
-            if x["usid"] == user or user == "admin":
+            if upload["usid"] == user or user == "admin":
                 if check_if_tags_found(lookup_tags, entry):
-                    files_data.append(x)
+                    files_data[upload["hash"]] = upload
         
-    return sorted(files_data, key=sorting, reverse=True)
+    return dict(sorted(files_data.items(), key=sorting, reverse=True))
 
 global entries
 entries = get_upload_entries([])
