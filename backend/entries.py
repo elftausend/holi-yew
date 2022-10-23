@@ -33,7 +33,6 @@ class Entries(Resource):
         else:
             tags = ""
 
-        print(local_entries)
         if page*16 >= len(entries):
             return {}
         start, end, page_count = utils.limit_end_len(page, len(entries))

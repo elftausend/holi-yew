@@ -28,27 +28,26 @@ def query_db_results(user_id: str) -> Dict[str, List[int]]:
     cur.execute("select * from users where user_id=?", (user_id,))
     data = cur.fetchall()
     
+    db_results = {"uploaded": [], "fav": []}
     if data:
-        db_results = data[1]
+        db_results = data[0][1]
     else:
         cur.execute("insert into users (user_id, entry_info) values(?, ?)", (user_id, json.dumps({ "uploaded": [], "fav": [] })))
         con.commit()
-        db_results = {"uploaded": [], "fav": []}
-
-    con.close()
     
-    return db_results
+    con.close()
+    return json.loads(db_results)
 
 class UserInfo():
-    def __init__(self, access_token: str, username: str, user_id: str, htl_class: str, htl_division: str, htl_type: str):
+    def __init__(self, access_token: str, username: str, user_id: str, htl_class: str, htl_division: str, htl_type: str, uploaded=[], favs = []):
         self.id = access_token
         self.username = username
         self.user_id = user_id
         self.htl_class = htl_class
         self.htl_division = htl_division
         self.htl_type = htl_type
-        self.uploaded = []
-        self.favs = []
+        self.uploaded = uploaded
+        self.favs = favs
 
     def set_uploaded_and_favs(self, db_results: Dict[str, List[int]]):
         self.uploaded = db_results["uploaded"]
@@ -120,7 +119,6 @@ def authenticate(username, code):
         return
 
     user_info.set_uploaded_and_favs(query_db_results(user_info.user_id))
-
     return User(user_info)
 
 def identity(payload):
@@ -132,6 +130,8 @@ def identity(payload):
             user_id=user_info_dict["user_id"],
             htl_class=user_info_dict["htl_class"],
             htl_division=user_info_dict["htl_division"],
-            htl_type=user_info_dict["htl_type"]
+            htl_type=user_info_dict["htl_type"],
+            uploaded=user_info_dict["uploaded"],
+            favs=user_info_dict["favs"]
         )
     )

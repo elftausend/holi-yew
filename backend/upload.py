@@ -12,8 +12,10 @@ import json
 from utils import entries
 from api_limiter import limiter
 from logger import log
+import sqlite3
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+USER_DB = f"{PATH}/db/user_database.db"
 PDF_LOGO_PATH = "logos/pdf_logo/pdf.png"
 
 MISSING_FILE = "Es wurde keine Datei ausgewählt."
@@ -21,8 +23,20 @@ MISSING_TITLE = "Der Titel wurde nicht angegeben."
 MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
 
-def add_upload_id_to_db(upload_id: int):
-    pass
+def add_upload_id_to_db(upload_id: int, user: User):
+    con = sqlite3.connect(USER_DB)
+    cur = con.cursor()
+
+    user.id["uploaded"].append(upload_id)
+
+    updated_uids = {
+        "uploaded": user.id["uploaded"],
+        "fav": user.id["favs"]
+    }
+
+    cur.execute("update users set entry_info = ? where user_id=?", (json.dumps(updated_uids), user.id["user_id"]))
+    con.commit()
+    con.close()
 
 class UploadMsgs():
     missing_file = ""
@@ -48,7 +62,7 @@ class UploadMsgs():
 
 def file_ext(file_name: str):
     splitted_ct = file_name.split(".")
-    data_type = splitted_ct[1]
+    data_type = splitted_ct[len(splitted_ct)-1]
     return data_type
 
 accepted_exts = ["pdf", "rs", "java", "py", "js", "cpp", "c"]
@@ -182,7 +196,8 @@ class Upload(Resource):
         self.handle_upload(upload)
         msg.successful_upload = SUCCESSFUL_UPLOAD
 
-        log(f"{upload.uploader}/{current_identity.id['username']}/{current_identity.id['htl_class']} uploaded entry called '{title}' with tags '{tags}' and hash '{file.hash}'.")
+        log(f"{upload.uploader}/{current_identity.id['username']}/{current_identity.id['htl_class']} uploaded entry called '{title}' with tags '{tags}' and hash '{file.hash}/{upload.uid}'.")
+        add_upload_id_to_db(upload.uid, current_identity)
 
         return msg.as_json()
     
