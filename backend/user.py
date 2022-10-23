@@ -2,6 +2,9 @@ import requests
 from utils import file_contents
 from flask_sqlalchemy import SQLAlchemy
 from config import config
+import sqlite3
+import os
+import json
 
 TOKEN_URL = "https://auth.htl-hl.ac.at/token.php"
 CLIENT_ID = "holi.htl-hl.ac.at"
@@ -10,6 +13,9 @@ GRANT_TYPE = "authorization_code"
 REDIRECT_URI = "https://holi.htl-hl.ac.at/authenticated"
 
 USER_INFO_URL = "https://auth.htl-hl.ac.at/getUserInformation.php?access_token="
+
+PATH = os.path.dirname(os.path.realpath(__file__))
+USER_DB = f"{PATH}/db/user_database.db"
 
 db = SQLAlchemy()
 
@@ -85,6 +91,19 @@ def authenticate(username, code):
     # if user is banned, don't authenticate
     if user_info.user_id in config.banned_ids:
         return
+
+    # use ORM
+    con = sqlite3.connect(USER_DB)
+    cur = con.cursor()
+
+    cur.execute("select * from users where user_id=?", (user_info.user_id,))
+    data = cur.fetchall()
+
+    if not data:
+        cur.execute("insert into users (user_id, entry_info) values(?, ?)", (user_info.user_id, json.dumps({ "uploaded": [], "fav": [] })))
+        con.commit()
+
+    con.close()
 
     return User(user_info)
 

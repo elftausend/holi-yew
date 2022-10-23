@@ -61,6 +61,8 @@ api.add_resource(Entry, '/entry/<int:uid>')
 api.add_resource(Upload, '/upload')
 
 if __name__ == '__main__':
+    from db.setup_db import create_user_db
+    create_user_db()
     #from waitress import serve
     #serve(app, host="127.0.0.1", port=82, threads=16)
     app.run(debug=True, port=82)

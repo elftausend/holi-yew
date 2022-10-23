@@ -1,6 +1,4 @@
-drop table if exists Users;
-create table Users (
-    user_id integer primary key,
-    uploaded int[],
-    fav int[],
+create table users (
+    user_id int primary key not null,
+    entry_info json
 );

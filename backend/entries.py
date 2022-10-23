@@ -40,7 +40,6 @@ class Entries(Resource):
         if page > page_count or page < 0:
             return 400
         
-        
         # return page count as well
         return local_entries[start:end]
 
@@ -63,7 +62,3 @@ class Entry(Resource):
             return 404
 
         return entry
-    
-        # check if exists?
-        #with open(f"{PATH}/static/uploaded/{upload}", mode='r') as file:
-        #    return json.load(file)

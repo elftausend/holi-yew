@@ -132,7 +132,7 @@ class UploadDetails:
             json.dump(upload_info, file)
     
 class Upload(Resource):
-    decorators = [jwt_required(), limiter.limit("10/second")]
+    decorators = [jwt_required(), limiter.limit("3/second")]
     def post(self):
         msg = UploadMsgs()
 
