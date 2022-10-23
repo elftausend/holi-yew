@@ -11,3 +11,4 @@ dist
 *secret*
 __pycache__
 config.json
+log.txt

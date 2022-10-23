@@ -11,6 +11,7 @@ from pdf_save import save_imgs_from_pdf
 import json
 from utils import entries
 from api_limiter import limiter
+from logger import log
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 PDF_LOGO_PATH = "logos/pdf_logo/pdf.png"
@@ -77,7 +78,7 @@ class UploadDetails:
         split_tags = tags.split()
         split_tags.append(date)
         # append division of user
-        # split_tags.append(user.division)
+        split_tags.append(user.id["htl_division"])
         self.tags = split_tags
 
         self.uploader = user.id["user_id"]
@@ -175,6 +176,9 @@ class Upload(Resource):
 
         self.handle_upload(upload)
         msg.successful_upload = SUCCESSFUL_UPLOAD
+
+        log(f"{upload.uploader}/{current_identity.id['username']}/{current_identity.id['htl_class']} uploaded entry called '{title}' with tags '{tags}' and hash '{file.hash}'.")
+
         return msg.as_json()
     
     def handle_upload(self, upload: UploadDetails):

@@ -1,6 +1,7 @@
 import requests
 from utils import file_contents
 from flask_sqlalchemy import SQLAlchemy
+from config import config
 
 TOKEN_URL = "https://auth.htl-hl.ac.at/token.php"
 CLIENT_ID = "holi.htl-hl.ac.at"
