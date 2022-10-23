@@ -10,3 +10,4 @@ dist
 *old*
 *secret*
 __pycache__
+config.json

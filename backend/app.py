@@ -12,6 +12,7 @@ from upload import *
 from user import *
 from utils import entries
 from api_limiter import limiter
+import config
 
 app = Flask(__name__)
 
@@ -39,18 +40,22 @@ jwt = JWT(app, authenticate, identity)
 
 class UserRoute(Resource):
     #@jwt_required()
-    decorators = [jwt_required(), limiter.limit("10/second")]
+    decorators = [jwt_required(), limiter.limit("20/second")]
     def get(self):
         token = request.headers["Authorization"][4:]
 
         #user_info = requests.get(f"{USER_INFO_URL}{current_identity.id}").json()
         #username = user_info["0"]["displayname"]["0"]
         #return user_info
-        return jsonify({"user_id" : current_identity.id["username"], "token" : token})
+        return jsonify({
+            "user_id": current_identity.id["username"],            
+            "division": current_identity.id["htl_division"],
+            "token": token
+        })
 
 class Entries(Resource):
     #@jwt_required()
-    decorators = [jwt_required(), limiter.limit("10/second")]
+    decorators = [jwt_required(), limiter.limit("50/second")]
     def get(self):
 
         global entries
@@ -82,7 +87,7 @@ class Entries(Resource):
 
 class EntryCount(Resource):
     #@jwt_required()
-    decorators = [jwt_required(), limiter.limit("10/second")]
+    decorators = [jwt_required(), limiter.limit("50/second")]
     def get(self):
         return {"entry_count": len(entries)}
 

@@ -20,10 +20,7 @@ pub fn user_context_provider(props: &Props) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", (), true).await {
                     log::info!("Logged in");
-                    user_ctx.set(UserInfo {
-                        user_id: user_info.user_id,
-                        token: user_info.token,
-                    });
+                    user_ctx.set(user_info)
                 }
             });
         });

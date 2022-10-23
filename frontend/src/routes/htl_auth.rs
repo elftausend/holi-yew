@@ -1,9 +1,10 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
+use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::{use_location, Location, use_history, History};
 
-use crate::{hooks::use_user_context, request};
+use crate::{hooks::use_user_context, request, REDIRECT};
 
 use super::{Route};
 
@@ -16,6 +17,7 @@ struct CodeQuery {
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
 pub struct UserInfo {
     pub user_id: String,
+    pub division: String,
     pub token: String,
 }
 
@@ -65,13 +67,20 @@ pub fn auth() -> Html {
                 wasm_bindgen_futures::spawn_local(async move {
                     if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info, true).await
                     {
-                        //set_jwt(Some(jwt.access_token));
                         user_ctx.login(UserInfo {
                             user_id: "must_get_from_htlhl".into(),
+                            division: "none".into(),
                             token: jwt.access_token,
                         });
 
+                        if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", (), true).await {
+                            user_ctx.inner.set(user_info);
+                        }
+
                         history.push(Route::Entries);
+                    } else {
+                        let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
+                        window().unwrap().location().set_href(&href).unwrap();
                     }
                 });
 

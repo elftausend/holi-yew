@@ -3,7 +3,7 @@ use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use crate::components::Auth;
+use crate::{components::Auth, hooks::use_user_context};
 use yew_router::prelude::{use_history, History};
 
 use crate::request;
@@ -40,6 +40,7 @@ pub fn upload() -> Html {
     let history = use_history().unwrap();
     let upload_info = use_state(UploadInfo::default);
     let upload_msgs = use_state(UploadMsgs::default);
+    let user_ctx = use_user_context();
 
     let file_select = use_state(|| None);
 
@@ -180,7 +181,7 @@ pub fn upload() -> Html {
 
                         <span style="color: red;">{ upload_msgs.missing_file.clone() }</span>
                         <br />
-                        <label for="file-upload">{"PDF oder Source File hochladen"}</label>
+                        <label for="file-upload">{"PDF oder Source File hochladen*"}</label>
                         <br />
                         <input
                             class="mb-3"
@@ -191,7 +192,7 @@ pub fn upload() -> Html {
                             multiple={false}
                         />
                         <div class="mb-3">
-                            <h3>{"Füge einen passenden Titel hinzu"}</h3>
+                            <h3>{"Füge einen passenden Titel hinzu*"}</h3>
                             <span style="color: red;">{ upload_msgs.missing_title.clone() }</span>
                             <textarea
                                 oninput={on_title_input}
@@ -207,7 +208,7 @@ pub fn upload() -> Html {
                         </div>
 
                         <div class="mb-3">
-                            <h3>{"Füge Tags hinzu"}</h3>
+                            <h3>{"Füge Tags hinzu*"}</h3>
                             <span style="color: red;">{ upload_msgs.missing_tags.clone() }</span>
                             <textarea
                                 oninput={on_tag_input}
@@ -223,6 +224,7 @@ pub fn upload() -> Html {
                         </div>
 
                         <div class="mb-3">
+                            <h4>{"Datum"}</h4>
                             <input autocomplete="off"
                                     id="dateinput"
                                     onkeypress={ondatepress}
@@ -235,6 +237,20 @@ pub fn upload() -> Html {
                                 />
                         </div>
 
+                        /*<div class="mb-3">
+                            <h4>{"Abteilung"}</h4>
+                            <input autocomplete="off"
+                                    id="dateinput"
+                                    onkeypress={ondivisionpress}
+                                    class="form-control"
+                                    style="width: 120px; height: 50px;"
+                                    maxlength="10"
+                                    type="text"
+                                    placeholder={user_ctx.inner.division.clone()}
+                                    name="date"
+                            />
+                        </div>*/
+
                         <div class="mb-3">
                             <p>
                                 <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
@@ -242,6 +258,11 @@ pub fn upload() -> Html {
                             <button onclick={on_click_upload} class="btn btn-primary">
                                 {"Upload"}
                             </button>
+                            <br />
+                            <span style="color: red; font-style: italic;">{ "Felder markiert mit '*' müssen ausgefüllt werden."}
+                                <br />
+                                {"Die Abteilung des Uploaders wird automatisch als Tag hinzugefügt."}
+                            </span>
                         </div>
 
                     </form>
