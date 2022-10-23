@@ -1,3 +1,4 @@
+from typing import Dict, List
 import requests
 from utils import file_contents
 from flask_sqlalchemy import SQLAlchemy
@@ -19,6 +20,24 @@ USER_DB = f"{PATH}/db/user_database.db"
 
 db = SQLAlchemy()
 
+def query_db_results(user_id: str) -> Dict[str, List[int]]:
+    # use ORM
+    con = sqlite3.connect(USER_DB)
+    cur = con.cursor()
+
+    cur.execute("select * from users where user_id=?", (user_id,))
+    data = cur.fetchall()
+    
+    if data:
+        db_results = data[1]
+    else:
+        cur.execute("insert into users (user_id, entry_info) values(?, ?)", (user_id, json.dumps({ "uploaded": [], "fav": [] })))
+        con.commit()
+        db_results = {"uploaded": [], "fav": []}
+
+    con.close()
+    
+    return db_results
 
 class UserInfo():
     def __init__(self, access_token: str, username: str, user_id: str, htl_class: str, htl_division: str, htl_type: str):
@@ -28,6 +47,12 @@ class UserInfo():
         self.htl_class = htl_class
         self.htl_division = htl_division
         self.htl_type = htl_type
+        self.uploaded = []
+        self.favs = []
+
+    def set_uploaded_and_favs(self, db_results: Dict[str, List[int]]):
+        self.uploaded = db_results["uploaded"]
+        self.favs = db_results["fav"]
 
 def get_user_info(access_token: str) -> UserInfo:
     # TODO: remember
@@ -63,7 +88,9 @@ class User():
             "user_id": user_info.user_id,
             "htl_class": user_info.htl_class,
             "htl_division": user_info.htl_division,
-            "htl_type": user_info.htl_type
+            "htl_type": user_info.htl_type,
+            "uploaded": user_info.uploaded,
+            "favs": user_info.favs
         }
 
 def authenticate(username, code):
@@ -92,18 +119,7 @@ def authenticate(username, code):
     if user_info.user_id in config.banned_ids:
         return
 
-    # use ORM
-    con = sqlite3.connect(USER_DB)
-    cur = con.cursor()
-
-    cur.execute("select * from users where user_id=?", (user_info.user_id,))
-    data = cur.fetchall()
-
-    if not data:
-        cur.execute("insert into users (user_id, entry_info) values(?, ?)", (user_info.user_id, json.dumps({ "uploaded": [], "fav": [] })))
-        con.commit()
-
-    con.close()
+    user_info.set_uploaded_and_favs(query_db_results(user_info.user_id))
 
     return User(user_info)
 

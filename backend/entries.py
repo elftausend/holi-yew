@@ -57,8 +57,18 @@ class Entry(Resource):
 
         # reversing the id with len(entries) - 1 - correct id,
         # because we also reverse the entries list beforehand
-        entry = entries[len(entries) - 1 - uid]
-        if entry["view"]:
-            return 404
 
-        return entry
+        # using an index won't work if an entry is deleted
+        # -> if all releated idxs would be updated, many links to an upload may become invalid
+        #entry = entries[len(entries) - 1 - uid]
+        #if entry["view"]:
+        #    return 404
+
+        with open(f"{PATH}/static/uploaded/{uid}.json", mode='r') as file:
+            entry = json.load(file)
+             
+            if entry["view"]:
+                return 404
+
+            return entry
+        

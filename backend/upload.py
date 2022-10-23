@@ -21,6 +21,8 @@ MISSING_TITLE = "Der Titel wurde nicht angegeben."
 MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
 
+def add_upload_id_to_db(upload_id: int):
+    pass
 
 class UploadMsgs():
     missing_file = ""
