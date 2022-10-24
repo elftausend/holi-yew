@@ -7,6 +7,7 @@ from flask_jwt import JWT, jwt_required, current_identity
 #import jwt
 
 from entries import *
+from edit import *
 from upload import *
 from user import *
 
@@ -62,6 +63,7 @@ api.add_resource(EntryCount, '/entry_count')
 api.add_resource(Entry, '/entry/<int:uid>')
 api.add_resource(Upload, '/upload')
 api.add_resource(EditEntries, "/editable_entries")
+api.add_resource(EditEntry, "/edit_entry")
 
 if __name__ == '__main__':
     from db.setup_db import create_user_db

@@ -84,6 +84,18 @@ class FileDetails:
         with open(self.save_path, "wb") as f:
             f.write(self.data)
 
+def save_upload_dict_as_json(upload_info, uid: int):
+    with open(f"{PATH}/static/uploaded/{uid}.json", mode="w") as file:
+        global entries
+        entries[uid] = upload_info
+
+        # move newest entry to the start
+        # there is a better way to implement this
+        entries = dict(sorted(entries.items(), key=utils.sorting, reverse=True))
+        #entries.insert(0, upload_info)
+
+        json.dump(upload_info, file)
+
 class UploadDetails:
     def __init__(self, file: FileDetails, title: str, date: str, tags: str, user: User):
         self.file = file
@@ -133,28 +145,19 @@ class UploadDetails:
             self.save_prog()
             upload_type = "prog"
 
-        with open(f"{PATH}/static/uploaded/{self.uid}.json", mode="w") as file:
-            upload_info = {
-                "uid": self.uid,
-                "title": self.title,
-                "date": self.date,
-                "tags": self.tags,
-                "view": self.view,
-                "img_exts": self.img_exts,
-                "usid": self.uploader,
-                "ut": upload_type,
-                "ext": self.file.ext,
-                "hash": self.file.hash
-            }
-            global entries
-            entries[self.uid] = upload_info
-
-            # move newest entry to the start
-            # there is a better way to implement this
-            entries = dict(sorted(entries.items(), key=utils.sorting, reverse=True))
-            #entries.insert(0, upload_info)
-
-            json.dump(upload_info, file)
+        upload_info = {
+            "uid": self.uid,
+            "title": self.title,
+            "date": self.date,
+            "tags": self.tags,
+            "view": self.view,
+            "img_exts": self.img_exts,
+            "usid": self.uploader,
+            "ut": upload_type,
+            "ext": self.file.ext,
+            "hash": self.file.hash
+        }
+        save_upload_dict_as_json(upload_info)
     
 class Upload(Resource):
     decorators = [jwt_required(), limiter.limit("3/second")]

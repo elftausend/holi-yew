@@ -46,7 +46,7 @@ pub fn auth(props: &Props) -> Html {
         }
     } else {
         html! {
-            {"Not logged in !"}
+            
         }
     }
 }

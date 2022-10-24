@@ -9,13 +9,13 @@ use yew_router::prelude::{use_history, History};
 use crate::request;
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
-struct UploadMsgs {
-    missing_file: String,
-    missing_title: String,
-    erroneous_date: String,
-    missing_tags: String,
-    no_user_terms: String,
-    successful_upload: String,
+pub struct UploadMsgs {
+    pub missing_file: String,
+    pub missing_title: String,
+    pub erroneous_date: String,
+    pub missing_tags: String,
+    pub no_user_terms: String,
+    pub successful_upload: String,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]

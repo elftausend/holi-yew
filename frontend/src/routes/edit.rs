@@ -1,9 +1,9 @@
 use reqwest::Method;
 use yew::prelude::*;
+use yew_router::prelude::*;
 use yew_hooks::use_mount;
-use yew_router::prelude::{use_location, Location};
-use crate::{components::{SearchBar, SearchQuery}, request, error::HoliError};
-use super::{Route, entries::EntryInfo};
+use crate::{components::{SearchBar, SearchQuery, CardGroup}, request, error::HoliError, pdf_path, image_path};
+use super::{Route, entries::EntryInfo, show_upload::HashQuery};
 
 pub async fn get_editable_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
     request(
@@ -30,6 +30,7 @@ pub fn edit() -> Html {
     {
         let location_inner = location.clone();
         let search_info = search_info.clone();
+        let entries = entries.clone();
         use_effect_with_deps(
             move |_| {
                 let search_query = location_inner.query::<SearchQuery>().unwrap_or_default();
@@ -59,6 +60,18 @@ pub fn edit() -> Html {
         );
     }
 
+    let has_view_or_not = |entry: &EntryInfo| {
+        if entry.img_exts.len() > 0 {
+            html! {
+                <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
+            }
+        } else {
+            html! {
+                <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
+            }
+        }
+    };
+
     html! {
         <div>
             <SearchBar route={Route::Edit} search_info={SearchQuery {
@@ -66,12 +79,51 @@ pub fn edit() -> Html {
                 tags: search_info.tags.clone()
             }} />
 
-            {
-                html! {
+            {       
 
-                }
+                entries.chunks(4).map(|chunk| {
+                    html! {
+                        <CardGroup>
+                        {
+                            chunk.iter().map(|entry| {
+                                
+                                html! {
+                                    <div class="card">
+                                        {has_view_or_not(entry)}
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                {entry.title.clone()}
+                                            </h5>
+                                            <p class="card-text">
+                                                {
+                                                    entry.tags.iter().map(|tag| {
+                                                        html! {
+                                                            <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                        }
+                                                    }).collect::<Html>()
+                                                }
+                                            </p>
+                                            <p>
+                                                <Link<Route, HashQuery>
+                                                    to={Route::EditUpload}
+                                                    query={Some(HashQuery{uid: entry.uid})}
+                                                >
+                                                    <button class="btn btn-primary">
+                                                        {"editieren"}
+                                                    </button>
 
+                                                </Link<Route, HashQuery>>
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+    
+                            }).collect::<Html>()
+                        }
+                        </CardGroup>
+                }}).collect::<Html>()
             }
+
         </div>
     }
 }

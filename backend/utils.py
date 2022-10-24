@@ -9,7 +9,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def sorting(entry):
     # entry[1]: because an entry is a tuple with (hash, <values>)
-    splitup = entry["date"].split('.')
+    splitup = entry[1]["date"].split('.')
     return (splitup[2], splitup[1], splitup[0])
 
 def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
