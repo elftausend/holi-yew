@@ -27,6 +27,7 @@ class EditEntry(Resource):
         global entries
         return entries[uid]
 
+    decorators = [jwt_required(), limiter.limit("10/second")]
     def post(self):
         msg = UploadMsgs()
 

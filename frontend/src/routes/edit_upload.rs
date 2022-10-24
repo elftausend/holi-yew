@@ -4,7 +4,7 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::*;
-use crate::{request, error::HoliError};
+use crate::{request, error::HoliError, components::Auth};
 
 use super::{show_upload::HashQuery, entries::EntryInfo, upload::UploadMsgs};
 
@@ -20,7 +20,6 @@ pub async fn get_edit_entry(uid: i32) -> Result<EntryInfo, HoliError> {
 
 #[function_component(EditUpload)]
 pub fn edit_upload() -> Html {
-    let hash_query = use_state(HashQuery::default);
     let history = use_history().unwrap();
     let edit_info = use_state(EditInfo::default);
     let disable_edit = use_state(|| false);
@@ -120,6 +119,7 @@ pub fn edit_upload() -> Html {
 
     html! {
         <div>
+            <Auth>
             <div class="container-fluid mt-3">
                 <button onclick={onback} class="btn btn-primary">
                     {"Zurück"}
@@ -171,6 +171,7 @@ pub fn edit_upload() -> Html {
                         </div>
                 </form>
             </div>
+            </Auth>
         </div>
     }
 }

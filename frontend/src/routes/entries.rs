@@ -149,10 +149,14 @@ pub fn entries() -> Html {
                     </div>
                 </div>
 
-                <SearchBar route={Route::Entries} search_info={SearchQuery {
-                    page: search_info.page,
-                    tags: search_info.tags.clone()
-                }} />
+                <div class="container" style="margin-top: 30px;">
+                    <div class="d-flex mt-4 mb-4">
+                        <SearchBar route={Route::Entries} search_info={SearchQuery {
+                            page: search_info.page,
+                            tags: search_info.tags.clone()
+                        }} />
+                    </div>
+                </div>
 
                 {
             

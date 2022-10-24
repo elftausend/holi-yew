@@ -2,6 +2,7 @@ import os
 import utils
 import json
 import filter_tags
+from flask import jsonify
 from flask_restful import Resource, request
 from flask_jwt import jwt_required
 from utils import entries
@@ -47,7 +48,8 @@ class EntryCount(Resource):
     #@jwt_required()
     decorators = [jwt_required(), limiter.limit("40/second")]
     def get(self):
-        return {"entry_count": len(entries)}
+        global entries
+        return jsonify({"entry_count": len(entries)})
 
 class Entry(Resource):
     #@jwt_required()

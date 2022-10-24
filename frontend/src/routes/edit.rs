@@ -2,7 +2,7 @@ use reqwest::Method;
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yew_hooks::use_mount;
-use crate::{components::{SearchBar, SearchQuery, CardGroup}, request, error::HoliError, pdf_path, image_path};
+use crate::{components::{SearchBar, SearchQuery, CardGroup, Auth}, request, error::HoliError, image_path};
 use super::{Route, entries::EntryInfo, show_upload::HashQuery};
 
 pub async fn get_editable_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
@@ -71,13 +71,33 @@ pub fn edit() -> Html {
             }
         }
     };
+    
+    let history = use_history().unwrap();
+    let onback = {    
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            history.back();
+        })
+    };
 
     html! {
         <div>
-            <SearchBar route={Route::Edit} search_info={SearchQuery {
-                page: search_info.page,
-                tags: search_info.tags.clone()
-            }} />
+        <Auth>
+            <div class="container-fluid mt-3">
+                <div class="d-flex mt-4 mb-4">
+                    <button onclick={onback} class="btn btn-primary me-2">
+                        {"Zurück"}
+                    </button>
+                    <SearchBar route={Route::Edit} search_info={SearchQuery {
+                        page: search_info.page,
+                        tags: search_info.tags.clone()
+                    }} />
+                </div>
+                <div >
+                    <h4>{"Deine Uploads"}</h4>
+                </div>
+            </div>
+            
 
             {       
 
@@ -124,6 +144,7 @@ pub fn edit() -> Html {
                 }}).collect::<Html>()
             }
 
+        </Auth>
         </div>
     }
 }
