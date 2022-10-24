@@ -19,6 +19,8 @@ pub struct UserInfo {
     pub user_id: String,
     pub division: String,
     pub token: String,
+    pub uploaded: Vec<u32>,
+    pub favs: Vec<u32>
 }
 
 
@@ -68,12 +70,12 @@ pub fn auth() -> Html {
                     if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info, true).await
                     {
                         user_ctx.login(UserInfo {
-                            user_id: "must_get_from_htlhl".into(),
-                            division: "none".into(),
                             token: jwt.access_token,
+                            ..Default::default()
                         });
 
                         if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", (), true).await {
+                            log::info!("userinfo: {:?}", user_info);
                             user_ctx.inner.set(user_info);
                         }
 

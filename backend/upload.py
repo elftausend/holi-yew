@@ -13,6 +13,7 @@ from utils import entries
 from api_limiter import limiter
 from logger import log
 import sqlite3
+from config import config
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 USER_DB = f"{PATH}/db/user_database.db"
@@ -68,7 +69,7 @@ def file_ext(file_name: str):
 accepted_exts = ["pdf", "rs", "java", "py", "js", "cpp", "c"]
 
 def is_ext_accepted(ext: str) -> bool:
-    return ext in accepted_exts;
+    return ext in accepted_exts
     
 
 class FileDetails:
@@ -98,8 +99,11 @@ class UploadDetails:
         self.tags = split_tags
 
         self.uploader = user.id["user_id"]
-        global entries
-        self.uid = len(entries)
+        
+        self.uid = config.total_uploads
+        config.total_uploads += 1
+        config.save()
+
         self.view = ""
 
     # TODO

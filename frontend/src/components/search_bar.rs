@@ -31,6 +31,7 @@ pub struct SearchBarInput {
 #[derive(Debug, Properties, PartialEq, Clone)]
 pub struct Props {
     pub search_info: SearchQuery,
+    pub route: Route,
 }
 
 #[function_component(SearchBar)]
@@ -40,13 +41,14 @@ pub fn search_bar(props: &Props) -> Html {
     let history = use_history().unwrap();
 
     let on_search = {
+        let props = props.clone();
         let history = history.clone();
         let tag_input = tag_input.clone();
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
             history
                 .push_with_query(
-                    Route::Entries,
+                    props.route.clone(),
                     SearchQuery {
                         page,
                         tags: tag_input.tags.clone(),

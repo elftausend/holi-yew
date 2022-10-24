@@ -14,9 +14,9 @@ pub fn user_panel() -> Html {
                 </Link<Route>>
                 </div>
                 <div class="row highlight">
-                    <a href="delete?page=0&tags" class="col it_bg_color card square">
-                        <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Delete"}</h1>
-                    </a>
+                    <Link<Route> classes={classes!("col", "it_bg_color", "card", "square")} to={Route::Edit}>
+                        <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Edit"}</h1>
+                    </Link<Route>>
                 </div>
             </Auth>
         </>

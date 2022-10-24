@@ -47,9 +47,11 @@ class UserRoute(Resource):
         #username = user_info["0"]["displayname"]["0"]
         #return user_info
         return jsonify({
-            "user_id": current_identity.id["username"],            
+            "user_id": current_identity.id["username"],
             "division": current_identity.id["htl_division"],
-            "token": token
+            "token": token,
+            "uploaded": current_identity.id["uploaded"],
+            "favs": current_identity.id["favs"]
         })
 
         

@@ -42,6 +42,10 @@ class Entries(Resource):
         # return page count as well
         return local_entries[start:end]
 
+class EditEntries(Resource):
+    def get(self):
+        pass
+
 class EntryCount(Resource):
     #@jwt_required()
     decorators = [jwt_required(), limiter.limit("40/second")]

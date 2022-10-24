@@ -5,6 +5,7 @@ pub mod page_not_found;
 pub mod show_upload;
 pub mod upload;
 pub mod user_panel;
+pub mod edit;
 
 pub use entries::Entries;
 pub use logout::Logout;
@@ -13,6 +14,7 @@ pub use show_upload::ShowUpload;
 pub use upload::Upload;
 pub use user_panel::UserPanel;
 pub use htl_auth::OAuth2;
+pub use edit::Edit;
 //pub use upload::Upload;
 
 use reqwest::Method;
@@ -35,6 +37,8 @@ pub enum Route {
     UserPanel,
     #[at("/upload")]
     Upload,
+    #[at("/edit")]
+    Edit,
     #[at("/show_upload")]
     ShowUpload,
     #[not_found]
@@ -53,6 +57,7 @@ pub fn switch(routes: &Route) -> Html {
         Route::ShowUpload => html! { <ShowUpload />},
         Route::NotFound => html! { <NotFound /> },
         Route::Auth => html! { <OAuth2 /> },
+        Route::Edit => html! { <Edit /> }
     }
 }
 

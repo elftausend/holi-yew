@@ -149,7 +149,7 @@ pub fn entries() -> Html {
                     </div>
                 </div>
 
-                <SearchBar search_info={SearchQuery {
+                <SearchBar route={Route::Entries} search_info={SearchQuery {
                     page: search_info.page,
                     tags: search_info.tags.clone()
                 }} />

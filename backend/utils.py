@@ -25,7 +25,7 @@ def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
 def get_upload_entries(lookup_tags, user="admin"):
     entry_path = f"{dir_path}/static/uploaded/"
     entries = len(os.listdir(entry_path))
-    files_data = []
+    files_data = {}
     
     for uid in reversed(range(entries)):
         with open(f"{entry_path}{uid}.json", mode="r") as file:
@@ -33,7 +33,7 @@ def get_upload_entries(lookup_tags, user="admin"):
 
             if upload["usid"] == user or user == "admin":
                 if check_if_tags_found(lookup_tags, upload):
-                    files_data.append(upload)
+                    files_data[upload["uid"]] = upload
         
     #return dict(sorted(files_data.items(), key=sorting, reverse=True))
     return files_data
