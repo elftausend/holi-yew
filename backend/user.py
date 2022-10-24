@@ -69,7 +69,7 @@ def get_user_info(access_token: str) -> UserInfo:
     htl_class = htl_related_ids[1][3:]
     # abteilung (ME)
     htl_division = htl_related_ids[2][3:]
-    # lebensmittel oder bundes htl (HTBL) denke ich
+    # root (HTBL)
     htl_type = htl_related_ids[3][2:]
 
     return UserInfo(access_token, username, user_id, htl_class, htl_division, htl_type)

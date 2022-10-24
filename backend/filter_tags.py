@@ -16,10 +16,11 @@ def check_if_tags_found(tags, entry):
     return True
 
 def filter_for_tags(tags, uploads):
-    filtered_uploads = []
-    for entry in uploads:
+    filtered_uploads = {}
+    for entry in uploads.values():
         if not check_if_tags_found(tags, entry):
             continue
-        filtered_uploads.append(entry)
+        filtered_uploads[entry["uid"]] = entry
+        #filtered_uploads.append(entry)
     
     return filtered_uploads

@@ -61,6 +61,7 @@ api.add_resource(Entries, '/entries')
 api.add_resource(EntryCount, '/entry_count')
 api.add_resource(Entry, '/entry/<int:uid>')
 api.add_resource(Upload, '/upload')
+api.add_resource(EditEntries, "/editable_entries")
 
 if __name__ == '__main__':
     from db.setup_db import create_user_db

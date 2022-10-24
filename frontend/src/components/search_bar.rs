@@ -126,6 +126,7 @@ pub fn search_bar(props: &Props) -> Html {
     });
 
     let on_input_change = {
+        let props = props.clone();
         let history = history.clone();
         let tag_input = tag_input.clone();
         let current_focus = current_focus.clone();
@@ -138,7 +139,7 @@ pub fn search_bar(props: &Props) -> Html {
 
             history
                 .push_with_query(
-                    Route::Entries,
+                    props.route.clone(),
                     SearchQuery {
                         page,
                         tags: info.tags.clone(),

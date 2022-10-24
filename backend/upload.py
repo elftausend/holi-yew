@@ -147,7 +147,12 @@ class UploadDetails:
                 "hash": self.file.hash
             }
             global entries
-            entries.insert(0, upload_info)
+            entries[self.uid] = upload_info
+
+            # move newest entry to the start
+            # there is a better way to implement this
+            entries = dict(sorted(entries.items(), key=utils.sorting, reverse=True))
+            #entries.insert(0, upload_info)
 
             json.dump(upload_info, file)
     
