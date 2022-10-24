@@ -20,7 +20,6 @@ pub async fn get_edit_entry(uid: i32) -> Result<EntryInfo, HoliError> {
 
 #[function_component(EditUpload)]
 pub fn edit_upload() -> Html {
-    let entry_info = use_state(EntryInfo::default);
     let hash_query = use_state(HashQuery::default);
     let history = use_history().unwrap();
     let edit_info = use_state(EditInfo::default);
@@ -30,16 +29,20 @@ pub fn edit_upload() -> Html {
     let location = use_location().unwrap();
     {
         let location = location.clone();
-        let entry_info = entry_info.clone();
+        let edit_info = edit_info.clone();
+        let history = history.clone();
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
                 let hash = location.query::<HashQuery>().unwrap_or_default();
                 if let Ok(entry) = get_edit_entry(hash.uid).await {
                     log::info!("EDIT ENTRY {entry:?}");
-                    entry_info.set(entry)
+                    edit_info.set(EditInfo {
+                        title: entry.title,
+                        tags: entry.tags.iter().map(|tag| format!("{tag} ")).collect::<String>()
+                    })
                 } else {
-                    entry_info.set(EntryInfo::default());
-                   // history.back();
+                    edit_info.set(EditInfo::default());
+                    history.back();
                 }
             });
         });
@@ -68,6 +71,7 @@ pub fn edit_upload() -> Html {
     let on_click_save = {
         let upload_msgs = upload_msgs.clone();
         let edit_info = edit_info.clone();
+        let location = location.clone();
 
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -79,7 +83,7 @@ pub fn edit_upload() -> Html {
 
             let edit_info = edit_info.clone();
             let upload_msgs = upload_msgs.clone();
-            let hash_query = hash_query.clone();
+            let location = location.clone();
 
             disable_edit.set(true);
 
@@ -88,7 +92,7 @@ pub fn edit_upload() -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(err_msgs) = request::<EditInfo, UploadMsgs>(
                     Method::POST,
-                    &format!("edit_entry?uid={}", hash_query.uid),
+                    &format!("edit_entry?uid={}", location.query::<HashQuery>().unwrap_or_default().uid),
                     (*edit_info).clone(),
                     false,
                 )

@@ -63,9 +63,13 @@ class EditEntry(Resource):
         global entries
         entry = entries[uid]
         entry["title"] = title
-        entry["tags"] = tags
-        save_upload_dict_as_json(entry)
-        log(f"{current_identity.id['user_id']}/{current_identity.id['username']}/{current_identity.id['htl_class']} edited entry uid={uid}, title={title}, tags={tags}.")
+        entry["tags"] = tags.split()
+        
+        save_upload_dict_as_json(entry, uid)
+        log(f"{current_identity.id['user_id']}/{current_identity.id['username']}/{current_identity.id['htl_class']} edited entry uid={uid}, title=({title}), tags=({tags}).")
+        
+        msg.successful_upload = "Die Änderungen wurden abgespeichert!"
+        return msg.as_json()
         
 
 

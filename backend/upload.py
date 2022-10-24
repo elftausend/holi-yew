@@ -157,7 +157,7 @@ class UploadDetails:
             "ext": self.file.ext,
             "hash": self.file.hash
         }
-        save_upload_dict_as_json(upload_info)
+        save_upload_dict_as_json(upload_info, self.uid)
     
 class Upload(Resource):
     decorators = [jwt_required(), limiter.limit("3/second")]
