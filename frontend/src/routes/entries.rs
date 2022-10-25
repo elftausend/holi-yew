@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{CardGroup, Footer, Pagination, SearchBar, SearchQuery, Auth};
+use crate::components::{CardGroup, Footer, Pagination, SearchBar, SearchQuery, Auth, PageQuery};
 use crate::{api::request, error::HoliError, hooks::use_user_context};
 use crate::{image_path, pdf_path, ENTRIES_ON_PAGE};
 
@@ -102,50 +102,102 @@ pub fn entries() -> Html {
             <Auth>
                 <div class="container-fluid">
                     <div class="row highlight">
-                        <a href="/et" class="col et_bg_color card square">
+                        <Link<Route, SearchQuery>
+                            classes={classes!("col", "et_bg_color", "card", "square")}
+                            to={Route::Entries}
+                            query={Some(SearchQuery {
+                                page: 0,
+                                tags: "ET".into()
+                            })}
+                        >
                             <div class="">
                                 <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"ET"}</h1>
                             </div>
-                        </a>
+                        </Link<Route, SearchQuery>>
 
-                        <a href="/?page=1&tags=IT#search_field" class="col it_bg_color card square">
-                        <div class="">
-                            <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"IT"}</h1>
-                        </div>
-                    </a>
+                        
+                        //<a href="/?page=1&tags=IT#search_field" class="col it_bg_color card square">
+                        <Link<Route, SearchQuery>
+                            classes={classes!("col", "it_bg_color", "card", "square")}
+                            to={Route::Entries}
+                            query={Some(SearchQuery {
+                                page: 0,
+                                tags: "IT".into()
+                            })}
+                        >
+                            <div class="">
+                                <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"IT"}</h1>
+                            </div>
+                        </Link<Route, SearchQuery>>
 
-                    <a href="/el" class="col el_bg_color card square">
-                        <div class="">
-                        <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"EL"}</h1>
-                        </div>
-                    </a>
+                        <Link<Route, SearchQuery>
+                            classes={classes!("col", "el_bg_color", "card", "square")}
+                            to={Route::Entries}
+                            query={Some(SearchQuery {
+                                page: 0,
+                                tags: "EL".into()
+                            })}
+                        >
+                            <div class="">
+                                <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"EL"}</h1>
+                            </div>
+                    
+                        </Link<Route, SearchQuery>>
 
-                    <a href="/me" class="col me_bg_color card square">
-                        <div class="">
-                            <h1 class="text-center text-white" style="margin-top: 56px;">{"ME"}</h1>
-                        </div>
-                    </a>
+                        <Link<Route, SearchQuery>
+                            classes={classes!("col", "me_bg_color", "card", "square")}
+                            to={Route::Entries}
+                            query={Some(SearchQuery {
+                                page: 0,
+                                tags: "ME".into()
+                            })}
+                        >
+                            <div class="">
+                                <h1 class="text-center text-white" style="margin-top: 56px;">{"ME"}</h1>
+                            </div>
+                        </Link<Route, SearchQuery>>
 
-                    <a href="/mb" class="col mb_bg_color card square">
-                        <div class="">
-                        <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"MB"}</h1>
-                        </div>
+                        <Link<Route, SearchQuery>
+                            classes={classes!("col", "mb_bg_color", "card", "square")}
+                            to={Route::Entries}
+                            query={Some(SearchQuery {
+                                page: 0,
+                                tags: "MB".into()
+                            })}
+                        >
+                            <div class="">
+                                <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"MB"}</h1>
+                            </div>
+                        </Link<Route, SearchQuery>>
 
-                    </a>
+                        <Link<Route, SearchQuery>
+                            classes={classes!("col", "wi_bg_color", "card", "square")}
+                            to={Route::Entries}
+                            query={Some(SearchQuery {
+                                page: 0,
+                                tags: "WIL".into()
+                            })}
+                        >
 
-                    <a href="/wi_log" class="col wi_bg_color card square">
-                        <div class="">
-                        <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"WIL"}</h1>
-                        </div>
-
-                    </a>
-
-                    <a href="/wi_inf" class="col wi_bg_color square card">
+                            <div class="">
+                                <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"WIL"}</h1>
+                            </div>
+                        </Link<Route, SearchQuery>>
+                    
+                        <Link<Route, SearchQuery>
+                        classes={classes!("col", "wi_bg_color", "card", "square")}
+                        to={Route::Entries}
+                        query={Some(SearchQuery {
+                            page: 0,
+                            tags: "WII".into()
+                        })}
+                    >
+                    
                         <div class="">
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"WII"}</h1>
                         </div>
 
-                    </a>
+                        </Link<Route, SearchQuery>>
                     </div>
                 </div>
 
