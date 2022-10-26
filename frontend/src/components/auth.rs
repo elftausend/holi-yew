@@ -19,6 +19,10 @@ pub fn auth(props: &Props) -> Html {
         let logged_in = logged_in.clone();
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
+                if user_ctx.inner.is_auth() {
+                    logged_in.set(true);
+                    return
+                }
                 let is_logged_in = is_logged_in().await;
                 logged_in.set(is_logged_in);
                 if !is_logged_in {

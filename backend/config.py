@@ -40,7 +40,7 @@ def config_file_setup():
             config_data["banned_ids"],
             config_data["admin_ids"],
             config_data["log"],
-            count_uploads()
+            config_data["total_uploads"]
         )
 
 config = config_file_setup()
