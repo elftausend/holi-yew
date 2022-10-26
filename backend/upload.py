@@ -210,6 +210,7 @@ class Upload(Resource):
 
         log(f"{upload.uploader}/{current_identity.id['username']}/{current_identity.id['htl_class']} uploaded entry called '{title}' with tags '{tags}' and hash '{file.hash}/{upload.uid}'.")
         add_upload_id_to_db(upload.uid, current_identity)
+        print(f"added to own ups?: {current_identity.id['uploaded']}")
 
         return msg.as_json()
     

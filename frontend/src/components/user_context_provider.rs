@@ -2,7 +2,7 @@ use reqwest::Method;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 
-use crate::{api::request, routes::htl_auth::UserInfo};
+use crate::{api::request, routes::htl_auth::UserInfo, app::set_jwt};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
@@ -21,6 +21,9 @@ pub fn user_context_provider(props: &Props) -> Html {
                 if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", (), true).await {
                     log::info!("Logged in");
                     user_ctx.set(user_info)
+                } else {
+                    set_jwt(None);
+                    user_ctx.set(UserInfo::default())
                 }
             });
         });

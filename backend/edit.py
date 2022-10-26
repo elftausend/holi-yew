@@ -5,6 +5,7 @@ from flask_restful import Resource, request
 from flask_jwt import jwt_required, current_identity
 from utils import entries
 from logger import log
+from user import User
 
 from api_limiter import limiter
 
@@ -21,7 +22,7 @@ class EditEntry(Resource):
             return 400
 
         # has not uploaded this entry    
-        if not (uid in current_identity.id["uploaded"]):
+        if not (uid in current_identity.id["uploaded"]) and not current_identity.is_admin():
             return 400
 
         global entries
@@ -41,7 +42,7 @@ class EditEntry(Resource):
             return 400
 
         # has not uploaded this entry    
-        if not (uid in current_identity.id["uploaded"]):
+        if not (uid in current_identity.id["uploaded"]) and not current_identity.is_admin():
             return 400
 
         json_data = request.get_json(force=True)
@@ -73,17 +74,25 @@ class EditEntry(Resource):
         return msg.as_json()
         
 
+def get_editable_entries(user: User):
+    global entries
+    if user.is_admin():
+        return entries
+
+    uploaded_entry_ids = user.id["uploaded"]
+    print(f"uploaded_entry_ids: {uploaded_entry_ids}")
+    
+    own_entries = {}
+    
+    for entry_id in uploaded_entry_ids:
+        own_entries[entry_id] = entries[entry_id]
+
+    return own_entries
 
 class EditEntries(Resource):
     decorators = [jwt_required(), limiter.limit("40/second")]
     def get(self):
-        uploaded_entry_ids = current_identity.id["uploaded"]
-        print(f"uploaded_entry_ids: {uploaded_entry_ids}")
-
-        global entries
-        own_entries = {}
-        for entry_id in uploaded_entry_ids:
-            own_entries[entry_id] = entries[entry_id]
+        own_entries = get_editable_entries(current_identity)        
 
         page = 0
         if request.args.get("page"):

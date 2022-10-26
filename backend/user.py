@@ -92,6 +92,12 @@ class User():
             "favs": user_info.favs
         }
 
+    def is_admin(self):
+        return self.id["user_id"] in config.admin_ids
+    
+    def is_banned(self):
+        return self.id["user_id"] in config.banned_ids
+
 def authenticate(username, code):
     # auth with htlhl
     print(f"received code: {code}")
@@ -123,6 +129,10 @@ def authenticate(username, code):
 
 def identity(payload):
     user_info_dict = payload['identity']
+
+    # appending uploaded entry uids to current_identity does not add it "globally"
+    # modify payload?
+    uploaded_and_favs = query_db_results(user_info_dict["user_id"])
     return User(
         UserInfo(
             access_token=user_info_dict["token"],
@@ -131,7 +141,7 @@ def identity(payload):
             htl_class=user_info_dict["htl_class"],
             htl_division=user_info_dict["htl_division"],
             htl_type=user_info_dict["htl_type"],
-            uploaded=user_info_dict["uploaded"],
-            favs=user_info_dict["favs"]
+            uploaded=uploaded_and_favs["uploaded"],
+            favs=uploaded_and_favs["fav"]
         )
     )
