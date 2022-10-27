@@ -52,10 +52,10 @@ pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliEr
 pub fn entries() -> Html {
     //let page = use_state(|| 1);
     let search_info = use_state(SearchQuery::default);
+    let history = use_history().unwrap();
 
     let total_pages = use_state(|| 0);
 
-    let user_ctx = use_user_context();
     let location = use_location().unwrap();
 
     let entries = use_state(Vec::<EntryInfo>::new);
@@ -77,14 +77,21 @@ pub fn entries() -> Html {
                     if let Ok(api_entries) =
                         get_entries(search_query.page, &search_query.tags).await
                     {
-                        entries.set(api_entries);
-
-                        if let Ok(entry_count) = get_entry_count().await {
-                            total_pages.set(entry_count.entry_count / *ENTRIES_ON_PAGE);
+                        let page_count = api_entries.len() as u64 / *ENTRIES_ON_PAGE;
+                        total_pages.set(page_count);
+                        
+                        if search_query.page > page_count {
+                            log::info!("invalid page");
+                            
                         }
+
+                        entries.set(api_entries);
                     } else {
+                        // else: probably an invalid page
+
                         entries.set(Vec::new());
                         total_pages.set(0);
+                        history.push_with_query(Route::Entries, SearchQuery::default()).unwrap();
                     }
                 });
 

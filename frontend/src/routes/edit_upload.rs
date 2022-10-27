@@ -158,17 +158,21 @@ pub fn edit_upload() -> Html {
                         </textarea>
                     </div>
                     <div class="mb-3">
-                            <p>
-                                <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
-                            </p>
-                            <button onclick={on_click_save} class="btn btn-primary">
-                                {"Speichern"}
-                            </button>
-                            <br />
-                            <span style="color: red; font-style: italic;">
-                                { "Felder markiert mit '*' müssen ausgefüllt werden."}
-                            </span>
-                        </div>
+                        <p>
+                            <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
+                        </p>
+                        <button onclick={on_click_save} class="btn btn-primary">
+                            {"Speichern"}
+                        </button>
+
+                        <button class="btn btn-danger ms-2">
+                            {"Löschen"}
+                        </button>
+                        <br />
+                        <span style="color: red; font-style: italic;">
+                            { "Felder markiert mit '*' müssen ausgefüllt werden."}
+                        </span>
+                    </div>
                 </form>
             </div>
             </Auth>

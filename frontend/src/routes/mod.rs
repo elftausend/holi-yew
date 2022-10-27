@@ -29,12 +29,12 @@ use self::htl_auth::UserInfo;
 
 #[derive(Routable, PartialEq, Eq, Clone, Debug)]
 pub enum Route {
+    #[at("/")]
+    Entries,
     #[at("/authenticated")]
     Auth,
     #[at("/logout")]
     Logout,
-    #[at("/")]
-    Entries,
     #[at("/user_panel")]
     UserPanel,
     #[at("/upload")]
@@ -49,6 +49,7 @@ pub enum Route {
     #[at("/404")]
     NotFound,
 }
+
 
 pub fn switch(routes: &Route) -> Html {
     match routes {

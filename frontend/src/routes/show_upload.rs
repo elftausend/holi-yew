@@ -3,9 +3,9 @@ use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, use_location, History, Location};
 
-use crate::{image_path, pdf_path, components::Auth};
+use crate::{image_path, pdf_path, components::{Auth, Tag}};
 
-use super::entries::{get_entry, EntryInfo};
+use super::{entries::{get_entry, EntryInfo}, Route};
 
 #[derive(Debug, Default, PartialEq, Deserialize, Clone, Serialize)]
 pub struct HashQuery {
@@ -72,35 +72,57 @@ pub fn show_upload() -> Html {
                                 <button onclick={onback} class="btn btn-primary">
                                     {"Zurück"}
                                 </button>
-                                <span class="ms-2">{entry_info.title.clone()}</span>
+                                <span class="ms-2 me-2">{entry_info.title.clone()}</span>
                                 // download does not work because the link to the download is not the same origin
-                                <a class="ms-2 me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={"true"}>
+                                <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={"true"}>
                                     <button class="btn btn-primary">{"download"}</button>
                                 </a>
-
-                                <button class="btn btn-danger">
                                 <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
+                                    <button class="btn btn-danger">
                                     {"PDF anzeigen"}
+                                    </button>
                                 </a>
-                                </button>
 
                                 <br/>
 
                                 {
                                     entry_info.tags.iter().map(|tag| {
                                         html! {
-                                            <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                            <Tag name={tag.clone()} route={Route::Entries} />
+                                            //<span class="badge me-1 bg-secondary tag">{tag}</span>
                                             //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
                                         }
                                     }).collect::<Html>()
                                 }
-
+                                <br />
+                                <p class="mt-3">
+                                    <h4>{"Extrahierte Bilder"}</h4>
+                                    {
+                                        if entry_info.img_exts.len() >= 1 {
+                                            (0..entry_info.img_exts.len()).into_iter().map(|idx| {
+                                                html!{
+                                                    <>
+                                                        <img 
+                                                            class="mb-3"
+                                                            style="width: 80%;" 
+                                                            src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))} 
+                                                            alt="Some holi image" 
+                                                        />
+                                                    </>
+                                                }
+                                            }).collect::<Html>()
+                                        } else {
+                                            html!()
+                                        }
+            
+                                    }
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <br />
-                <div class="container">
+                /*<div class="container">
                 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-interval="false">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
@@ -131,7 +153,7 @@ pub fn show_upload() -> Html {
                         <span class="visually-hidden">{"Next"}</span>
                     </button>
                 </div>
-                </div>
+                </div>*/
             </Auth>
         </div>
     }
