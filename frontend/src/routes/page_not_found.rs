@@ -1,6 +1,6 @@
+use crate::components::Auth;
 use yew::prelude::*;
 use yew_router::prelude::{use_history, History};
-use crate::components::Auth;
 
 #[function_component(NotFound)]
 pub fn not_found() -> Html {

@@ -1,3 +1,4 @@
+use crate::{components::Auth, hooks::use_user_context};
 use gloo::file::File;
 use js_sys::Date;
 use reqwest::Method;
@@ -5,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_mount;
-use crate::{components::Auth, hooks::use_user_context};
 use yew_router::prelude::{use_history, History};
 
 use crate::request;
@@ -62,9 +62,9 @@ pub fn upload() -> Html {
         use_mount(move || {
             let date = Date::new_0();
             let day = add_zero_pad(date.get_date());
-            let month = add_zero_pad(date.get_month()+1);
+            let month = add_zero_pad(date.get_month() + 1);
             let year = date.get_full_year();
-            
+
             date_str.set(format!("{day}.{month}.{year}"))
         });
     }
@@ -198,7 +198,7 @@ pub fn upload() -> Html {
             let mut info = (*upload_info).clone();
             info.date = input.value();
             upload_info.set(info);
-        })  
+        })
     };
 
     html! {

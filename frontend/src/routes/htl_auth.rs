@@ -2,17 +2,16 @@ use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::window;
 use yew::prelude::*;
-use yew_router::prelude::{use_location, Location, use_history, History};
+use yew_router::prelude::{use_history, use_location, History, Location};
 
 use crate::{hooks::use_user_context, request, REDIRECT};
 
-use super::{Route};
+use super::Route;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
 struct CodeQuery {
     code: String,
 }
-
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
 pub struct UserInfo {
@@ -20,9 +19,8 @@ pub struct UserInfo {
     pub division: String,
     pub token: String,
     pub uploaded: Vec<u32>,
-    pub favs: Vec<u32>
+    pub favs: Vec<u32>,
 }
-
 
 impl UserInfo {
     pub fn is_auth(&self) -> bool {
@@ -35,7 +33,6 @@ pub struct JWT {
     pub access_token: String,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
 struct CodeInfo {
     // irrelevant
@@ -47,7 +44,7 @@ impl CodeInfo {
     pub fn new(token: String) -> Self {
         CodeInfo {
             username: "11111".into(),
-            code: token
+            code: token,
         }
     }
 }
@@ -74,7 +71,9 @@ pub fn auth() -> Html {
                             ..Default::default()
                         });
 
-                        if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", (), true).await {
+                        if let Ok(user_info) =
+                            request::<_, UserInfo>(Method::GET, "user", (), true).await
+                        {
                             user_ctx.inner.set(user_info);
                         }
 
@@ -107,7 +106,7 @@ pub fn auth() -> Html {
 
                 history.push(Route::Entries);
             }
-        });        
+        });
     });*/
 
     html! {}

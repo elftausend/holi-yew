@@ -1,9 +1,10 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
+use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{CardGroup, Footer, Pagination, SearchBar, SearchQuery, Auth, PageQuery};
+use crate::components::{Auth, CardGroup, Footer, PageQuery, Pagination, SearchBar, SearchQuery};
 use crate::{api::request, error::HoliError, hooks::use_user_context};
 use crate::{image_path, pdf_path, ENTRIES_ON_PAGE};
 
@@ -69,6 +70,17 @@ pub fn entries() -> Html {
         use_effect_with_deps(
             move |_| {
                 let search_query = location_inner.query::<SearchQuery>().unwrap_or_default();
+
+                if search_query.scroll_to_bar {
+                    window()
+                        .unwrap()
+                        .document()
+                        .unwrap()
+                        .get_element_by_id("search_field")
+                        .unwrap()
+                        .scroll_into_view();
+                }
+
                 search_info1.set(search_query.clone());
 
                 log::info!("page: {search_query:?}");
@@ -79,10 +91,9 @@ pub fn entries() -> Html {
                     {
                         let page_count = api_entries.len() as u64 / *ENTRIES_ON_PAGE;
                         total_pages.set(page_count);
-                        
+
                         if search_query.page > page_count {
                             log::info!("invalid page");
-                            
                         }
 
                         entries.set(api_entries);
@@ -91,7 +102,9 @@ pub fn entries() -> Html {
 
                         entries.set(Vec::new());
                         total_pages.set(0);
-                        history.push_with_query(Route::Entries, SearchQuery::default()).unwrap();
+                        history
+                            .push_with_query(Route::Entries, SearchQuery::default())
+                            .unwrap();
                     }
                 });
 
@@ -114,7 +127,8 @@ pub fn entries() -> Html {
                             to={Route::Entries}
                             query={Some(SearchQuery {
                                 page: 0,
-                                tags: "ET".into()
+                                tags: "ET".into(),
+                                scroll_to_bar: true
                             })}
                         >
                             <div class="">
@@ -122,14 +136,15 @@ pub fn entries() -> Html {
                             </div>
                         </Link<Route, SearchQuery>>
 
-                        
+
                         //<a href="/?page=1&tags=IT#search_field" class="col it_bg_color card square">
                         <Link<Route, SearchQuery>
                             classes={classes!("col", "it_bg_color", "card", "square")}
                             to={Route::Entries}
                             query={Some(SearchQuery {
                                 page: 0,
-                                tags: "IT".into()
+                                tags: "IT".into(),
+                                scroll_to_bar: true
                             })}
                         >
                             <div class="">
@@ -142,13 +157,14 @@ pub fn entries() -> Html {
                             to={Route::Entries}
                             query={Some(SearchQuery {
                                 page: 0,
-                                tags: "EL".into()
+                                tags: "EL".into(),
+                                scroll_to_bar: true
                             })}
                         >
                             <div class="">
                                 <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"EL"}</h1>
                             </div>
-                    
+
                         </Link<Route, SearchQuery>>
 
                         <Link<Route, SearchQuery>
@@ -156,7 +172,8 @@ pub fn entries() -> Html {
                             to={Route::Entries}
                             query={Some(SearchQuery {
                                 page: 0,
-                                tags: "ME".into()
+                                tags: "ME".into(),
+                                scroll_to_bar: true
                             })}
                         >
                             <div class="">
@@ -169,7 +186,8 @@ pub fn entries() -> Html {
                             to={Route::Entries}
                             query={Some(SearchQuery {
                                 page: 0,
-                                tags: "MB".into()
+                                tags: "MB".into(),
+                                scroll_to_bar: true
                             })}
                         >
                             <div class="">
@@ -182,7 +200,8 @@ pub fn entries() -> Html {
                             to={Route::Entries}
                             query={Some(SearchQuery {
                                 page: 0,
-                                tags: "WIL".into()
+                                tags: "WIL".into(),
+                                scroll_to_bar: true
                             })}
                         >
 
@@ -190,16 +209,17 @@ pub fn entries() -> Html {
                                 <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"WIL"}</h1>
                             </div>
                         </Link<Route, SearchQuery>>
-                    
+
                         <Link<Route, SearchQuery>
                         classes={classes!("col", "wi_bg_color", "card", "square")}
                         to={Route::Entries}
                         query={Some(SearchQuery {
                             page: 0,
-                            tags: "WII".into()
+                            tags: "WII".into(),
+                            scroll_to_bar: true
                         })}
                     >
-                    
+
                         <div class="">
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"WII"}</h1>
                         </div>
@@ -209,16 +229,17 @@ pub fn entries() -> Html {
                 </div>
 
                 <div class="container" style="margin-top: 30px;">
-                    <div class="d-flex mt-4 mb-4">
+                    <div id="search_field" class="d-flex mt-4 mb-4">
                         <SearchBar route={Route::Entries} search_info={SearchQuery {
                             page: search_info.page,
-                            tags: search_info.tags.clone()
+                            tags: search_info.tags.clone(),
+                            scroll_to_bar: true
                         }} />
                     </div>
                 </div>
 
                 {
-            
+
                 entries.chunks(4).map(|chunk|
                     html! {
                         <CardGroup>
@@ -284,7 +305,8 @@ pub fn entries() -> Html {
                 <Pagination
                     search_info={SearchQuery {
                         page: search_info.page,
-                        tags: search_info.tags.clone()
+                        tags: search_info.tags.clone(),
+                        scroll_to_bar: true
                     }}
                     total_pages={*total_pages}
                     route_to_page={Route::Entries}

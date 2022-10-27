@@ -1,9 +1,7 @@
 use yew::prelude::*;
 use yew_router::prelude::use_history;
 
-use crate::{
-    hooks::use_user_context,
-};
+use crate::hooks::use_user_context;
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {

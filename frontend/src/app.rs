@@ -5,7 +5,7 @@ use yew::prelude::*;
 use lazy_static::lazy_static;
 use yew_router::prelude::*;
 
-use crate::components::{ResendToken, NavBar, UserContextProvider};
+use crate::components::{NavBar, ResendToken, UserContextProvider};
 use crate::routes::{switch, Route};
 
 const TOKEN_KEY: &str = "access_token";

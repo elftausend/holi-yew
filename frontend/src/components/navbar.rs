@@ -1,10 +1,7 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::{
-    hooks::use_user_context,
-    routes::Route,
-};
+use crate::{hooks::use_user_context, routes::Route};
 
 #[function_component(NavBar)]
 pub fn navbar() -> Html {

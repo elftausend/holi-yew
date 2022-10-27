@@ -4,8 +4,8 @@ use yew_router::prelude::*;
 
 //use crate::api::request;
 use crate::app::set_jwt;
-use crate::REDIRECT;
 use crate::routes::htl_auth::UserInfo;
+use crate::REDIRECT;
 
 /// State handle for the [`use_user_context`] hook.
 pub struct UseUserContextHandle {

@@ -12,6 +12,7 @@ use crate::routes::Route;
 pub struct SearchQuery {
     pub page: u64,
     pub tags: String,
+    pub scroll_to_bar: bool,
 }
 
 impl Default for SearchQuery {
@@ -19,6 +20,7 @@ impl Default for SearchQuery {
         Self {
             page: 0,
             tags: "".into(),
+            scroll_to_bar: false,
         }
     }
 }
@@ -52,6 +54,7 @@ pub fn search_bar(props: &Props) -> Html {
                     SearchQuery {
                         page,
                         tags: tag_input.tags.clone(),
+                        scroll_to_bar: false,
                     },
                 )
                 .unwrap();
@@ -143,6 +146,7 @@ pub fn search_bar(props: &Props) -> Html {
                     SearchQuery {
                         page,
                         tags: info.tags.clone(),
+                        scroll_to_bar: false,
                     },
                 )
                 .unwrap();
@@ -164,6 +168,7 @@ pub fn search_bar(props: &Props) -> Html {
                     SearchQuery {
                         page,
                         tags: tag_input.tags.clone(),
+                        scroll_to_bar: false,
                     },
                 )
                 .unwrap();

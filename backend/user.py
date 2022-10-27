@@ -115,7 +115,6 @@ def authenticate(username, code):
         return
 
     token_info = answer.json()
-
     # TODO: remember
     user_info = get_user_info(token_info["access_token"])
     #user_info = get_user_info("remember")

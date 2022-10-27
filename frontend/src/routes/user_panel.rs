@@ -1,7 +1,7 @@
+use super::Route;
+use crate::components::Auth;
 use yew::prelude::*;
 use yew_router::prelude::*;
-use crate::components::Auth;
-use super::Route;
 
 #[function_component(UserPanel)]
 pub fn user_panel() -> Html {

@@ -1,3 +1,5 @@
+pub mod edit;
+pub mod edit_upload;
 pub mod entries;
 pub mod htl_auth;
 pub mod logout;
@@ -5,18 +7,16 @@ pub mod page_not_found;
 pub mod show_upload;
 pub mod upload;
 pub mod user_panel;
-pub mod edit;
-pub mod edit_upload;
 
+pub use edit::Edit;
+pub use edit_upload::EditUpload;
 pub use entries::Entries;
+pub use htl_auth::OAuth2;
 pub use logout::Logout;
 pub use page_not_found::NotFound;
 pub use show_upload::ShowUpload;
 pub use upload::Upload;
 pub use user_panel::UserPanel;
-pub use htl_auth::OAuth2;
-pub use edit::Edit;
-pub use edit_upload::EditUpload;
 //pub use upload::Upload;
 
 use reqwest::Method;
@@ -50,7 +50,6 @@ pub enum Route {
     NotFound,
 }
 
-
 pub fn switch(routes: &Route) -> Html {
     match routes {
         Route::Logout => html! { <Logout /> },
@@ -63,7 +62,7 @@ pub fn switch(routes: &Route) -> Html {
         Route::NotFound => html! { <NotFound /> },
         Route::Auth => html! { <OAuth2 /> },
         Route::Edit => html! { <Edit /> },
-        Route::EditUpload => html! { <EditUpload /> }
+        Route::EditUpload => html! { <EditUpload /> },
     }
 }
 

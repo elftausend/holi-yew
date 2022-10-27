@@ -21,14 +21,14 @@ pub fn auth(props: &Props) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 if user_ctx.inner.is_auth() {
                     logged_in.set(true);
-                    return
+                    return;
                 }
                 let is_logged_in = is_logged_in().await;
                 logged_in.set(is_logged_in);
                 if !is_logged_in {
                     let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
                     window().unwrap().location().set_href(&href).unwrap();
-                    //log::info!("-  - - - - - - - would redirect !!!");    
+                    //log::info!("-  - - - - - - - would redirect !!!");
                 }
             });
             //if !user_ctx.inner.is_auth() {
@@ -49,8 +49,6 @@ pub fn auth(props: &Props) -> Html {
             { for props.children.iter() }
         }
     } else {
-        html! {
-            
-        }
+        html! {}
     }
 }

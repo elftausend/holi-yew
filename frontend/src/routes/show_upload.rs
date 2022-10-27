@@ -3,9 +3,15 @@ use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, use_location, History, Location};
 
-use crate::{image_path, pdf_path, components::{Auth, Tag}};
+use crate::{
+    components::{Auth, Tag},
+    image_path, pdf_path,
+};
 
-use super::{entries::{get_entry, EntryInfo}, Route};
+use super::{
+    entries::{get_entry, EntryInfo},
+    Route,
+};
 
 #[derive(Debug, Default, PartialEq, Deserialize, Clone, Serialize)]
 pub struct HashQuery {
@@ -102,11 +108,11 @@ pub fn show_upload() -> Html {
                                             (0..entry_info.img_exts.len()).into_iter().map(|idx| {
                                                 html!{
                                                     <>
-                                                        <img 
+                                                        <img
                                                             class="mb-3"
-                                                            style="width: 80%;" 
-                                                            src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))} 
-                                                            alt="Some holi image" 
+                                                            style="width: 80%;"
+                                                            src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))}
+                                                            alt="Some holi image"
                                                         />
                                                     </>
                                                 }
@@ -114,7 +120,7 @@ pub fn show_upload() -> Html {
                                         } else {
                                             html!()
                                         }
-            
+
                                     }
                                 </p>
                             </div>

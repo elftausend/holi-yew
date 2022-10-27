@@ -42,7 +42,7 @@ pub fn pagination(props: &Props) -> Html {
                                     classes={classes!("page-link")}
                                     disabled={search_info.page==1}
                                     to={route_to_page.clone()}
-                                    query={Some(SearchQuery{page: search_info.page-1, tags: "".to_string()})}
+                                    query={Some(SearchQuery{page: search_info.page-1, tags: "".to_string(), scroll_to_bar: true})}
                                 >
                                     { "<" }
                                 </Link<Route, SearchQuery>>
@@ -65,7 +65,7 @@ pub fn pagination(props: &Props) -> Html {
                                     classes={classes!("page-link")}
                                     disabled={true}
                                     to={route_to_page}
-                                    query={Some(SearchQuery{page: search_info.page+1, tags: search_info.tags})}
+                                    query={Some(SearchQuery{page: search_info.page+1, tags: search_info.tags, scroll_to_bar: true})}
                                 >
                                     { ">" }
                                 </Link<Route, SearchQuery>>

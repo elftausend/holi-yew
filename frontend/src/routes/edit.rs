@@ -1,9 +1,13 @@
+use super::{entries::EntryInfo, show_upload::HashQuery, Route};
+use crate::{
+    components::{Auth, CardGroup, SearchBar, SearchQuery, Tag},
+    error::HoliError,
+    image_path, request,
+};
 use reqwest::Method;
 use yew::prelude::*;
-use yew_router::prelude::*;
 use yew_hooks::use_mount;
-use crate::{components::{SearchBar, SearchQuery, CardGroup, Auth, Tag}, request, error::HoliError, image_path};
-use super::{Route, entries::EntryInfo, show_upload::HashQuery};
+use yew_router::prelude::*;
 
 pub async fn get_editable_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
     request(
@@ -22,9 +26,7 @@ pub fn edit() -> Html {
     let entries = use_state(Vec::<EntryInfo>::new);
 
     {
-        use_mount(|| {
-            
-        });
+        use_mount(|| {});
     }
 
     {
@@ -48,10 +50,10 @@ pub fn edit() -> Html {
                         //if let Ok(entry_count) = get_entry_count().await {
                         //    total_pages.set(entry_count.entry_count / *ENTRIES_ON_PAGE);
                         //}
-                    }/* else {
-                        entries.set(Vec::new());
-                        total_pages.set(0);
-                    }*/
+                    } /* else {
+                          entries.set(Vec::new());
+                          total_pages.set(0);
+                      }*/
                 });
 
                 || ()
@@ -71,9 +73,9 @@ pub fn edit() -> Html {
             }
         }
     };
-    
+
     let history = use_history().unwrap();
-    let onback = {    
+    let onback = {
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
             history.back();
@@ -90,23 +92,24 @@ pub fn edit() -> Html {
                     </button>
                     <SearchBar route={Route::Edit} search_info={SearchQuery {
                         page: search_info.page,
-                        tags: search_info.tags.clone()
+                        tags: search_info.tags.clone(),
+                        scroll_to_bar: false
                     }} />
                 </div>
                 <div >
                     <h4>{"Deine Uploads"}</h4>
                 </div>
             </div>
-            
 
-            {       
+
+            {
 
                 entries.chunks(4).map(|chunk| {
                     html! {
                         <CardGroup>
                         {
                             chunk.iter().map(|entry| {
-                                
+
                                 html! {
                                     <div class="card">
                                         {has_view_or_not(entry)}
@@ -138,7 +141,7 @@ pub fn edit() -> Html {
                                         </div>
                                     </div>
                                 }
-    
+
                             }).collect::<Html>()
                         }
                         </CardGroup>

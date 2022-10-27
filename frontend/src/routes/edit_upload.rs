@@ -1,12 +1,12 @@
+use crate::{components::Auth, error::HoliError, request};
 use reqwest::Method;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::*;
-use crate::{request, error::HoliError, components::Auth};
 
-use super::{show_upload::HashQuery, entries::EntryInfo, upload::UploadMsgs};
+use super::{entries::EntryInfo, show_upload::HashQuery, upload::UploadMsgs};
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct EditInfo {
@@ -37,7 +37,11 @@ pub fn edit_upload() -> Html {
                     log::info!("EDIT ENTRY {entry:?}");
                     edit_info.set(EditInfo {
                         title: entry.title,
-                        tags: entry.tags.iter().map(|tag| format!("{tag} ")).collect::<String>()
+                        tags: entry
+                            .tags
+                            .iter()
+                            .map(|tag| format!("{tag} "))
+                            .collect::<String>(),
                     })
                 } else {
                     edit_info.set(EditInfo::default());
@@ -91,7 +95,10 @@ pub fn edit_upload() -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(err_msgs) = request::<EditInfo, UploadMsgs>(
                     Method::POST,
-                    &format!("edit_entry?uid={}", location.query::<HashQuery>().unwrap_or_default().uid),
+                    &format!(
+                        "edit_entry?uid={}",
+                        location.query::<HashQuery>().unwrap_or_default().uid
+                    ),
                     (*edit_info).clone(),
                     false,
                 )
@@ -100,7 +107,7 @@ pub fn edit_upload() -> Html {
                     log::info!("err_msgs!!!!!!!!!!!!!!: {err_msgs:?}");
 
                     if &err_msgs.successful_upload != "" {
-                     //   upload_info.set(UploadInfo::default())
+                        //   upload_info.set(UploadInfo::default())
                     }
                     disable_edit.set(false);
                     upload_msgs.set(err_msgs);
