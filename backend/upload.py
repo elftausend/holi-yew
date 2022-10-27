@@ -9,7 +9,7 @@ import os
 from user import User
 from pdf_save import save_imgs_from_pdf
 import json
-from utils import entries
+import utils
 from api_limiter import limiter
 from logger import log
 import sqlite3
@@ -86,12 +86,11 @@ class FileDetails:
 
 def save_upload_dict_as_json(upload_info, uid: int):
     with open(f"{PATH}/static/uploaded/{uid}.json", mode="w") as file:
-        global entries
-        entries[uid] = upload_info
+        utils.entries[uid] = upload_info
 
         # move newest entry to the start
         # there is a better way to implement this
-        entries = dict(sorted(entries.items(), key=utils.sorting, reverse=True))
+        utils.entries = dict(sorted(utils.entries.items(), key=utils.sorting, reverse=True))
         #entries.insert(0, upload_info)
 
         json.dump(upload_info, file)

@@ -25,7 +25,6 @@ class EditEntry(Resource):
         if not (uid in current_identity.id["uploaded"]) and not current_identity.is_admin():
             return 400
 
-        global entries
         return entries[uid]
 
     decorators = [jwt_required(), limiter.limit("10/second")]
@@ -62,7 +61,6 @@ class EditEntry(Resource):
         if msg.has_errors():
             return msg.as_json()
 
-        global entries
         entry = entries[uid]
         entry["title"] = title
         entry["tags"] = tags.split()
@@ -75,7 +73,6 @@ class EditEntry(Resource):
         
 
 def get_editable_entries(user: User):
-    global entries
     if user.is_admin():
         return entries
 
