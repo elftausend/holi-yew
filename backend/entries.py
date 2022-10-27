@@ -16,7 +16,6 @@ class Entries(Resource):
     decorators = [jwt_required(), limiter.limit("40/second")]
     def get(self):
 
-        global entries
         local_entries = entries
 
         page = 0
@@ -48,14 +47,12 @@ class EntryCount(Resource):
     #@jwt_required()
     decorators = [jwt_required(), limiter.limit("40/second")]
     def get(self):
-        global entries
         return jsonify({"entry_count": len(entries)})
 
 class Entry(Resource):
     #@jwt_required()
     decorators = [jwt_required(), limiter.limit("10/second")]
     def get(self, uid: int):
-        global entries
 
         # reversing the id with len(entries) - 1 - correct id,
         # because we also reverse the entries list beforehand

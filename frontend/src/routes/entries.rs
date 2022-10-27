@@ -71,14 +71,18 @@ pub fn entries() -> Html {
             move |_| {
                 let search_query = location_inner.query::<SearchQuery>().unwrap_or_default();
 
+                // scroll to search bar
                 if search_query.scroll_to_bar {
-                    window()
+                    let doc = window()
                         .unwrap()
                         .document()
-                        .unwrap()
-                        .get_element_by_id("search_field")
-                        .unwrap()
-                        .scroll_into_view();
+                        .unwrap();
+
+                    if let Some(search) = doc.get_element_by_id("search_field") {
+                        search.scroll_into_view();
+                    }
+
+                        
                 }
 
                 search_info1.set(search_query.clone());

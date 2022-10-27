@@ -38,7 +38,6 @@ def get_upload_entries(lookup_tags, user="admin"):
     #return dict(sorted(files_data.items(), key=sorting, reverse=True))
     return files_data
 
-global entries
 entries = get_upload_entries([])
 
 def check_date(today, returned_date):
