@@ -1,8 +1,10 @@
 use gloo::file::File;
+use js_sys::Date;
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+use yew_hooks::use_mount;
 use crate::{components::Auth, hooks::use_user_context};
 use yew_router::prelude::{use_history, History};
 
@@ -35,17 +37,37 @@ pub struct UploadInfo {
     tags: String,
 }
 
+pub fn add_zero_pad(num: u32) -> String {
+    if num >= 10 {
+        num.to_string()
+    } else {
+        format!("0{num}")
+    }
+}
+
 #[function_component(Upload)]
 pub fn upload() -> Html {
     let history = use_history().unwrap();
     let upload_info = use_state(UploadInfo::default);
     let upload_msgs = use_state(UploadMsgs::default);
-    let user_ctx = use_user_context();
+    let date_str = use_state(String::new);
 
     let file_select = use_state(|| None);
 
     let disable_upload = use_state(|| false);
     let handle = use_state(|| None);
+
+    {
+        let date_str = date_str.clone();
+        use_mount(move || {
+            let date = Date::new_0();
+            let day = add_zero_pad(date.get_date());
+            let month = add_zero_pad(date.get_month()+1);
+            let year = date.get_full_year();
+            
+            date_str.set(format!("{day}.{month}.{year}"))
+        });
+    }
 
     let on_file_change = {
         let handle = handle.clone();
@@ -123,7 +145,7 @@ pub fn upload() -> Html {
                     if &err_msgs.successful_upload != "" {
                         // unselect file
                         (*file_select).as_ref().unwrap().set_value("");
-                        upload_info.set(UploadInfo::default())
+                        upload_info.set(UploadInfo::default());
                     }
                     disable_upload.set(false);
                     upload_msgs.set(err_msgs);
@@ -167,6 +189,16 @@ pub fn upload() -> Html {
                 e.prevent_default();
             }
         })
+    };
+
+    let ondateinput = {
+        let upload_info = upload_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*upload_info).clone();
+            info.date = input.value();
+            upload_info.set(info);
+        })  
     };
 
     html! {
@@ -225,14 +257,16 @@ pub fn upload() -> Html {
 
                         <div class="mb-3">
                             <h4>{"Datum"}</h4>
+                            <span style="color: red;">{ upload_msgs.erroneous_date.clone() }</span>
                             <input autocomplete="off"
                                     id="dateinput"
                                     onkeypress={ondatepress}
+                                    oninput={ondateinput}
                                     class="form-control"
                                     style="width: 120px; height: 50px;"
                                     maxlength="10"
                                     type="text"
-                                    placeholder="{{ date }}"
+                                    placeholder={(*date_str).clone()}
                                     name="date"
                                 />
                         </div>
