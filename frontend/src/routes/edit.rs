@@ -41,9 +41,10 @@ pub fn edit() -> Html {
                 log::info!("page: {search_query:?}");
 
                 wasm_bindgen_futures::spawn_local(async move {
-                    if let Ok(api_entries) =
+                    if let Ok(mut api_entries) =
                         get_editable_entries(search_query.page, &search_query.tags).await
                     {
+                        api_entries.sort_by(|a, b| b.uid.cmp(&a.uid));
                         log::info!("editable: {api_entries:?}");
                         entries.set(api_entries);
 

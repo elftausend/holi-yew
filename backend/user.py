@@ -55,9 +55,9 @@ class UserInfo():
 
 def get_user_info(access_token: str) -> UserInfo:
     # TODO: remember
-    user_info = requests.get(f"{USER_INFO_URL}{access_token}").json()
+    #user_info = requests.get(f"{USER_INFO_URL}{access_token}").json()
 
-    #user_info = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
+    user_info = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
 
     # personal name
     username = user_info["0"]["displayname"]["0"]
@@ -102,24 +102,24 @@ def authenticate(username, code):
     # auth with htlhl
     print(f"received code: {code}")
 #
-    payload = {
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "grant_type": GRANT_TYPE,
-        "code": code,
-        "redirect_uri": REDIRECT_URI,
-    }
-
-    answer = requests.post(TOKEN_URL, json=payload)
-    if not answer:
-        return
-
-    token_info = answer.json()
+    #payload = {
+    #    "client_id": CLIENT_ID,
+    #    "client_secret": CLIENT_SECRET,
+    #    "grant_type": GRANT_TYPE,
+    #    "code": code,
+    #    "redirect_uri": REDIRECT_URI,
+    #}
+#
+    #answer = requests.post(TOKEN_URL, json=payload)
+    #if not answer:
+    #    return
+#
+    #token_info = answer.json()
     # TODO: remember
-    user_info = get_user_info(token_info["access_token"])
-    #user_info = get_user_info("remember")
+    #user_info = get_user_info(token_info["access_token"])
+    user_info = get_user_info("remember")
 
-    # if user is banned, don't authenticate
+    # if user is banned, doyn't authenticate
     if user_info.user_id in config.banned_ids:
         return
 

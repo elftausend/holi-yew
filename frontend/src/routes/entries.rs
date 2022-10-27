@@ -81,8 +81,6 @@ pub fn entries() -> Html {
                     if let Some(search) = doc.get_element_by_id("search_field") {
                         search.scroll_into_view();
                     }
-
-                        
                 }
 
                 search_info1.set(search_query.clone());
@@ -90,9 +88,10 @@ pub fn entries() -> Html {
                 log::info!("page: {search_query:?}");
 
                 wasm_bindgen_futures::spawn_local(async move {
-                    if let Ok(api_entries) =
+                    if let Ok(mut api_entries) =
                         get_entries(search_query.page, &search_query.tags).await
                     {
+                        api_entries.sort_by(|a, b| b.uid.cmp(&a.uid));
                         let page_count = api_entries.len() as u64 / *ENTRIES_ON_PAGE;
                         total_pages.set(page_count);
 

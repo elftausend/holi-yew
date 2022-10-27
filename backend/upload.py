@@ -84,13 +84,17 @@ class FileDetails:
         with open(self.save_path, "wb") as f:
             f.write(self.data)
 
+def sort_by_id(entry):
+    return entry[1]["uid"]
+
 def save_upload_dict_as_json(upload_info, uid: int):
     with open(f"{PATH}/static/uploaded/{uid}.json", mode="w") as file:
         utils.entries[uid] = upload_info
 
-        # move newest entry to the start
-        # there is a better way to implement this
-        utils.entries = dict(sorted(utils.entries.items(), key=utils.sorting, reverse=True))
+        print(f"before: {utils.entries}")
+        
+        # ordering is done by the frontend
+        #utils.entries = dict(sorted(utils.entries.items(), key=sort_by_id, reverse=True))
         #entries.insert(0, upload_info)
 
         json.dump(upload_info, file)
