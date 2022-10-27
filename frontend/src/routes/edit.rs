@@ -2,7 +2,7 @@ use reqwest::Method;
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yew_hooks::use_mount;
-use crate::{components::{SearchBar, SearchQuery, CardGroup, Auth}, request, error::HoliError, image_path};
+use crate::{components::{SearchBar, SearchQuery, CardGroup, Auth, Tag}, request, error::HoliError, image_path};
 use super::{Route, entries::EntryInfo, show_upload::HashQuery};
 
 pub async fn get_editable_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
@@ -118,7 +118,8 @@ pub fn edit() -> Html {
                                                 {
                                                     entry.tags.iter().map(|tag| {
                                                         html! {
-                                                            <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                            <Tag name={tag.clone()} route={Route::Edit} />
+                                                            //<span class="badge me-1 bg-secondary tag">{tag}</span>
                                                         }
                                                     }).collect::<Html>()
                                                 }
