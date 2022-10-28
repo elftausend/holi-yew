@@ -1,10 +1,9 @@
 from typing import List
 import fitz
 import io
-import os
 from PIL import Image
+from holiapi.config import PATH
 
-PATH = os.path.dirname(os.path.realpath(__file__))
 
 def save_imgs_from_pdf(path, hexdigest) -> List[str]:
     uploaded_pdf = fitz.open(path)

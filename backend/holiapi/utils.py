@@ -1,11 +1,9 @@
 import os
-from typing import Dict, Tuple
+from typing import Tuple
 import json
-from pathlib import Path
-from filter_tags import check_if_tags_found
+from holiapi.entries.filter_tags import check_if_tags_found
 import re
-
-dir_path = os.path.dirname(os.path.realpath(__file__))
+from holiapi.config import PATH
 
 def sorting(entry):
     # entry[1]: because an entry is a tuple with (hash, <values>)
@@ -22,13 +20,12 @@ def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
     times = int(max_len / 16)
     return (start, end, times)
 
-def get_upload_entries(lookup_tags, user="admin"):
-    entry_path = f"{dir_path}/static/uploaded/"
-    entries = len(os.listdir(entry_path))
+def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/uploaded/"):
+    entries = os.listdir(entry_path)
     files_data = {}
     
-    for uid in reversed(range(entries)):
-        with open(f"{entry_path}{uid}.json", mode="r") as file:
+    for entry in entries:
+        with open(f"{entry_path}{entry}", mode="r") as file:
             upload = json.load(file)
 
             if upload["usid"] == user or user == "admin":
@@ -75,7 +72,7 @@ def file_contents(filename):
         return the contents of that file
     """
     try:
-        with open(f"{dir_path}/{filename}", 'r') as f:
+        with open(f"{PATH}/{filename}", 'r') as f:
             # It's assumed our file contains a single line,
             # with our API key
             return f.read().strip()

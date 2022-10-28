@@ -1,15 +1,15 @@
 import os
-import utils
 import json
-import filter_tags
+#import holiapi.entries.filter_tags
+from holiapi import utils
+from holiapi.entries import filter_tags
 from flask import jsonify
 from flask_restful import Resource, request
 from flask_jwt import jwt_required
-from utils import entries
+from holiapi.utils import entries
+from holiapi.config import PATH
 
-PATH = os.path.dirname(os.path.realpath(__file__))
-
-from api_limiter import limiter
+from holiapi.api_limiter import limiter
 
 class Entries(Resource):
     #@jwt_required()

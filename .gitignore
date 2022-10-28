@@ -3,10 +3,11 @@ target
 Cargo.lock
 dist
 # to ignore all uploaded entries
-/backend/static/images/*.*
-/backend/static/pdfs
-/backend/static/files
-/backend/static/uploaded
+/backend/holiapi/static/images/*.*
+/backend/holiapi/static/pdfs
+/backend/holiapi/static/files
+/backend/holiapi/static/uploaded
+*.pdf
 *old*
 *secret*
 __pycache__

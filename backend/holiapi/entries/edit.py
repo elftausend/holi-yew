@@ -1,13 +1,13 @@
-from upload import UploadMsgs, MISSING_TAGS, MISSING_TITLE, save_upload_dict_as_json
-import utils
-import filter_tags
+from holiapi.upload import UploadMsgs, MISSING_TAGS, MISSING_TITLE, save_upload_dict_as_json
 from flask_restful import Resource, request
 from flask_jwt import jwt_required, current_identity
-from utils import entries
-from logger import log
-from user import User
+from holiapi.utils import entries
+from holiapi.logger import log
+from holiapi.user import User
+from holiapi import utils
+from holiapi.entries import filter_tags
 
-from api_limiter import limiter
+from holiapi.api_limiter import limiter
 
 class EditEntry(Resource):
     decorators = [jwt_required(), limiter.limit("40/second")]

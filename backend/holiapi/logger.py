@@ -1,8 +1,6 @@
-import os
 import datetime
-from config import config
+from holiapi.config import config, PATH
 
-PATH = os.path.dirname(os.path.realpath(__file__))
 LOG_FILE = f"{PATH}/log.txt"
 
 def log(info: str):

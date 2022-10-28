@@ -1,22 +1,17 @@
 import hashlib
-from flask import jsonify
 from flask_restful import Resource, request
 from flask_jwt import jwt_required, current_identity
 from datetime import date
-import utils
+from holiapi import utils
 from typing import List
-import os
-from user import User
-from pdf_save import save_imgs_from_pdf
+from holiapi.user import User
+from holiapi.pdf_save import save_imgs_from_pdf
 import json
-import utils
-from api_limiter import limiter
-from logger import log
-import sqlite3
-from config import config
+from holiapi.api_limiter import limiter
+from holiapi.logger import log
+from holiapi.config import config, PATH
+from holiapi.db.entry_info import write_entry_info_to_db
 
-PATH = os.path.dirname(os.path.realpath(__file__))
-USER_DB = f"{PATH}/db/user_database.db"
 PDF_LOGO_PATH = "logos/pdf_logo/pdf.png"
 
 MISSING_FILE = "Es wurde keine Datei ausgewählt."
@@ -25,19 +20,14 @@ MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
 
 def add_upload_id_to_db(upload_id: int, user: User):
-    con = sqlite3.connect(USER_DB)
-    cur = con.cursor()
-
     user.id["uploaded"].append(upload_id)
 
-    updated_uids = {
+    entry_info = {
         "uploaded": user.id["uploaded"],
         "fav": user.id["favs"]
     }
 
-    cur.execute("update users set entry_info = ? where user_id=?", (json.dumps(updated_uids), user.id["user_id"]))
-    con.commit()
-    con.close()
+    write_entry_info_to_db(user.id["user_id"], entry_info)
 
 class UploadMsgs():
     missing_file = ""
@@ -92,7 +82,7 @@ def save_upload_dict_as_json(upload_info, uid: int):
         utils.entries[uid] = upload_info
 
         print(f"before: {utils.entries}")
-        
+
         # ordering is done by the frontend
         #utils.entries = dict(sorted(utils.entries.items(), key=sort_by_id, reverse=True))
         #entries.insert(0, upload_info)

@@ -1,10 +1,8 @@
 from typing import Dict, List
-import requests
-from utils import file_contents
+from holiapi.utils import file_contents
 from flask_sqlalchemy import SQLAlchemy
-from config import config
+from holiapi.config import config, PATH
 import sqlite3
-import os
 import json
 
 TOKEN_URL = "https://auth.htl-hl.ac.at/token.php"
@@ -15,14 +13,13 @@ REDIRECT_URI = "https://holi.htl-hl.ac.at/authenticated"
 
 USER_INFO_URL = "https://auth.htl-hl.ac.at/getUserInformation.php?access_token="
 
-PATH = os.path.dirname(os.path.realpath(__file__))
 USER_DB = f"{PATH}/db/user_database.db"
 
 db = SQLAlchemy()
 
-def query_db_results(user_id: str) -> Dict[str, List[int]]:
+def query_db_results(user_id: str, db = USER_DB) -> Dict[str, List[int]]:
     # use ORM
-    con = sqlite3.connect(USER_DB)
+    con = sqlite3.connect(db)
     cur = con.cursor()
 
     cur.execute("select * from users where user_id=?", (user_id,))
@@ -53,24 +50,33 @@ class UserInfo():
         self.uploaded = db_results["uploaded"]
         self.favs = db_results["fav"]
 
-def get_user_info(access_token: str) -> UserInfo:
+def get_user_info(user_info_raw, access_token: str) -> UserInfo:
     # TODO: remember
-    #user_info = requests.get(f"{USER_INFO_URL}{access_token}").json()
-
-    user_info = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
-
+    
     # personal name
-    username = user_info["0"]["displayname"]["0"]
-    htl_related_ids = user_info["0"]["dn"].split(",")
+    username = user_info_raw["0"]["displayname"]["0"]
+    htl_related_ids = user_info_raw["0"]["dn"].split(",")
     
     # id (e.g. 101234)
     user_id = str(htl_related_ids[0][3:])
     # 2AHMBT
     htl_class = htl_related_ids[1][3:]
+
     # abteilung (ME)
     htl_division = htl_related_ids[2][3:]
+
+    # to differentiate between Wirtschaftsing. logistik and informatik
+    # WI -> WIL || WII
+    if htl_division == "WI":
+        htl_division = htl_class[3:]
+
+    # no access for lebenmittel
+    if htl_division == "L":
+        return None
+
     # root (HTBL)
     htl_type = htl_related_ids[3][2:]
+
 
     return UserInfo(access_token, username, user_id, htl_class, htl_division, htl_type)
 
@@ -114,10 +120,21 @@ def authenticate(username, code):
     #if not answer:
     #    return
 #
-    #token_info = answer.json()
+    #token = answer.json()["access_token"]
+#
+    #user_info_raw = requests.get(f"{USER_INFO_URL}{token}").json()
+
     # TODO: remember
-    #user_info = get_user_info(token_info["access_token"])
-    user_info = get_user_info("remember")
+    user_info_raw = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
+    token = "asdfas"
+
+    user_info = get_user_info(user_info_raw, token)
+
+    # attaining user_info was not successful
+    if not user_info:
+        return
+
+    #user_info = get_user_info("remember")
 
     # if user is banned, doyn't authenticate
     if user_info.user_id in config.banned_ids:
