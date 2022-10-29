@@ -1,4 +1,5 @@
 use gloo::utils::document;
+use js_sys::Function;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::HtmlInputElement;
@@ -36,6 +37,14 @@ pub struct Props {
     pub route: Route,
 }
 
+fn close_list() {
+    let list_items = document().get_elements_by_class_name("autocomplete-items"); 
+    for i in 0..list_items.length() {
+        let list_item = list_items.item(i).unwrap();
+        list_item.parent_node().unwrap().remove_child(&list_item).unwrap();
+    }
+}
+
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
     let tag_input = use_state(SearchBarInput::default);
@@ -64,69 +73,83 @@ pub fn search_bar(props: &Props) -> Html {
     let current_focus = use_state(|| 0);
 
     use_mount(|| {
-        let testing_ipts = ["Test", "Hallo", "Spannend", "Alphabet", "Custos"];
+        let testing_ipts = ["Test", "Hallo", "Spannend", "Alphabet", "Custos", "Test2", "Testok"];
 
         let search_field: HtmlInputElement = document()
             .get_element_by_id("search_field")
             .unwrap()
             .unchecked_into();
 
+        
+        let click_tag = {
+            let search_field = search_field.clone();
+            Closure::wrap(Box::new(move |e: MouseEvent| {
+                let list_input: HtmlInputElement = e.target_unchecked_into();
+                search_field.set_value(&list_input.value());
+            }) as Box<dyn FnMut(_)>)
+        };
+
         let input_callback = {
             let search_field = search_field.clone();
             Closure::wrap(Box::new(move |input: InputEvent| {
                 let value = search_field.value();
+                close_list();
                 if &value == "" {
                     return;
                 }
                 let list_div = document().create_element("div").unwrap();
                 list_div
-                    .set_attribute("id", &format!("{} autocomplete-list", search_field.id()))
+                    .set_attribute("id", &format!("{}autocomplete-list", search_field.id()))
                     .unwrap();
+
                 list_div
-                    .set_attribute(
-                        "class",
-                        &format!("{} autocomplete-items", search_field.id()),
-                    )
+                    .set_attribute("class", "autocomplete-items")
                     .unwrap();
+
                 search_field
                     .parent_node()
                     .unwrap()
                     .append_child(&list_div)
                     .unwrap();
 
-                for inpt in testing_ipts {
-                    if (&inpt[..value.len()]).to_uppercase() == value.to_uppercase() {
+                for input in testing_ipts {
+                    if value.len() > input.len() {
+                        continue;
+                    }
+                    if (&input[..value.len()]).to_uppercase() == value.to_uppercase() {
                         let div = document().create_element("div").unwrap();
                         div.set_inner_html(&format!(
                             "
-                                <strong>{}</strong>
+                                <strong>{}</strong>{}
                                 <input type='hidden' value='{}'/>
                             ",
-                            &inpt[..value.len()],
-                            inpt
+                            &input[..value.len()],
+                            &input[value.len()..],
+                            input
                         ));
                         let search_field = search_field.clone();
+                        
                         div.add_event_listener_with_callback(
                             "click",
-                            Closure::wrap(Box::new(move |e: MouseEvent| {
-                                let list_input: HtmlInputElement = e.target_unchecked_into();
-                                search_field.set_value(&list_input.value());
-                            }) as Box<dyn FnMut(_)>)
-                            .as_ref()
-                            .unchecked_ref(),
-                        )
-                        .unwrap();
+                            click_tag.as_ref().unchecked_ref(),
+                        ).unwrap();
 
-                        list_div.append_child(&list_div).unwrap();
+                        list_div.append_child(&div).unwrap();
+                        
                     }
                 }
             }) as Box<dyn FnMut(_)>)
         };
+        //ffclick_tag.forget();
 
         search_field
             .add_event_listener_with_callback("input", input_callback.as_ref().unchecked_ref())
+            //.add_event_listener_with_callback("input", callback.)
             .unwrap();
+        input_callback.forget();
     });
+
+    
 
     let on_input_change = {
         let props = props.clone();

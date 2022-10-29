@@ -104,6 +104,7 @@ class User():
     def is_banned(self):
         return self.id["user_id"] in config.banned_ids
 
+# TODO: use flask-jwt-extended!
 def authenticate(username, code):
     # auth with htlhl
     print(f"received code: {code}")

@@ -99,6 +99,11 @@ pub fn entries() -> Html {
                             log::info!("invalid page");
                         }
 
+
+                        //if let Ok(entry_count) = get_entry_count().await {
+                        //    total_pages.set(entry_count.entry_count / *ENTRIES_ON_PAGE);
+                        //}
+
                         entries.set(api_entries);
                     } else {
                         // else: probably an invalid page
@@ -232,7 +237,7 @@ pub fn entries() -> Html {
                 </div>
 
                 <div class="container" style="margin-top: 30px;">
-                    <div id="search_field" class="d-flex mt-4 mb-4">
+                    <div class="d-flex mt-4 mb-4">
                         <SearchBar route={Route::Entries} search_info={SearchQuery {
                             page: search_info.page,
                             tags: search_info.tags.clone(),
