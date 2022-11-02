@@ -67,7 +67,7 @@ pub fn switch(routes: &Route) -> Html {
 }
 
 pub async fn is_logged_in() -> bool {
-    request::<_, UserInfo>(Method::GET, "user", (), true)
+    request::<_, UserInfo>(Method::GET, "user", ())
         .await
         .is_ok()
 }

@@ -18,7 +18,7 @@ pub fn user_context_provider(props: &Props) -> Html {
         let user_ctx = user_ctx.clone();
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
-                if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", (), true).await {
+                if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", ()).await {
                     log::info!("Logged in");
                     user_ctx.set(user_info)
                 } else {

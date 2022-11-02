@@ -64,7 +64,7 @@ pub fn auth() -> Html {
                 let code_info = CodeInfo::new(code_query.code);
 
                 wasm_bindgen_futures::spawn_local(async move {
-                    if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info, true).await
+                    if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info).await
                     {
                         user_ctx.login(UserInfo {
                             token: jwt.access_token,
@@ -72,7 +72,7 @@ pub fn auth() -> Html {
                         });
 
                         if let Ok(user_info) =
-                            request::<_, UserInfo>(Method::GET, "user", (), true).await
+                            request::<_, UserInfo>(Method::GET, "user", ()).await
                         {
                             user_ctx.inner.set(user_info);
                         }

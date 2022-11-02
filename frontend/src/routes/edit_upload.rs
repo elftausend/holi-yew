@@ -6,7 +6,9 @@ use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::*;
 
-use super::{entries::EntryInfo, show_upload::HashQuery, upload::UploadMsgs};
+use super::{entries::EntryInfo, show_upload::HashQuery, upload::UploadMsgs, Route};
+
+const FAILED_DELETE_MSG: &str = "Dieser Upload konnte nicht gelöscht werden.";
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct EditInfo {
@@ -15,7 +17,7 @@ pub struct EditInfo {
 }
 
 pub async fn get_edit_entry(uid: i32) -> Result<EntryInfo, HoliError> {
-    request(Method::GET, &format!("edit_entry?uid={uid}"), (), false).await
+    request(Method::GET, &format!("edit_entry?uid={uid}"), ()).await
 }
 
 #[function_component(EditUpload)]
@@ -24,15 +26,19 @@ pub fn edit_upload() -> Html {
     let edit_info = use_state(EditInfo::default);
     let disable_edit = use_state(|| false);
     let upload_msgs = use_state(UploadMsgs::default);
+    let delete_error = use_state(String::default);
+    let uid = use_state(|| None);
 
     let location = use_location().unwrap();
     {
         let location = location.clone();
         let edit_info = edit_info.clone();
         let history = history.clone();
+        let uid = uid.clone();
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
                 let hash = location.query::<HashQuery>().unwrap_or_default();
+                uid.set(Some(hash.uid));
                 if let Ok(entry) = get_edit_entry(hash.uid).await {
                     log::info!("EDIT ENTRY {entry:?}");
                     edit_info.set(EditInfo {
@@ -100,7 +106,6 @@ pub fn edit_upload() -> Html {
                         location.query::<HashQuery>().unwrap_or_default().uid
                     ),
                     (*edit_info).clone(),
-                    false,
                 )
                 .await
                 {
@@ -121,6 +126,28 @@ pub fn edit_upload() -> Html {
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
             history.back();
+        })
+    };
+
+    let ondelete = {
+        let history = history.clone();
+        let uid = uid.clone();
+        let delete_error = delete_error.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            let uid = uid.clone();
+            let delete_error = delete_error.clone();
+            let history = history.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                if let Some(uid) = *uid {
+                    if let Err(_) = request::<(), ()>(reqwest::Method::POST, &format!("delete/?uid={uid}"), ()).await {
+                        delete_error.set(FAILED_DELETE_MSG.to_string())
+                    } else {
+                        history.push(Route::Edit);
+                    }
+                }
+            });
+            
         })
     };
 
@@ -172,7 +199,8 @@ pub fn edit_upload() -> Html {
                             {"Speichern"}
                         </button>
 
-                        <button class="btn btn-danger ms-2">
+                        {&*(delete_error)}
+                        <button onclick={ondelete} class="btn btn-danger ms-2">
                             {"Löschen"}
                         </button>
                         <br />

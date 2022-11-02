@@ -1,12 +1,13 @@
 from holiapi.api_limiter import limiter
 from holiapi.utils import entries
 from holiapi.config import PATH
+from holiapi.user import User
+from holiapi.db.entry_info import write_entry_info_to_db
 
 from os import remove
 from flask import request
 from flask_jwt_extended import current_user, jwt_required
 from flask_restful import Resource
-
 
 def delete_entry(uid: int):
     entry_info = entries[uid]
@@ -21,6 +22,16 @@ def delete_entry(uid: int):
         remove(f"{PATH}/static/images/{entry_info['hash']}{img_ext}")
 
     entries.pop(uid)
+
+def remove_entry_from_user_uploaded(uid: int, user: User):
+    user.uploaded.remove(uid)
+
+    entry_info = {
+        "uploaded": user.uploaded,
+        "fav": user.favs
+    }
+    write_entry_info_to_db(user.user_id, entry_info)
+
 
 class DeleteEntry(Resource):
     decorators = [jwt_required(), limiter.limit("32/minute")]
@@ -39,7 +50,5 @@ class DeleteEntry(Resource):
             return 400
         
         delete_entry(uid)
+        remove_entry_from_user_uploaded(uid, current_user)
         
-
-    
-    

@@ -1,4 +1,4 @@
-use crate::{components::Auth, hooks::use_user_context};
+use crate::components::Auth;
 use gloo::file::File;
 use js_sys::Date;
 use reqwest::Method;
@@ -136,7 +136,6 @@ pub fn upload() -> Html {
                     Method::POST,
                     "upload",
                     (*upload_info).clone(),
-                    false,
                 )
                 .await
                 {

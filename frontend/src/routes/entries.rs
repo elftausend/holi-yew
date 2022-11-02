@@ -4,8 +4,8 @@ use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{Auth, CardGroup, Footer, PageQuery, Pagination, SearchBar, SearchQuery};
-use crate::{api::request, error::HoliError, hooks::use_user_context};
+use crate::components::{Auth, CardGroup, Footer, Pagination, SearchBar, SearchQuery};
+use crate::{api::request, error::HoliError};
 use crate::{image_path, pdf_path, ENTRIES_ON_PAGE};
 
 use super::show_upload::HashQuery;
@@ -32,11 +32,11 @@ pub struct EntryCount {
 }
 
 pub async fn get_entry_count() -> Result<EntryCount, HoliError> {
-    request(Method::GET, "entry_count", (), false).await
+    request(Method::GET, "entry_count", ()).await
 }
 
 pub async fn get_entry(uid: i32) -> Result<EntryInfo, HoliError> {
-    request(Method::GET, &format!("entry/{uid}"), (), false).await
+    request(Method::GET, &format!("entry/{uid}"), ()).await
 }
 
 pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
@@ -44,7 +44,6 @@ pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliEr
         Method::GET,
         &format!("entries?page={page}&tags={tags}"),
         (),
-        false,
     )
     .await
 }

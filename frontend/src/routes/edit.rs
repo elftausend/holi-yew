@@ -14,7 +14,6 @@ pub async fn get_editable_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo
         Method::GET,
         &format!("editable_entries?page={page}&tags={tags}"),
         (),
-        false,
     )
     .await
 }

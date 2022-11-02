@@ -17,7 +17,6 @@ pub async fn request<B, T>(
     method: reqwest::Method,
     url: &str,
     body: B,
-    cors: bool,
 ) -> Result<T, HoliError>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug,
