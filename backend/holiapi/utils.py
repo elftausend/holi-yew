@@ -78,3 +78,11 @@ def file_contents(filename):
             return f.read().strip()
     except FileNotFoundError:
         print(f"{filename} file not found")
+
+def is_hash_in_file(hash: str) -> bool:
+    for value in entries.values():
+        if hash in value["hash"]:
+            return True
+    return False
+
+    

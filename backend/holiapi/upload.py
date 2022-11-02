@@ -2,11 +2,11 @@ import hashlib
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required, current_user
 from datetime import date
-from holiapi import utils
 from typing import List
 from holiapi.user import User
-from holiapi.pdf_save import save_imgs_from_pdf
 import json
+from holiapi import utils
+from holiapi.pdf_save import save_imgs_from_pdf
 from holiapi.api_limiter import limiter
 from holiapi.logger import log
 from holiapi.config import config, PATH
@@ -18,6 +18,7 @@ MISSING_FILE = "Es wurde keine Datei ausgewählt."
 MISSING_TITLE = "Der Titel wurde nicht angegeben."
 MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
+ALREADY_UPLOADED = "Dieses File wurde schon hochgeladen."
 
 def add_upload_id_to_db(upload_id: int, user: User):
     user.uploaded.append(upload_id)
@@ -186,13 +187,16 @@ class Upload(Resource):
 
         (current_date, date_error) = utils.check_date(today, returned_date)
         msg.erroneous_date = date_error
-        
-        # check date errors
+
         if msg.has_errors():
             return msg.as_json()
-
+        
         file = FileDetails(file_name, file_data)
-
+        
+        if utils.is_hash_in_file(file.hash):
+            msg.missing_file = ALREADY_UPLOADED
+            return msg.as_json()
+    
         upload = UploadDetails(
             file, title, current_date, 
             tags, current_user

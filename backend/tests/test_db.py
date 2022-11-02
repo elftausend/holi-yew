@@ -3,7 +3,7 @@ import os
 
 from holiapi.db.setup_db import create_user_db
 from holiapi.upload import add_upload_id_to_db
-from holiapi.user import query_db_results, get_user_info, User
+from holiapi.user import query_db_results, get_user_from_raw, User
 from holiapi.db.entry_info import write_entry_info_to_db
 
 DB = "./db/user_database.db"
@@ -53,17 +53,16 @@ class TestDatabase(unittest.TestCase):
             '1': 'displayname', 'count': 2, 'dn': 'cn=111211,ou=1AHWII,ou=WI,o=HTBL'}
         }
 
-        user_info = get_user_info(user_info_raw, "notoken")
+        user = get_user_from_raw(user_info_raw, "notoken")
 
         
-        uids = query_db_results(user_info.user_id, DB)
+        uids = query_db_results(user.user_id, DB)
         
         assert uids["uploaded"] == []
         assert uids["fav"] == []
 
-        user_info.set_uploaded_and_favs(uids)
+        user.set_uploaded_and_favs(uids)
         
-        user = User(user_info)
 
 #        add_upload_id_to_db(5, user)
 

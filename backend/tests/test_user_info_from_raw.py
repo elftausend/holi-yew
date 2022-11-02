@@ -1,7 +1,7 @@
 import unittest
 import pytest
 
-from holiapi.user import get_user_info
+from holiapi.user import get_user_from_raw
 
 class TestGetUserInfo(unittest.TestCase):
     def test_get_user_info_from_raw(self):
@@ -12,12 +12,12 @@ class TestGetUserInfo(unittest.TestCase):
             '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}
         }
         
-        user_info = get_user_info(user_info_raw, "notoken")
+        user_info = get_user_from_raw(user_info_raw, "notoken")
 
         assert user_info.htl_class == "1AFET"
         assert user_info.htl_division == "ET"
         assert user_info.username == "A Name"
-        assert user_info.id == "notoken"
+        assert user_info.htl_access_token == "notoken"
         assert user_info.user_id == "111111"
 
     def test_get_ui_wii(self):
@@ -28,12 +28,12 @@ class TestGetUserInfo(unittest.TestCase):
             '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AHWII,ou=WI,o=HTBL'}
         }
 
-        user_info = get_user_info(user_info_raw, "notoken")
+        user_info = get_user_from_raw(user_info_raw, "notoken")
 
         assert user_info.htl_class == "1AHWII"
         assert user_info.htl_division == "WII"
         assert user_info.username == "A Name"
-        assert user_info.id == "notoken"
+        assert user_info.htl_access_token == "notoken"
         assert user_info.user_id == "111111"
 
     def test_get_ui_wil(self):
@@ -44,12 +44,12 @@ class TestGetUserInfo(unittest.TestCase):
             '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AHWIL,ou=WI,o=HTBL'}
         }
 
-        user_info = get_user_info(user_info_raw, "notoken")
+        user_info = get_user_from_raw(user_info_raw, "notoken")
 
         assert user_info.htl_class == "1AHWIL"
         assert user_info.htl_division == "WIL"
         assert user_info.username == "A Name"
-        assert user_info.id == "notoken"
+        assert user_info.htl_access_token == "notoken"
         assert user_info.user_id == "111111"
 
     def test_get_ui_l(self):
@@ -60,6 +60,6 @@ class TestGetUserInfo(unittest.TestCase):
             '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AHWII,ou=L,o=HTBL'}
         }
 
-        user_info = get_user_info(user_info_raw, "notoken")
+        user_info = get_user_from_raw(user_info_raw, "notoken")
 
         assert user_info == None

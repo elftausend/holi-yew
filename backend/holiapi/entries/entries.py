@@ -63,12 +63,8 @@ class Entry(Resource):
         #if entry["view"]:
         #    return 404
 
-        # TODO: use uid
-        with open(f"{PATH}/static/uploaded/{uid}.json", mode='r') as file:
-            entry = json.load(file)
-             
-            if entry["view"]:
-                return 404
-
-            return entry
+        try:
+            return entries[uid]
+        except Exception:
+            return 404
         
