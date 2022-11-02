@@ -1,6 +1,6 @@
 from typing import Dict, List
 from holiapi.utils import file_contents
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from holiapi.config import config, PATH
 import sqlite3
 import json
@@ -15,7 +15,7 @@ USER_INFO_URL = "https://auth.htl-hl.ac.at/getUserInformation.php?access_token="
 
 USER_DB = f"{PATH}/db/user_database.db"
 
-db = SQLAlchemy()
+#db = SQLAlchemy()
 
 def query_db_results(user_id: str, db = USER_DB) -> Dict[str, List[int]]:
     # use ORM
@@ -50,7 +50,44 @@ class UserInfo():
         self.uploaded = db_results["uploaded"]
         self.favs = db_results["fav"]
 
-def get_user_info(user_info_raw, access_token: str) -> UserInfo:
+#db.Model
+class User():
+    #user_id = db.Column(db.Integer, primary_key=True)
+    # list
+    # stars = db.Column()
+
+    def __init__(self, htl_access_token: str, username: str, user_id: str, htl_class: str, htl_division: str, uploaded=[], favs = []):
+        self.htl_access_token = htl_access_token
+        self.username = username
+        self.user_id = user_id
+        self.htl_class = htl_class
+        self.htl_division = htl_division
+        self.uploaded = uploaded
+        self.favs = favs
+
+    def set_uploaded_and_favs(self, db_results: Dict[str, List[int]]):
+        self.uploaded = db_results["uploaded"]
+        self.favs = db_results["fav"]
+
+    def is_admin(self):
+        return self.user_id in config.admin_ids
+    
+    def is_banned(self):
+        return self.user_id in config.banned_ids
+
+    def as_dict(self):
+        return {
+            "htl_access_token": self.htl_access_token,
+            "username": self.username,
+            "user_id": self.user_id,
+            "htl_class": self.htl_class,
+            "htl_division": self.htl_division,
+            "uploaded": self.uploaded,
+            "favs": self.favs
+        }
+
+
+def get_user_from_raw(user_info_raw, access_token: str) -> User:
     # TODO: remember
     
     # personal name
@@ -74,91 +111,7 @@ def get_user_info(user_info_raw, access_token: str) -> UserInfo:
     if htl_division == "L":
         return None
 
-    # root (HTBL)
+    # root, useless (HTBL) 
     htl_type = htl_related_ids[3][2:]
 
-
-    return UserInfo(access_token, username, user_id, htl_class, htl_division, htl_type)
-
-#db.Model
-class User():
-    #user_id = db.Column(db.Integer, primary_key=True)
-    # list
-    # stars = db.Column()
-
-    def __init__(self, user_info):
-        self.id = {
-            "username": user_info.username,
-            "token": user_info.id,
-            "user_id": user_info.user_id,
-            "htl_class": user_info.htl_class,
-            "htl_division": user_info.htl_division,
-            "htl_type": user_info.htl_type,
-            "uploaded": user_info.uploaded,
-            "favs": user_info.favs
-        }
-
-    def is_admin(self):
-        return self.id["user_id"] in config.admin_ids
-    
-    def is_banned(self):
-        return self.id["user_id"] in config.banned_ids
-
-# TODO: use flask-jwt-extended!
-def authenticate(username, code):
-    # auth with htlhl
-    print(f"received code: {code}")
-#
-    #payload = {
-    #    "client_id": CLIENT_ID,
-    #    "client_secret": CLIENT_SECRET,
-    #    "grant_type": GRANT_TYPE,
-    #    "code": code,
-    #    "redirect_uri": REDIRECT_URI,
-    #}
-#
-    #answer = requests.post(TOKEN_URL, json=payload)
-    #if not answer:
-    #    return
-#
-    #token = answer.json()["access_token"]
-#
-    #user_info_raw = requests.get(f"{USER_INFO_URL}{token}").json()
-
-    # TODO: remember
-    user_info_raw = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
-    token = "asdfas"
-
-    user_info = get_user_info(user_info_raw, token)
-
-    # attaining user_info was not successful
-    if not user_info:
-        return
-
-    #user_info = get_user_info("remember")
-
-    # if user is banned, doyn't authenticate
-    if user_info.user_id in config.banned_ids:
-        return
-
-    user_info.set_uploaded_and_favs(query_db_results(user_info.user_id))
-    return User(user_info)
-
-def identity(payload):
-    user_info_dict = payload['identity']
-
-    # appending uploaded entry uids to current_identity does not add it "globally"
-    # modify payload?
-    uploaded_and_favs = query_db_results(user_info_dict["user_id"])
-    return User(
-        UserInfo(
-            access_token=user_info_dict["token"],
-            username=user_info_dict["username"],
-            user_id=user_info_dict["user_id"],
-            htl_class=user_info_dict["htl_class"],
-            htl_division=user_info_dict["htl_division"],
-            htl_type=user_info_dict["htl_type"],
-            uploaded=uploaded_and_favs["uploaded"],
-            favs=uploaded_and_favs["fav"]
-        )
-    )
+    return User(access_token, username, user_id, htl_class, htl_division, htl_type)

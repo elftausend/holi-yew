@@ -35,7 +35,7 @@ where
     //.fetch_mode_no_cors();
 
     if let Some(token) = get_jwt() {
-        builder = builder.header("Authorization", format!("JWT {token}"));
+        builder = builder.header("Authorization", format!("Bearer {token}"));
     }
 
     if allow_body {

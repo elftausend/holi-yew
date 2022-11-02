@@ -5,7 +5,7 @@ from holiapi import utils
 from holiapi.entries import filter_tags
 from flask import jsonify
 from flask_restful import Resource, request
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 from holiapi.utils import entries
 from holiapi.config import PATH
 

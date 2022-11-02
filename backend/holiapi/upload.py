@@ -1,6 +1,6 @@
 import hashlib
 from flask_restful import Resource, request
-from flask_jwt import jwt_required, current_identity
+from flask_jwt_extended import jwt_required, current_user
 from datetime import date
 from holiapi import utils
 from typing import List
@@ -20,14 +20,14 @@ MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
 
 def add_upload_id_to_db(upload_id: int, user: User):
-    user.id["uploaded"].append(upload_id)
+    user.uploaded.append(upload_id)
 
     entry_info = {
-        "uploaded": user.id["uploaded"],
-        "fav": user.id["favs"]
+        "uploaded": user.uploaded,
+        "fav": user.favs
     }
 
-    write_entry_info_to_db(user.id["user_id"], entry_info)
+    write_entry_info_to_db(user.user_id, entry_info)
 
 class UploadMsgs():
     missing_file = ""
@@ -100,10 +100,10 @@ class UploadDetails:
         split_tags = tags.split()
         split_tags.append(date)
         # append division of user
-        split_tags.append(user.id["htl_division"])
+        split_tags.append(user.htl_division)
         self.tags = split_tags
 
-        self.uploader = user.id["user_id"]
+        self.uploader = user.user_id
         
         self.uid = config.total_uploads
         config.total_uploads += 1
@@ -195,15 +195,15 @@ class Upload(Resource):
 
         upload = UploadDetails(
             file, title, current_date, 
-            tags, current_identity
+            tags, current_user
         )
 
         self.handle_upload(upload)
         msg.successful_upload = SUCCESSFUL_UPLOAD
 
-        log(f"{upload.uploader}/{current_identity.id['username']}/{current_identity.id['htl_class']} uploaded entry called '{title}' with tags '{tags}' and hash '{file.hash}/{upload.uid}'.")
-        add_upload_id_to_db(upload.uid, current_identity)
-        print(f"added to own ups?: {current_identity.id['uploaded']}")
+        log(f"{upload.uploader}/{current_user.username}/{current_user.htl_class} uploaded entry called '{title}' with tags '{tags}' and hash '{file.hash}/{upload.uid}'.")
+        add_upload_id_to_db(upload.uid, current_user)
+        print(f"added to own ups?: {current_user.uploaded}")
 
         return msg.as_json()
     

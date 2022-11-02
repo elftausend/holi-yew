@@ -1,6 +1,6 @@
 from holiapi.upload import UploadMsgs, MISSING_TAGS, MISSING_TITLE, save_upload_dict_as_json
 from flask_restful import Resource, request
-from flask_jwt import jwt_required, current_identity
+from flask_jwt_extended import jwt_required, current_user
 from holiapi.utils import entries
 from holiapi.logger import log
 from holiapi.user import User
@@ -22,7 +22,7 @@ class EditEntry(Resource):
             return 400
 
         # has not uploaded this entry    
-        if not (uid in current_identity.id["uploaded"]) and not current_identity.is_admin():
+        if not (uid in current_user.uploaded) and not current_user.is_admin():
             return 400
 
         return entries[uid]
@@ -41,7 +41,7 @@ class EditEntry(Resource):
             return 400
 
         # has not uploaded this entry    
-        if not (uid in current_identity.id["uploaded"]) and not current_identity.is_admin():
+        if not (uid in current_user.uploaded) and not current_user.is_admin():
             return 400
 
         json_data = request.get_json(force=True)
@@ -66,7 +66,7 @@ class EditEntry(Resource):
         entry["tags"] = tags.split()
         
         save_upload_dict_as_json(entry, uid)
-        log(f"{current_identity.id['user_id']}/{current_identity.id['username']}/{current_identity.id['htl_class']} edited entry uid={uid}, title=({title}), tags=({tags}).")
+        log(f"{current_user.user_id}/{current_user.username}/{current_user.htl_class} edited entry uid={uid}, title=({title}), tags=({tags}).")
         
         msg.successful_upload = "Die Änderungen wurden abgespeichert!"
         return msg.as_json()
@@ -76,7 +76,7 @@ def get_editable_entries(user: User):
     if user.is_admin():
         return entries
 
-    uploaded_entry_ids = user.id["uploaded"]
+    uploaded_entry_ids = user.uploaded
     print(f"uploaded_entry_ids: {uploaded_entry_ids}")
     
     own_entries = {}
@@ -89,7 +89,7 @@ def get_editable_entries(user: User):
 class EditEntries(Resource):
     decorators = [jwt_required(), limiter.limit("40/second")]
     def get(self):
-        own_entries = get_editable_entries(current_identity)        
+        own_entries = get_editable_entries(current_user)
 
         page = 0
         if request.args.get("page"):
