@@ -13,11 +13,7 @@ pub async fn get<R: DeserializeOwned>(url: &str) -> R {
         .unwrap()
 }
 
-pub async fn request<B, T>(
-    method: reqwest::Method,
-    url: &str,
-    body: B,
-) -> Result<T, HoliError>
+pub async fn request<B, T>(method: reqwest::Method, url: &str, body: B) -> Result<T, HoliError>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug,
     B: Serialize + std::fmt::Debug,

@@ -40,12 +40,7 @@ pub async fn get_entry(uid: i32) -> Result<EntryInfo, HoliError> {
 }
 
 pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
-    request(
-        Method::GET,
-        &format!("entries?page={page}&tags={tags}"),
-        (),
-    )
-    .await
+    request(Method::GET, &format!("entries?page={page}&tags={tags}"), ()).await
 }
 
 #[function_component(Entries)]
@@ -72,10 +67,7 @@ pub fn entries() -> Html {
 
                 // scroll to search bar
                 if search_query.scroll_to_bar {
-                    let doc = window()
-                        .unwrap()
-                        .document()
-                        .unwrap();
+                    let doc = window().unwrap().document().unwrap();
 
                     if let Some(search) = doc.get_element_by_id("search_field") {
                         search.scroll_into_view();
@@ -97,7 +89,6 @@ pub fn entries() -> Html {
                         if search_query.page > page_count {
                             log::info!("invalid page");
                         }
-
 
                         //if let Ok(entry_count) = get_entry_count().await {
                         //    total_pages.set(entry_count.entry_count / *ENTRIES_ON_PAGE);

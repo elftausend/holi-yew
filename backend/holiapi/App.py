@@ -8,6 +8,7 @@ from flask_jwt_extended import JWTManager, jwt_required, current_user, create_ac
 
 from holiapi.entries.entries import Entries, Entry, EntryCount
 from holiapi.entries.edit import EditEntries, EditEntry
+from holiapi.entries.delete import DeleteEntry
 from holiapi.upload import *
 from holiapi.user import *
 
@@ -130,6 +131,7 @@ def init_and_run():
     api.add_resource(Upload, '/upload')
     api.add_resource(EditEntries, "/editable_entries")
     api.add_resource(EditEntry, "/edit_entry")
+    api.add_resource(DeleteEntry, "/delete")
 
     from holiapi.db.setup_db import create_user_db
     create_user_db()

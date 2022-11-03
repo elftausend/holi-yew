@@ -140,14 +140,16 @@ pub fn edit_upload() -> Html {
             let history = history.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 if let Some(uid) = *uid {
-                    if let Err(_) = request::<(), ()>(reqwest::Method::POST, &format!("delete/?uid={uid}"), ()).await {
+                    if let Err(_) =
+                        request::<(), ()>(reqwest::Method::POST, &format!("delete?uid={uid}"), ())
+                            .await
+                    {
                         delete_error.set(FAILED_DELETE_MSG.to_string())
                     } else {
                         history.push(Route::Edit);
                     }
                 }
             });
-            
         })
     };
 

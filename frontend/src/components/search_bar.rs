@@ -38,10 +38,14 @@ pub struct Props {
 }
 
 fn close_list() {
-    let list_items = document().get_elements_by_class_name("autocomplete-items"); 
+    let list_items = document().get_elements_by_class_name("autocomplete-items");
     for i in 0..list_items.length() {
         let list_item = list_items.item(i).unwrap();
-        list_item.parent_node().unwrap().remove_child(&list_item).unwrap();
+        list_item
+            .parent_node()
+            .unwrap()
+            .remove_child(&list_item)
+            .unwrap();
     }
 }
 
@@ -73,14 +77,15 @@ pub fn search_bar(props: &Props) -> Html {
     let current_focus = use_state(|| 0);
 
     use_mount(|| {
-        let testing_ipts = ["Test", "Hallo", "Spannend", "Alphabet", "Custos", "Test2", "Testok"];
+        let testing_ipts = [
+            "Test", "Hallo", "Spannend", "Alphabet", "Custos", "Test2", "Testok",
+        ];
 
         let search_field: HtmlInputElement = document()
             .get_element_by_id("search_field")
             .unwrap()
             .unchecked_into();
 
-        
         let click_tag = {
             let search_field = search_field.clone();
             Closure::wrap(Box::new(move |e: MouseEvent| {
@@ -128,14 +133,14 @@ pub fn search_bar(props: &Props) -> Html {
                             input
                         ));
                         let search_field = search_field.clone();
-                        
+
                         div.add_event_listener_with_callback(
                             "click",
                             click_tag.as_ref().unchecked_ref(),
-                        ).unwrap();
+                        )
+                        .unwrap();
 
                         list_div.append_child(&div).unwrap();
-                        
                     }
                 }
             }) as Box<dyn FnMut(_)>)
@@ -148,8 +153,6 @@ pub fn search_bar(props: &Props) -> Html {
             .unwrap();
         input_callback.forget();
     });
-
-    
 
     let on_input_change = {
         let props = props.clone();
