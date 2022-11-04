@@ -1,3 +1,6 @@
+mod unique_tag;
+pub use unique_tag::*;
+
 use gloo_net::http::Request;
 use serde::{de::DeserializeOwned, Serialize};
 

@@ -13,7 +13,6 @@ pub struct Props {
 pub fn auth(props: &Props) -> Html {
     let user_ctx = use_user_context();
     let logged_in = use_state(|| false);
-    let user_ctx_check = user_ctx.clone();
 
     {
         let logged_in = logged_in.clone();

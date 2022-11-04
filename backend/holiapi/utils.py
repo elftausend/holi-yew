@@ -84,5 +84,4 @@ def is_hash_in_file(hash: str) -> bool:
         if hash in value["hash"]:
             return True
     return False
-
     

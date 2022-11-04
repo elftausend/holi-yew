@@ -1,13 +1,12 @@
 use gloo::utils::document;
-use js_sys::Function;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::Closure, JsCast};
-use web_sys::{HtmlInputElement, HtmlElement};
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, History, AnyHistory};
 
-use crate::routes::Route;
+use crate::{routes::Route, api::get_unique_tags};
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct SearchQuery {
@@ -69,6 +68,7 @@ fn update_search(history: AnyHistory, value: String, tag_input: UseStateHandle<S
 
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
+    let unique_tags = use_state(Vec::new);
     let tag_input = use_state(SearchBarInput::default);
     let page = props.search_info.page;
     let history = use_history().unwrap();
@@ -95,13 +95,29 @@ pub fn search_bar(props: &Props) -> Html {
     let current_focus = use_state(|| 0);
 
     {
+        let unique_tags = unique_tags.clone();
+        use_mount(move || {
+            wasm_bindgen_futures::spawn_local(async move {
+                let tags = get_unique_tags().await.unwrap();
+                log::info!("tags: {tags:?}");
+                let Ok(mut tags) = get_unique_tags().await else {
+                    return;
+                };
+                tags.sort_by(|a, b| b.count.cmp(&a.count));
+                unique_tags.set(tags);
+
+            });
+        });
+    }
+
+    {
+        let unique_tags1 = unique_tags.clone();
         let history = history.clone();
         let tag_input = tag_input.clone();
         let props = props.clone();
-        use_mount(move || {
-            let testing_ipts = [
-                "Test", "Hallo", "Spannend", "Alphabet", "Custos", "Test2", "Testok",
-            ];
+        
+        use_effect_with_deps(move |_| {
+            let tags = (*unique_tags1).clone();
 
             let search_field: HtmlInputElement = document()
                 .get_element_by_id("search_field")
@@ -111,6 +127,7 @@ pub fn search_bar(props: &Props) -> Html {
             let input_callback = {
                 let search_field = search_field.clone();
                 Closure::wrap(Box::new(move |input: InputEvent| {
+                    let tags = tags.clone();
                     let value = search_field.value();
 
                     close_list();
@@ -134,8 +151,21 @@ pub fn search_bar(props: &Props) -> Html {
 
                     
                     let mut idx = 0;
-                    for input in testing_ipts {
+                    for tag in tags {
+
+                        let input = tag.name;
+                        let splitted = value.split(' ');
+                        
+                        let Some(value) = splitted.last() else {
+                            continue;
+                        };
+
+                        if value == "" {
+                            continue;
+                        }
+
                         let tag_input = tag_input.clone();
+                        
                         if value.len() > input.len() {
                             continue;
                         }
@@ -146,11 +176,13 @@ pub fn search_bar(props: &Props) -> Html {
                             div.set_inner_html(&format!(
                                 "
                                     <strong>{}</strong>{}
+                                    {tag_count}
                                     <input type='hidden' value='{}'/>
                                 ",
                                 &input[..value.len()],
                                 &input[value.len()..],
-                                input
+                                input,
+                                tag_count=format!(r#"<span style="float=right; color:violet"> ({}) </span>"#, tag.count)
                             ));
                             let search_field = search_field.clone();
 
@@ -159,15 +191,26 @@ pub fn search_bar(props: &Props) -> Html {
                                 let search_field = search_field.clone();
                                 let props = props.clone();
                                 let history = history.clone();
+                                let value = value.to_string();
+
                                 Closure::wrap(Box::new(move |_e: MouseEvent| {
                                     let props = props.clone();
                                     let list_input: HtmlInputElement = document().get_elements_by_tag_name("input").get_with_index(idx as u32).unwrap().unchecked_into();
                                     //let list_input: HtmlInputElement = e.target_unchecked_into();
-                                    update_search(history.clone(), list_input.value(), tag_input.clone(), props.clone());
+
+                                    let tags = search_field.value();
+
+                                    // removes the pre-autocompletion input
+                                    let mut tags = tags[..tags.len()-value.len()].to_string();
+                                    
+                                    tags.push_str(&format!("{} ", list_input.value()));
+
+                                    update_search(history.clone(), tags, tag_input.clone(), props.clone());
+
+                                    close_list();
 
                                 }) as Box<dyn FnMut(_)>)
                             };
-
 
                             div.add_event_listener_with_callback(
                                 "click",
@@ -188,7 +231,8 @@ pub fn search_bar(props: &Props) -> Html {
                 //.add_event_listener_with_callback("input", callback.)
                 .unwrap();
             input_callback.forget();
-        });
+            || {}
+        }, unique_tags.clone());
     }
 
     let on_input_change = {
