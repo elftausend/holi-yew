@@ -74,6 +74,35 @@ fn update_search(
     tag_input.set(info);
 }
 
+fn mount_tags(unique_tags: UseStateHandle<Vec<UniqueTag>>) {
+    use_mount(|| {
+        wasm_bindgen_futures::spawn_local(async move {
+            let tags = get_unique_tags().await.unwrap();
+            log::info!("tags: {tags:?}");
+            let Ok(mut tags) = get_unique_tags().await else {
+                return;
+            };
+            tags.sort_by(|a, b| b.count.cmp(&a.count));
+            unique_tags.set(tags);
+        });
+    });
+}
+
+fn on_search_callback(history: AnyHistory, props: Props, tag_input: UseStateHandle<SearchBarInput>) -> Callback<MouseEvent> {
+    Callback::from(move |e: MouseEvent| {
+        e.prevent_default();
+        history
+            .push_with_query(
+                props.route.clone(),
+                SearchQuery {
+                    page: props.search_info.page,
+                    tags: tag_input.tags.clone(),
+                    scroll_to_bar: false,
+                },
+            )
+            .unwrap();
+    })
+}
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
     let unique_tags = use_state(Vec::new);
@@ -81,41 +110,12 @@ pub fn search_bar(props: &Props) -> Html {
     let page = props.search_info.page;
     let history = use_history().unwrap();
 
-    let on_search = {
-        let props = props.clone();
-        let history = history.clone();
-        let tag_input = tag_input.clone();
-        Callback::from(move |e: MouseEvent| {
-            e.prevent_default();
-            history
-                .push_with_query(
-                    props.route.clone(),
-                    SearchQuery {
-                        page,
-                        tags: tag_input.tags.clone(),
-                        scroll_to_bar: false,
-                    },
-                )
-                .unwrap();
-        })
-    };
-
+    
     let current_focus = use_state(|| 0);
+    
+    let on_search = on_search_callback(history.clone(), props.clone(), tag_input.clone());
 
-    {
-        let unique_tags = unique_tags.clone();
-        use_mount(move || {
-            wasm_bindgen_futures::spawn_local(async move {
-                let tags = get_unique_tags().await.unwrap();
-                log::info!("tags: {tags:?}");
-                let Ok(mut tags) = get_unique_tags().await else {
-                    return;
-                };
-                tags.sort_by(|a, b| b.count.cmp(&a.count));
-                unique_tags.set(tags);
-            });
-        });
-    }
+    mount_tags(unique_tags.clone());
 
     {
         let unique_tags1 = unique_tags.clone();
@@ -161,7 +161,7 @@ pub fn search_bar(props: &Props) -> Html {
 
                         let mut idx = 0;
                         for tag in tags {
-                            let Some(div) = create_tag_div_if_match(value.clone(), tag.clone()) else {
+                            let Some(div) = create_tag_div_if_match(&value, &tag) else {
                                 continue;
                             };
 
@@ -190,7 +190,7 @@ pub fn search_bar(props: &Props) -> Html {
                             list_div.append_child(&div).unwrap();
                             // unsorted_tag_divs.push((div, tag.count));
                             click_tag.forget();
-                      
+
                         }
 
                         //unsorted_tag_divs.sort_by(|a, b| b.1.cmp(&a.1));
@@ -302,8 +302,8 @@ pub fn click_tag(
     }) as Box<dyn FnMut(MouseEvent)>)
 }
 
-pub fn create_tag_div_if_match(value: String, tag: UniqueTag) -> Option<Element> {
-    let input = tag.name;
+pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> {
+    let input = &tag.name;
     let splitted = value.split(' ');
 
     let Some(value) = splitted.last() else {

@@ -20,6 +20,29 @@ pub async fn get_edit_entry(uid: i32) -> Result<EntryInfo, HoliError> {
     request(Method::GET, &format!("edit_entry?uid={uid}"), ()).await
 }
 
+fn mount_entry_to_edit(history: AnyHistory, edit_info: UseStateHandle<EditInfo>, uid: UseStateHandle<Option<i32>>) {
+    use_mount(move || {
+        wasm_bindgen_futures::spawn_local(async move {
+            let hash = history.location().query::<HashQuery>().unwrap_or_default();
+            uid.set(Some(hash.uid));
+            if let Ok(entry) = get_edit_entry(hash.uid).await {
+                log::info!("EDIT ENTRY {entry:?}");
+                edit_info.set(EditInfo {
+                    title: entry.title,
+                    tags: entry
+                        .tags
+                        .iter()
+                        .map(|tag| format!("{tag} "))
+                        .collect::<String>(),
+                })
+            } else {
+                edit_info.set(EditInfo::default());
+                history.back();
+            }
+        });
+    });
+}
+
 #[function_component(EditUpload)]
 pub fn edit_upload() -> Html {
     let history = use_history().unwrap();
@@ -29,33 +52,9 @@ pub fn edit_upload() -> Html {
     let delete_error = use_state(String::default);
     let uid = use_state(|| None);
 
+    mount_entry_to_edit(history.clone(), edit_info.clone(), uid.clone());
+
     let location = use_location().unwrap();
-    {
-        let location = location.clone();
-        let edit_info = edit_info.clone();
-        let history = history.clone();
-        let uid = uid.clone();
-        use_mount(move || {
-            wasm_bindgen_futures::spawn_local(async move {
-                let hash = location.query::<HashQuery>().unwrap_or_default();
-                uid.set(Some(hash.uid));
-                if let Ok(entry) = get_edit_entry(hash.uid).await {
-                    log::info!("EDIT ENTRY {entry:?}");
-                    edit_info.set(EditInfo {
-                        title: entry.title,
-                        tags: entry
-                            .tags
-                            .iter()
-                            .map(|tag| format!("{tag} "))
-                            .collect::<String>(),
-                    })
-                } else {
-                    edit_info.set(EditInfo::default());
-                    history.back();
-                }
-            });
-        });
-    }
 
     let on_title_input = {
         let edit_info = edit_info.clone();
