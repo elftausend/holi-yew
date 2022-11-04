@@ -1,7 +1,9 @@
+use std::cell::RefCell;
+
 use gloo::utils::document;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{closure::WasmClosure, convert::FromWasmAbi, prelude::Closure, JsCast};
-use web_sys::{Element, HtmlInputElement};
+use web_sys::{Element, HtmlCollection, HtmlInputElement};
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, AnyHistory, History};
@@ -88,7 +90,11 @@ fn mount_tags(unique_tags: UseStateHandle<Vec<UniqueTag>>) {
     });
 }
 
-fn on_search_callback(history: AnyHistory, props: Props, tag_input: UseStateHandle<SearchBarInput>) -> Callback<MouseEvent> {
+fn on_search_callback(
+    history: AnyHistory,
+    props: Props,
+    tag_input: UseStateHandle<SearchBarInput>,
+) -> Callback<MouseEvent> {
     Callback::from(move |e: MouseEvent| {
         e.prevent_default();
         history
@@ -110,9 +116,6 @@ pub fn search_bar(props: &Props) -> Html {
     let page = props.search_info.page;
     let history = use_history().unwrap();
 
-    
-    let current_focus = use_state(|| 0);
-    
     let on_search = on_search_callback(history.clone(), props.clone(), tag_input.clone());
 
     mount_tags(unique_tags.clone());
@@ -125,6 +128,8 @@ pub fn search_bar(props: &Props) -> Html {
 
         use_effect_with_deps(
             move |_| {
+                let current_focus = RefCell::new(-1);
+
                 let tags = (*unique_tags1).clone();
 
                 let search_field: HtmlInputElement = document()
@@ -190,7 +195,6 @@ pub fn search_bar(props: &Props) -> Html {
                             list_div.append_child(&div).unwrap();
                             // unsorted_tag_divs.push((div, tag.count));
                             click_tag.forget();
-
                         }
 
                         //unsorted_tag_divs.sort_by(|a, b| b.1.cmp(&a.1));
@@ -209,6 +213,18 @@ pub fn search_bar(props: &Props) -> Html {
                     //.add_event_listener_with_callback("input", callback.)
                     .unwrap();
                 input_callback.forget();
+
+                let keydown_callback =
+                    searchbar_keydown(search_field.clone(), current_focus);
+
+                search_field
+                    .add_event_listener_with_callback(
+                        "keydown",
+                        keydown_callback.as_ref().unchecked_ref(),
+                    )
+                    .unwrap();
+
+                keydown_callback.forget();
                 || {}
             },
             unique_tags.clone(),
@@ -219,7 +235,7 @@ pub fn search_bar(props: &Props) -> Html {
         let props = props.clone();
         let history = history.clone();
         let tag_input = tag_input.clone();
-        let current_focus = current_focus.clone();
+        //let current_focus = current_focus.clone();
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
@@ -270,6 +286,75 @@ pub fn search_bar(props: &Props) -> Html {
             <button style="width: 80px;" onclick={on_search} id="search_button" class="btn btn-secondary ms-2">{"Suchen"}</button>
             </>
        // </div>
+    }
+}
+
+pub fn searchbar_keydown(
+    search_field: HtmlInputElement,
+    current_focus: RefCell<i32>,
+) -> Closure<dyn FnMut(KeyboardEvent)> {
+    Closure::wrap(Box::new(move |e: KeyboardEvent| {
+        let Some(list) = document().get_element_by_id(&format!("{}autocomplete-list", search_field.id())) else {
+            return;
+        };
+
+        let tags = list.get_elements_by_tag_name("div");
+        if tags.length() == 0 {
+            return;
+        }
+
+        let mut current_focus = current_focus.borrow_mut();
+
+        // down key
+        if e.key_code() == 40 {
+            *current_focus += 1;
+            add_active(&tags, &mut *current_focus);
+
+        } else if e.key_code() == 38 { // up key
+            
+            // prevent moving cursor to the start of the input field.
+            e.prevent_default();
+            *current_focus -= 1;
+            
+            add_active(&tags, &mut *current_focus);
+        }
+    }) as Box<dyn FnMut(KeyboardEvent)>)
+}
+
+pub fn add_active(tags: &HtmlCollection, current_focus: &mut i32) {
+    remove_active(tags);
+
+    if *current_focus >= tags.length() as i32 {
+        *current_focus = 0;
+    }
+    if *current_focus < 0 {
+        *current_focus = tags.length() as i32 - 1
+    }
+
+    let Some(tag) = tags.get_with_index(*current_focus as u32) else {
+        return
+    };
+
+    log::info!("focus: {}", current_focus);
+
+    let class_attrs = tag.get_attribute("class").unwrap_or_default();
+
+    tag.set_attribute("class", &format!("{class_attrs} autocomplete-active"))
+        .unwrap();
+}
+
+pub fn remove_active(tags: &HtmlCollection) {
+    for i in 0..tags.length() {
+        let tag = tags.get_with_index(i).unwrap();
+        let class_attrs = tag.get_attribute("class").unwrap_or_default();
+
+        if !class_attrs.ends_with("autocomplete-active") {
+            continue;
+        }
+
+        // removes the 'autocomplete-active' class
+        let class_attrs = &class_attrs[..class_attrs.len() - 19];
+        tag.set_attribute("class", class_attrs).unwrap();
     }
 }
 
