@@ -1,9 +1,9 @@
-use std::cell::RefCell;
+use std::{cell::RefCell, rc::Rc};
 
 use gloo::utils::document;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{closure::WasmClosure, convert::FromWasmAbi, prelude::Closure, JsCast};
-use web_sys::{Element, HtmlCollection, HtmlInputElement};
+use web_sys::{Element, HtmlCollection, HtmlInputElement, HtmlElement};
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, AnyHistory, History};
@@ -128,7 +128,7 @@ pub fn search_bar(props: &Props) -> Html {
 
         use_effect_with_deps(
             move |_| {
-                let current_focus = RefCell::new(-1);
+                let current_focus = Rc::new(RefCell::new(-1));
 
                 let tags = (*unique_tags1).clone();
 
@@ -139,7 +139,10 @@ pub fn search_bar(props: &Props) -> Html {
 
                 let input_callback = {
                     let search_field = search_field.clone();
+                    let current_focus = current_focus.clone();
                     Closure::wrap(Box::new(move |_input: InputEvent| {
+
+                        *current_focus.borrow_mut() = -1;
                         //let mut unsorted_tag_divs = vec![];
 
                         let tags = tags.clone();
@@ -166,6 +169,12 @@ pub fn search_bar(props: &Props) -> Html {
 
                         let mut idx = 0;
                         for tag in tags {
+                            let splitted = value.split(' ');
+
+                            let Some(value) = splitted.last() else {
+                                continue;
+                            };
+
                             let Some(div) = create_tag_div_if_match(&value, &tag) else {
                                 continue;
                             };
@@ -214,8 +223,7 @@ pub fn search_bar(props: &Props) -> Html {
                     .unwrap();
                 input_callback.forget();
 
-                let keydown_callback =
-                    searchbar_keydown(search_field.clone(), current_focus);
+                let keydown_callback = searchbar_keydown(search_field.clone(), current_focus);
 
                 search_field
                     .add_event_listener_with_callback(
@@ -248,7 +256,9 @@ pub fn search_bar(props: &Props) -> Html {
         })
     };
 
-    let onkeypress = {
+    // TODO: conflicts with tag ??
+    /*let onkeypress = {
+        let props = props.clone();
         Callback::from(move |e: KeyboardEvent| {
             // check for enter key
             if e.key_code() != 13 {
@@ -257,7 +267,7 @@ pub fn search_bar(props: &Props) -> Html {
 
             history
                 .push_with_query(
-                    Route::Entries,
+                    props.route.clone(),
                     SearchQuery {
                         page,
                         tags: tag_input.tags.clone(),
@@ -266,7 +276,7 @@ pub fn search_bar(props: &Props) -> Html {
                 )
                 .unwrap();
         })
-    };
+    };*/
 
     html! {
         <>
@@ -274,7 +284,7 @@ pub fn search_bar(props: &Props) -> Html {
            <div class="autocomplete">
             <input autocomplete="off"
                 value={props.search_info.tags.clone()}
-                onkeypress={onkeypress}
+                //onkeypress={onkeypress}
                 oninput={on_input_change}
                 id="search_field"
                 class="form-control input-field"
@@ -291,7 +301,7 @@ pub fn search_bar(props: &Props) -> Html {
 
 pub fn searchbar_keydown(
     search_field: HtmlInputElement,
-    current_focus: RefCell<i32>,
+    current_focus: Rc<RefCell<i32>>,
 ) -> Closure<dyn FnMut(KeyboardEvent)> {
     Closure::wrap(Box::new(move |e: KeyboardEvent| {
         let Some(list) = document().get_element_by_id(&format!("{}autocomplete-list", search_field.id())) else {
@@ -304,19 +314,33 @@ pub fn searchbar_keydown(
         }
 
         let mut current_focus = current_focus.borrow_mut();
+        log::info!("focus: {}", current_focus);
 
         // down key
         if e.key_code() == 40 {
             *current_focus += 1;
             add_active(&tags, &mut *current_focus);
+        } else if e.key_code() == 38 {
+            // up key
 
-        } else if e.key_code() == 38 { // up key
-            
             // prevent moving cursor to the start of the input field.
             e.prevent_default();
             *current_focus -= 1;
-            
+
             add_active(&tags, &mut *current_focus);
+        } else if e.key_code() == 13 {
+            // enter
+            e.prevent_default();
+
+            // update route
+            if *current_focus == -1 {
+
+            } else {
+                let tag: HtmlElement = tags.get_with_index(*current_focus as u32).unwrap().unchecked_into();
+                tag.click();
+                *current_focus = -1;
+                
+            }
         }
     }) as Box<dyn FnMut(KeyboardEvent)>)
 }
@@ -335,26 +359,16 @@ pub fn add_active(tags: &HtmlCollection, current_focus: &mut i32) {
         return
     };
 
-    log::info!("focus: {}", current_focus);
-
-    let class_attrs = tag.get_attribute("class").unwrap_or_default();
-
-    tag.set_attribute("class", &format!("{class_attrs} autocomplete-active"))
-        .unwrap();
+    tag.class_list().add_1("autocomplete-active").unwrap_or_default();
 }
 
 pub fn remove_active(tags: &HtmlCollection) {
     for i in 0..tags.length() {
-        let tag = tags.get_with_index(i).unwrap();
-        let class_attrs = tag.get_attribute("class").unwrap_or_default();
-
-        if !class_attrs.ends_with("autocomplete-active") {
-            continue;
-        }
-
-        // removes the 'autocomplete-active' class
-        let class_attrs = &class_attrs[..class_attrs.len() - 19];
-        tag.set_attribute("class", class_attrs).unwrap();
+        tags.get_with_index(i)
+            .unwrap()
+            .class_list()
+            .remove_1("autocomplete-active")
+            .unwrap_or_default();
     }
 }
 
@@ -389,12 +403,7 @@ pub fn click_tag(
 
 pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> {
     let input = &tag.name;
-    let splitted = value.split(' ');
-
-    let Some(value) = splitted.last() else {
-        return None;
-    };
-
+    
     if value == "" {
         return None;
     }
