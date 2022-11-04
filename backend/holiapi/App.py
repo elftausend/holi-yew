@@ -118,6 +118,8 @@ def init_and_run():
 
     #app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///user.db"
     app.config["JWT_SECRET_KEY"] = os.urandom(32)
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=24*60*7)
+    
     #app.config["JWT_EXPIRATION_DELTA"] = datetime.timedelta(minutes=24*60*7)
     #app.config["JWT_AUTH_PASSWORD_KEY"] = "code"
     #app.config["JWT_AUTH_URL_RULE"] = "/api/auth"
