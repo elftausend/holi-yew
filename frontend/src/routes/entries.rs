@@ -26,6 +26,12 @@ pub struct EntryInfo {
     pub hash: String,
 }
 
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+pub struct EntriesWithPages {
+    entries: Vec<EntryInfo>,
+    page_count: u64,
+}
+
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct EntryCount {
     entry_count: u64,
@@ -40,6 +46,10 @@ pub async fn get_entry(uid: i32) -> Result<EntryInfo, HoliError> {
 }
 
 pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
+    request(Method::GET, &format!("entries?page={page}&tags={tags}"), ()).await
+}
+
+pub async fn get_entries_with_total(page: u64, tags: &str) -> Result<EntriesWithPages, HoliError> {
     request(Method::GET, &format!("entries?page={page}&tags={tags}"), ()).await
 }
 
@@ -80,21 +90,21 @@ pub fn entries() -> Html {
 
                 wasm_bindgen_futures::spawn_local(async move {
                     if let Ok(mut api_entries) =
-                        get_entries(search_query.page, &search_query.tags).await
+                        get_entries_with_total(search_query.page, &search_query.tags).await
                     {
-                        api_entries.sort_by(|a, b| b.uid.cmp(&a.uid));
-                        let page_count = api_entries.len() as u64 / *ENTRIES_ON_PAGE;
-                        total_pages.set(page_count);
-
-                        if search_query.page > page_count {
-                            log::info!("invalid page");
-                        }
+                        api_entries.entries.sort_by(|a, b| b.uid.cmp(&a.uid));
+                        total_pages.set(api_entries.page_count);
+                        //let page_count = api_entries.len() as u64 / *ENTRIES_ON_PAGE;
+                        //total_pages.set(page_count);
+                        //if search_query.page > page_count {
+                        //    log::info!("invalid page");
+                        //}
 
                         //if let Ok(entry_count) = get_entry_count().await {
                         //    total_pages.set(entry_count.entry_count / *ENTRIES_ON_PAGE);
                         //}
 
-                        entries.set(api_entries);
+                        entries.set(api_entries.entries);
                     } else {
                         // else: probably an invalid page
 

@@ -3,7 +3,7 @@ use std::{cell::RefCell, rc::Rc};
 use gloo::utils::document;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{closure::WasmClosure, convert::FromWasmAbi, prelude::Closure, JsCast};
-use web_sys::{Element, HtmlCollection, HtmlInputElement, HtmlElement};
+use web_sys::{Element, HtmlCollection, HtmlElement, HtmlInputElement};
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, AnyHistory, History};
@@ -112,7 +112,9 @@ fn on_search_callback(
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
     let unique_tags = use_state(Vec::new);
-    let tag_input = use_state(SearchBarInput::default);
+    let tag_input = use_state(|| SearchBarInput {
+        tags: props.search_info.tags.clone(),
+    });
     let page = props.search_info.page;
     let history = use_history().unwrap();
 
@@ -141,7 +143,6 @@ pub fn search_bar(props: &Props) -> Html {
                     let search_field = search_field.clone();
                     let current_focus = current_focus.clone();
                     Closure::wrap(Box::new(move |_input: InputEvent| {
-
                         *current_focus.borrow_mut() = -1;
                         //let mut unsorted_tag_divs = vec![];
 
@@ -169,15 +170,20 @@ pub fn search_bar(props: &Props) -> Html {
 
                         let mut idx = 0;
                         for tag in tags {
-                            let splitted_inputs = value.split(' ').collect::<Vec<&str>>();
+                            let selection_start = search_field.selection_start().unwrap().unwrap();
+
+                            log::info!("{selection_start:?}");
+                            let split_inputs = value.split(' ').collect::<Vec<&str>>();
+
+                            let tag_pos = tag_idx_at_cursor(selection_start, &split_inputs);
 
                             // if a tag was already written in the search field, then
                             // do not add this tag to the tag autocompletion again
-                            if is_tag_in_search_bar(&splitted_inputs, &tag) {
+                            if is_tag_in_search_bar(&split_inputs, &tag) {
                                 continue;
                             }
 
-                            let Some(value) = splitted_inputs.last() else {
+                            let Some(value) = split_inputs.get(tag_pos) else {
                                 continue;
                             };
 
@@ -198,7 +204,7 @@ pub fn search_bar(props: &Props) -> Html {
                                 search_field.clone(),
                                 tag_input.clone(),
                                 idx,
-                                value.to_string(),
+                                tag_pos,
                             );
 
                             div.add_event_listener_with_callback(
@@ -230,14 +236,13 @@ pub fn search_bar(props: &Props) -> Html {
                 input_callback.forget();
 
                 let keydown_callback = searchbar_keydown(search_field.clone(), current_focus);
-
+                
                 search_field
                     .add_event_listener_with_callback(
                         "keydown",
                         keydown_callback.as_ref().unchecked_ref(),
                     )
                     .unwrap();
-
                 keydown_callback.forget();
                 || {}
             },
@@ -253,12 +258,15 @@ pub fn search_bar(props: &Props) -> Html {
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            update_search(
+            let mut tags = (*tag_input).clone();
+            tags.tags = input.value();
+            tag_input.set(tags);
+            /*update_search(
                 history.clone(),
                 input.value(),
                 tag_input.clone(),
                 props.clone(),
-            );
+            );*/
         })
     };
 
@@ -289,7 +297,7 @@ pub fn search_bar(props: &Props) -> Html {
         //<div class="d-flex mt-4 mb-4">
            <div class="autocomplete">
             <input autocomplete="off"
-                value={props.search_info.tags.clone()}
+                value={tag_input.tags.clone()}
                 //onkeypress={onkeypress}
                 oninput={on_input_change}
                 id="search_field"
@@ -340,12 +348,13 @@ pub fn searchbar_keydown(
 
             // could update route
             if *current_focus == -1 {
-
             } else {
-                let tag: HtmlElement = tags.get_with_index(*current_focus as u32).unwrap().unchecked_into();
+                let tag: HtmlElement = tags
+                    .get_with_index(*current_focus as u32)
+                    .unwrap()
+                    .unchecked_into();
                 tag.click();
                 *current_focus = -1;
-                
             }
         }
     }) as Box<dyn FnMut(KeyboardEvent)>)
@@ -365,7 +374,9 @@ pub fn add_active(tags: &HtmlCollection, current_focus: &mut i32) {
         return
     };
 
-    tag.class_list().add_1("autocomplete-active").unwrap_or_default();
+    tag.class_list()
+        .add_1("autocomplete-active")
+        .unwrap_or_default();
 }
 
 pub fn remove_active(tags: &HtmlCollection) {
@@ -384,7 +395,7 @@ pub fn click_tag(
     search_field: HtmlInputElement,
     tag_input: UseStateHandle<SearchBarInput>,
     idx: usize,
-    value: String,
+    tag_idx: usize,
 ) -> Closure<dyn FnMut(MouseEvent)> {
     Closure::wrap(Box::new(move |_e: MouseEvent| {
         let list_input: HtmlInputElement = document()
@@ -394,12 +405,21 @@ pub fn click_tag(
             .unchecked_into();
         //let list_input: HtmlInputElement = e.target_unchecked_into();
 
+        let list_input = list_input.value();
         let tags = search_field.value();
 
-        // removes the pre-autocompletion input
-        let mut tags = tags[..tags.len() - value.len()].to_string();
+        let mut tags = tags.split(' ').collect::<Vec<&str>>();
+        tags[tag_idx] = &list_input;
 
-        tags.push_str(&format!("{} ", list_input.value()));
+        let tags = tags
+            .into_iter()
+            .map(|tag| format!("{tag} "))
+            .collect::<String>();
+
+        // removes the pre-autocompletion input
+        /*let mut tags = tags[..tags.len() - value.len()].to_string();
+
+        tags.push_str(&format!("{} ", list_input.value()));*/
 
         update_search(history.clone(), tags, tag_input.clone(), props.clone());
 
@@ -407,9 +427,22 @@ pub fn click_tag(
     }) as Box<dyn FnMut(MouseEvent)>)
 }
 
+pub fn tag_idx_at_cursor(selection_start: u32, split_inputs: &[&str]) -> usize {
+    let mut tag_pos = split_inputs.len() - 1;
+    let mut len = 0;
+    for (idx, input) in split_inputs.iter().enumerate() {
+        if selection_start >= len {
+            tag_pos = idx;
+        }
+        // +1 for the stripped away whitespace
+        len += input.len() as u32 + 1;
+    }
+    tag_pos
+}
+
 pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> {
     let input = &tag.name;
-    
+
     // would show a list with tags when whitespace was entered
     if value == "" {
         return None;
@@ -440,8 +473,8 @@ pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> 
     Some(div)
 }
 
-fn is_tag_in_search_bar(splitted_inputs: &[&str], tag: &UniqueTag) -> bool {
-    for input in splitted_inputs {
+fn is_tag_in_search_bar(split_inputs: &[&str], tag: &UniqueTag) -> bool {
+    for input in split_inputs {
         if input == &tag.name {
             return true;
         }

@@ -88,15 +88,15 @@ pub fn pagination(props: &Props) -> Html {
                 </li>
             </ul>
             <div class="text-center ">
-                <input 
+                <input
                     class="ms-2"
-                    autocomplete="off" 
-                    /*onkeypress="return onlyDigits(event)"*/ 
+                    autocomplete="off"
+                    /*onkeypress="return onlyDigits(event)"*/
                     onkeypress={only_digits()}
                     oninput={enter_page(props.clone(), history.clone(), invalid_input)}
-                    style="width: 48px; height: 38px;" 
-                    id="page-input" 
-                    name="page-input" 
+                    style="width: 48px; height: 38px;"
+                    id="page-input"
+                    name="page-input"
                     placeholder = {(props.search_info.page +1).to_string()}
                 />
                 <span class="ms-1">
@@ -110,36 +110,41 @@ pub fn pagination(props: &Props) -> Html {
     }
 }
 
-fn enter_page(props: Props, history: AnyHistory, invalid_input: UseStateHandle<bool>) -> Callback<InputEvent> {
+fn enter_page(
+    props: Props,
+    history: AnyHistory,
+    invalid_input: UseStateHandle<bool>,
+) -> Callback<InputEvent> {
     Callback::from(move |e: InputEvent| {
         invalid_input.set(false);
         let props = props.clone();
         let input_field: HtmlInputElement = e.target_unchecked_into();
-    
-        let page = input_field.value().parse::<u64>().unwrap_or(1) -1;
+
+        let page = input_field.value().parse::<u64>().unwrap_or(1) - 1;
         if page > props.total_pages {
             invalid_input.set(true);
             return;
         }
-                
-        history.push_with_query(
-            props.route_to_page,
-            SearchQuery {
-                page,
-                tags: props.search_info.tags,
-                scroll_to_bar: props.search_info.scroll_to_bar,
-            }
-        ).unwrap();       
+
+        history
+            .push_with_query(
+                props.route_to_page,
+                SearchQuery {
+                    page,
+                    tags: props.search_info.tags,
+                    scroll_to_bar: props.search_info.scroll_to_bar,
+                },
+            )
+            .unwrap();
     })
 }
 
 fn only_digits() -> Callback<KeyboardEvent> {
     Callback::from(move |e: KeyboardEvent| {
-    
         let key_code = e.key_code();
         if !(key_code == 13 || key_code >= 48 && key_code <= 57) {
             e.prevent_default();
             return;
-        }    
+        }
     })
 }
