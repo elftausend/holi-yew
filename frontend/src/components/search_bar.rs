@@ -169,9 +169,15 @@ pub fn search_bar(props: &Props) -> Html {
 
                         let mut idx = 0;
                         for tag in tags {
-                            let splitted = value.split(' ');
+                            let splitted_inputs = value.split(' ').collect::<Vec<&str>>();
 
-                            let Some(value) = splitted.last() else {
+                            // if a tag was already written in the search field, then
+                            // do not add this tag to the tag autocompletion again
+                            if is_tag_in_search_bar(&splitted_inputs, &tag) {
+                                continue;
+                            }
+
+                            let Some(value) = splitted_inputs.last() else {
                                 continue;
                             };
 
@@ -332,7 +338,7 @@ pub fn searchbar_keydown(
             // enter
             e.prevent_default();
 
-            // update route
+            // could update route
             if *current_focus == -1 {
 
             } else {
@@ -404,6 +410,7 @@ pub fn click_tag(
 pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> {
     let input = &tag.name;
     
+    // would show a list with tags when whitespace was entered
     if value == "" {
         return None;
     }
@@ -431,4 +438,13 @@ pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> 
     ));
 
     Some(div)
+}
+
+fn is_tag_in_search_bar(splitted_inputs: &[&str], tag: &UniqueTag) -> bool {
+    for input in splitted_inputs {
+        if input == &tag.name {
+            return true;
+        }
+    }
+    false
 }
