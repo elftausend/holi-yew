@@ -83,7 +83,6 @@ pub fn edit_upload() -> Html {
     let on_click_save = {
         let upload_msgs = upload_msgs.clone();
         let edit_info = edit_info.clone();
-        let location = location.clone();
 
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -114,9 +113,9 @@ pub fn edit_upload() -> Html {
                 {
                     log::info!("err_msgs!!!!!!!!!!!!!!: {err_msgs:?}");
 
-                    if &err_msgs.successful_upload != "" {
-                        //   upload_info.set(UploadInfo::default())
-                    }
+                    //if &err_msgs.successful_upload.is_empty {
+                    //    //   upload_info.set(UploadInfo::default())
+                    //}
                     disable_edit.set(false);
                     upload_msgs.set(err_msgs);
                 }
@@ -133,8 +132,6 @@ pub fn edit_upload() -> Html {
     };
 
     let ondelete = {
-        let history = history.clone();
-        let uid = uid.clone();
         let delete_error = delete_error.clone();
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -143,9 +140,9 @@ pub fn edit_upload() -> Html {
             let history = history.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 if let Some(uid) = *uid {
-                    if let Err(_) =
-                        request::<(), ()>(reqwest::Method::POST, &format!("delete?uid={uid}"), ())
-                            .await
+                    if request::<(), ()>(reqwest::Method::POST, &format!("delete?uid={uid}"), ())
+                        .await
+                        .is_err()
                     {
                         delete_error.set(FAILED_DELETE_MSG.to_string())
                     } else {

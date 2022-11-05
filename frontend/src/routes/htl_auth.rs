@@ -13,7 +13,7 @@ struct CodeQuery {
     code: String,
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Eq, PartialEq)]
 pub struct UserInfo {
     pub user_id: String,
     pub division: String,
@@ -28,7 +28,7 @@ impl UserInfo {
     }
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, Eq, PartialEq)]
 pub struct JWT {
     pub access_token: String,
 }

@@ -7,7 +7,7 @@ use crate::routes::Route;
 
 use super::SearchQuery;
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Clone, Debug)]
 pub struct PageQuery {
     // TODO: pub tags: String
     pub page: u64,
@@ -142,9 +142,8 @@ fn enter_page(
 fn only_digits() -> Callback<KeyboardEvent> {
     Callback::from(move |e: KeyboardEvent| {
         let key_code = e.key_code();
-        if !(key_code == 13 || key_code >= 48 && key_code <= 57) {
+        if !(key_code == 13 || (48..=57).contains(&key_code)) {
             e.prevent_default();
-            return;
         }
     })
 }

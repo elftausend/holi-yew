@@ -5,7 +5,7 @@ use crate::routes::Route;
 
 use super::SearchQuery;
 
-#[derive(Debug, Properties, Clone, PartialEq)]
+#[derive(Debug, Properties, Clone, Eq, PartialEq)]
 pub struct Props {
     pub name: String,
     #[prop_or_default]

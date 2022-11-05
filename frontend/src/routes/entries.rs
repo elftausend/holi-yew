@@ -6,12 +6,12 @@ use yew_router::prelude::*;
 
 use crate::components::{Auth, CardGroup, Footer, Pagination, SearchBar, SearchQuery};
 use crate::{api::request, error::HoliError};
-use crate::{image_path, pdf_path, ENTRIES_ON_PAGE};
+use crate::{image_path, pdf_path};
 
 use super::show_upload::HashQuery;
 use super::Route;
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EntryInfo {
     pub uid: i32,
     pub title: String,
@@ -37,16 +37,12 @@ pub struct EntryCount {
     entry_count: u64,
 }
 
-pub async fn get_entry_count() -> Result<EntryCount, HoliError> {
-    request(Method::GET, "entry_count", ()).await
-}
+//pub async fn get_entry_count() -> Result<EntryCount, HoliError> {
+//    request(Method::GET, "entry_count", ()).await
+//}
 
 pub async fn get_entry(uid: i32) -> Result<EntryInfo, HoliError> {
     request(Method::GET, &format!("entry/{uid}"), ()).await
-}
-
-pub async fn get_entries(page: u64, tags: &str) -> Result<Vec<EntryInfo>, HoliError> {
-    request(Method::GET, &format!("entries?page={page}&tags={tags}"), ()).await
 }
 
 pub async fn get_entries_with_total(page: u64, tags: &str) -> Result<EntriesWithPages, HoliError> {
@@ -121,9 +117,9 @@ pub fn entries() -> Html {
             location.query::<SearchQuery>().unwrap_or_default(),
         );
     }
-    let card = move |title: String| -> Html {
-        html! {}
-    };
+    //let card = move |title: String| -> Html {
+    //    html! {}
+    //};
 
     html! {
         <div>
@@ -253,7 +249,7 @@ pub fn entries() -> Html {
                         <CardGroup>
                         {
                         chunk.iter().map(|entry| {
-                            if entry.img_exts.len() > 0 {
+                            if !entry.img_exts.is_empty() {
                                 html! {
                                     <div class="card">
                                         <Link<Route, HashQuery>

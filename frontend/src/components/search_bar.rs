@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use gloo::utils::document;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::{closure::WasmClosure, convert::FromWasmAbi, prelude::Closure, JsCast};
+use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::{Element, HtmlCollection, HtmlElement, HtmlInputElement};
 use yew::prelude::*;
 use yew_hooks::use_mount;
@@ -13,7 +13,7 @@ use crate::{
     routes::Route,
 };
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct SearchQuery {
     pub page: u64,
     pub tags: String,
@@ -30,7 +30,7 @@ impl Default for SearchQuery {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, PartialEq, Eq)]
 pub struct SearchBarInput {
     pub tags: String,
 }
@@ -109,17 +109,35 @@ fn on_search_callback(
             .unwrap();
     })
 }
+
+fn update_division_tags(props: Props) {
+    let props1 = props.clone();
+    use_effect_with_deps(
+        move |_| {
+            let search_field: HtmlInputElement = document()
+                .get_element_by_id("search_field")
+                .unwrap()
+                .unchecked_into();
+
+            search_field.set_value(&props1.search_info.tags);
+            || {}
+        },
+        props.search_info.tags,
+    );
+}
+
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
     let unique_tags = use_state(Vec::new);
     let tag_input = use_state(|| SearchBarInput {
         tags: props.search_info.tags.clone(),
     });
-    let page = props.search_info.page;
+
     let history = use_history().unwrap();
 
     let on_search = on_search_callback(history.clone(), props.clone(), tag_input.clone());
 
+    update_division_tags(props.clone());
     mount_tags(unique_tags.clone());
 
     {
@@ -144,13 +162,12 @@ pub fn search_bar(props: &Props) -> Html {
                     let current_focus = current_focus.clone();
                     Closure::wrap(Box::new(move |_input: InputEvent| {
                         *current_focus.borrow_mut() = -1;
-                        //let mut unsorted_tag_divs = vec![];
 
                         let tags = tags.clone();
                         let value = search_field.value();
 
                         close_list();
-                        if &value == "" {
+                        if value.is_empty() {
                             return;
                         }
                         let list_div = document().create_element("div").unwrap();
@@ -168,18 +185,19 @@ pub fn search_bar(props: &Props) -> Html {
                             .append_child(&list_div)
                             .unwrap();
 
+                        let selection_start = search_field.selection_start().unwrap().unwrap();
+
                         let mut idx = 0;
                         for tag in tags {
-                            let selection_start = search_field.selection_start().unwrap().unwrap();
-
                             log::info!("{selection_start:?}");
                             let split_inputs = value.split(' ').collect::<Vec<&str>>();
 
                             let tag_pos = tag_idx_at_cursor(selection_start, &split_inputs);
 
                             // if a tag was already written in the search field, then
-                            // do not add this tag to the tag autocompletion again
-                            if is_tag_in_search_bar(&split_inputs, &tag) {
+                            // do not add this tag to the tag autocompletion again.
+                            // if the tag that is currently edited/written, do not skip it -> (tag_pos)
+                            if is_tag_in_search_bar(&split_inputs, &tag, tag_pos) {
                                 continue;
                             }
 
@@ -187,7 +205,7 @@ pub fn search_bar(props: &Props) -> Html {
                                 continue;
                             };
 
-                            let Some(div) = create_tag_div_if_match(&value, &tag) else {
+                            let Some(div) = create_tag_div_if_match(value, &tag) else {
                                 continue;
                             };
 
@@ -214,29 +232,21 @@ pub fn search_bar(props: &Props) -> Html {
                             .unwrap();
 
                             list_div.append_child(&div).unwrap();
-                            // unsorted_tag_divs.push((div, tag.count));
                             click_tag.forget();
                         }
-
-                        //unsorted_tag_divs.sort_by(|a, b| b.1.cmp(&a.1));
-                        //for (div, _) in unsorted_tag_divs {
-                        //    list_div.append_child(&div).unwrap();
-                        //}
                     }) as Box<dyn FnMut(_)>)
                 };
-                //ffclick_tag.forget();
 
                 search_field
                     .add_event_listener_with_callback(
                         "input",
                         input_callback.as_ref().unchecked_ref(),
                     )
-                    //.add_event_listener_with_callback("input", callback.)
                     .unwrap();
                 input_callback.forget();
 
                 let keydown_callback = searchbar_keydown(search_field.clone(), current_focus);
-                
+
                 search_field
                     .add_event_listener_with_callback(
                         "keydown",
@@ -246,27 +256,27 @@ pub fn search_bar(props: &Props) -> Html {
                 keydown_callback.forget();
                 || {}
             },
-            unique_tags.clone(),
+            unique_tags,
         );
     }
 
     let on_input_change = {
         let props = props.clone();
-        let history = history.clone();
         let tag_input = tag_input.clone();
-        //let current_focus = current_focus.clone();
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             let mut tags = (*tag_input).clone();
             tags.tags = input.value();
+
             tag_input.set(tags);
-            /*update_search(
+
+            update_search(
                 history.clone(),
                 input.value(),
                 tag_input.clone(),
                 props.clone(),
-            );*/
+            );
         })
     };
 
@@ -332,8 +342,9 @@ pub fn searchbar_keydown(
 
         // down key
         if e.key_code() == 40 {
+            e.prevent_default();
             *current_focus += 1;
-            add_active(&tags, &mut *current_focus);
+            add_active(&tags, &mut current_focus);
         } else if e.key_code() == 38 {
             // up key
 
@@ -341,7 +352,7 @@ pub fn searchbar_keydown(
             e.prevent_default();
             *current_focus -= 1;
 
-            add_active(&tags, &mut *current_focus);
+            add_active(&tags, &mut current_focus);
         } else if e.key_code() == 13 {
             // enter
             e.prevent_default();
@@ -354,6 +365,7 @@ pub fn searchbar_keydown(
                     .unwrap()
                     .unchecked_into();
                 tag.click();
+                e.prevent_default();
                 *current_focus = -1;
             }
         }
@@ -416,11 +428,6 @@ pub fn click_tag(
             .map(|tag| format!("{tag} "))
             .collect::<String>();
 
-        // removes the pre-autocompletion input
-        /*let mut tags = tags[..tags.len() - value.len()].to_string();
-
-        tags.push_str(&format!("{} ", list_input.value()));*/
-
         update_search(history.clone(), tags, tag_input.clone(), props.clone());
 
         close_list();
@@ -444,37 +451,37 @@ pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> 
     let input = &tag.name;
 
     // would show a list with tags when whitespace was entered
-    if value == "" {
+    if value.is_empty() {
         return None;
     }
 
     if value.len() > input.len() {
         return None;
     }
-    if (&input[..value.len()]).to_uppercase() != value.to_uppercase() {
+    if (input[..value.len()]).to_uppercase() != value.to_uppercase() {
         return None;
     }
     let div = document().create_element("div").unwrap();
     div.set_inner_html(&format!(
-        "
+        r#"
             <strong>{}</strong>{}
-            {tag_count}
+            <span style="float=right; color:violet"> ({tag_count}) </span>
             <input type='hidden' value='{}'/>
-        ",
+        "#,
         &input[..value.len()],
         &input[value.len()..],
         input,
-        tag_count = format!(
-            r#"<span style="float=right; color:violet"> ({}) </span>"#,
-            tag.count
-        )
+        tag_count = tag.count        
     ));
 
     Some(div)
 }
 
-fn is_tag_in_search_bar(split_inputs: &[&str], tag: &UniqueTag) -> bool {
-    for input in split_inputs {
+fn is_tag_in_search_bar(split_inputs: &[&str], tag: &UniqueTag, tag_idx: usize) -> bool {
+    for (idx, input) in split_inputs.iter().enumerate() {
+        if idx == tag_idx {
+            continue;
+        }
         if input == &tag.name {
             return true;
         }

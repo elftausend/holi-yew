@@ -63,13 +63,14 @@ pub fn edit() -> Html {
     }
 
     let has_view_or_not = |entry: &EntryInfo| {
-        if entry.img_exts.len() > 0 {
-            html! {
-                <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
-            }
-        } else {
+        if entry.img_exts.is_empty() {
             html! {
                 <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
+            }
+        } else {
+            
+            html! {
+                <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
             }
         }
     };

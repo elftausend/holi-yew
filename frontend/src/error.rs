@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Error, Clone, Debug, PartialEq)]
+#[derive(Error, Clone, Debug, PartialEq, Eq)]
 pub enum HoliError {
     /// 401
     #[error("Unauthorized")]

@@ -1,20 +1,9 @@
 mod unique_tag;
 pub use unique_tag::*;
 
-use gloo_net::http::Request;
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{app::get_jwt, error::HoliError, API_ROOT};
-
-pub async fn get<R: DeserializeOwned>(url: &str) -> R {
-    Request::get(url)
-        .send()
-        .await
-        .unwrap()
-        .json()
-        .await
-        .unwrap()
-}
 
 pub async fn request<B, T>(method: reqwest::Method, url: &str, body: B) -> Result<T, HoliError>
 where

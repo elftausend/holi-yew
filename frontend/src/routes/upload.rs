@@ -113,7 +113,6 @@ pub fn upload() -> Html {
     let on_click_upload = {
         let upload_msgs = upload_msgs.clone();
         let upload_info = upload_info.clone();
-        let file_select = file_select.clone();
 
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -141,7 +140,7 @@ pub fn upload() -> Html {
                 {
                     log::info!("err_msgs!!!!!!!!!!!!!!: {err_msgs:?}");
 
-                    if &err_msgs.successful_upload != "" {
+                    if !&err_msgs.successful_upload.is_empty() {
                         // unselect file
                         (*file_select).as_ref().unwrap().set_value("");
                         upload_info.set(UploadInfo::default());
@@ -174,7 +173,6 @@ pub fn upload() -> Html {
     };
 
     let onback = {
-        let history = history.clone();
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
             history.back();
@@ -184,7 +182,8 @@ pub fn upload() -> Html {
     let ondatepress = {
         Callback::from(move |e: KeyboardEvent| {
             let k = e.key_code();
-            if !(k >= 48 && k <= 57 || k == 46) {
+
+            if !((48..=57).contains(&k) || k == 46) {
                 e.prevent_default();
             }
         })

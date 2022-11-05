@@ -13,7 +13,7 @@ use super::{
     Route,
 };
 
-#[derive(Debug, Default, PartialEq, Deserialize, Clone, Serialize)]
+#[derive(Debug, Default, PartialEq, Eq, Deserialize, Clone, Serialize)]
 pub struct HashQuery {
     pub uid: i32,
 }
@@ -21,7 +21,6 @@ pub struct HashQuery {
 #[function_component(ShowUpload)]
 pub fn show_upload() -> Html {
     let entry_info = use_state(EntryInfo::default);
-    let hash_query = use_state(HashQuery::default);
     let history = use_history().unwrap();
 
     let onback = {
@@ -52,7 +51,6 @@ pub fn show_upload() -> Html {
     }*/
 
     {
-        let location = location.clone();
         let entry_info = entry_info.clone();
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
@@ -104,7 +102,7 @@ pub fn show_upload() -> Html {
                                 <p class="mt-3">
                                     <h4>{"Extrahierte Bilder"}</h4>
                                     {
-                                        if entry_info.img_exts.len() >= 1 {
+                                        if !entry_info.img_exts.is_empty() {
                                             (0..entry_info.img_exts.len()).into_iter().map(|idx| {
                                                 html!{
                                                     <>
