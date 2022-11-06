@@ -11,6 +11,7 @@ from holiapi.entries.entries import Entries, Entry, EntryCount
 from holiapi.entries.edit import EditEntries, EditEntry
 from holiapi.entries.delete import DeleteEntry
 from holiapi.tags.unique_tags import UniqueTags
+from holiapi.auth import Auth, jwt
 from holiapi.upload import *
 from holiapi.user import *
 
@@ -37,70 +38,7 @@ class UserRoute(Resource):
 
 
 app = Flask(__name__)
-jwt = JWTManager(app)
-
-@jwt.user_identity_loader
-def user_identity_lookup(user):
-    print(f"user {user}")
-    return user
-
-@jwt.user_lookup_loader
-def user_lookup_callback(_jwt_header, jwt_data):
-    user_info_dict = jwt_data["sub"]
-    print(f"identity: {user_info_dict}")
-    
-    uploaded_and_favs = query_db_results(user_info_dict["user_id"])    
-
-    return User(
-        htl_access_token=user_info_dict["htl_access_token"],
-        username=user_info_dict["username"],
-        user_id=user_info_dict["user_id"],
-        htl_class=user_info_dict["htl_class"],
-        htl_division=user_info_dict["htl_division"],
-        uploaded=uploaded_and_favs["uploaded"],
-        favs=uploaded_and_favs["fav"]
-    )
-
-class Auth(Resource):
-    def post(self):
-        code = request.json.get("code", None)
-        
-        # auth with htlhl
-        print(f"received code: {code}")
-
-        payload = {
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "grant_type": GRANT_TYPE,
-            "code": code,
-            "redirect_uri": REDIRECT_URI,
-        }
-        answer = requests.post(TOKEN_URL, json=payload)
-        if not answer:
-            return
-
-        token = answer.json()["access_token"]
-
-        user_info_raw = requests.get(f"{USER_INFO_URL}{token}").json()
-
-        #user_info_raw = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
-        #token = "asdfas"
-
-        user = get_user_from_raw(user_info_raw, token)
-
-        # attaining user_info was not successful
-        if not user:
-            return
-
-        #user_info = get_user_info("remember")
-
-        # if user is banned, doyn't authenticate
-        if user.user_id in config.banned_ids:
-            return
-
-        user.set_uploaded_and_favs(query_db_results(user.user_id))
-        access_token = create_access_token(identity=user.as_dict())
-        return jsonify(access_token=access_token)
+jwt.init_app(app)
 
 
 def init_and_run():

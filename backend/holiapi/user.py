@@ -1,17 +1,9 @@
 from typing import Dict, List
-from holiapi.utils import file_contents
 #from flask_sqlalchemy import SQLAlchemy
 from holiapi.config import config, PATH
 import sqlite3
 import json
 
-TOKEN_URL = "https://auth.htl-hl.ac.at/token.php"
-CLIENT_ID = "holi.htl-hl.ac.at"
-CLIENT_SECRET = file_contents("client_secret")
-GRANT_TYPE = "authorization_code"
-REDIRECT_URI = "https://holi.htl-hl.ac.at/authenticated"
-
-USER_INFO_URL = "https://auth.htl-hl.ac.at/getUserInformation.php?access_token="
 
 USER_DB = f"{PATH}/db/user_database.db"
 
@@ -74,6 +66,9 @@ class User():
     
     def is_banned(self):
         return self.user_id in config.banned_ids
+    
+    def is_whitelisted(self):
+        return self.user_id in config.whitelist_ids
 
     def as_dict(self):
         return {

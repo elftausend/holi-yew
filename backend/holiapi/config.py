@@ -6,9 +6,11 @@ PATH = os.path.dirname(os.path.realpath(__file__))
 CONFIG_PATH = f"{PATH}/config.json"
 
 class Config:
-    def __init__(self, banned_ids: List[str], admin_ids: List[str], log: bool, total_uploads):
+    def __init__(self, banned_ids: List[str], admin_ids: List[str], whitelist_ids: List[str], whitelist: bool, log: bool, total_uploads):
         self.banned_ids = banned_ids
         self.admin_ids = admin_ids
+        self.whitelist_ids = whitelist_ids
+        self.whitelist = whitelist
         self.log = log
         self.total_uploads = total_uploads
 
@@ -17,6 +19,8 @@ class Config:
             json.dump({
                 "banned_ids": self.banned_ids,
                 "admin_ids": self.admin_ids,
+                "whitelist_ids": self.whitelist_ids,
+                "whitelist": self.whitelist,
                 "log": self.log,
                 "total_uploads": self.total_uploads
             }, config_file, indent=4)
@@ -30,6 +34,8 @@ def config_file_setup():
             json.dump({
                 "banned_ids": [],
                 "admin_ids": [],
+                "whitelist_ids": [],
+                "whitelist": False,
                 "log": True,
                 "total_uploads": count_uploads()
             }, config_file, indent=4)
@@ -39,8 +45,10 @@ def config_file_setup():
         return Config(
             config_data["banned_ids"],
             config_data["admin_ids"],
+            config_data["whitelist_ids"],
+            config_data["whitelist"],
             config_data["log"],
-            config_data["total_uploads"]
+            config_data["total_uploads"],
         )
 
 config = config_file_setup()
