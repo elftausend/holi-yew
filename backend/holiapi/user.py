@@ -63,7 +63,7 @@ class User():
         self.favs = db_results["fav"]
 
     def is_admin(self):
-        self.is_config_admin
+        return self.is_config_admin
     
     def is_banned(self):
         return self.user_id in config.banned_ids
