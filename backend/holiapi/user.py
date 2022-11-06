@@ -56,13 +56,14 @@ class User():
         self.htl_division = htl_division
         self.uploaded = uploaded
         self.favs = favs
+        self.is_config_admin = self.user_id in config.admin_ids
 
     def set_uploaded_and_favs(self, db_results: Dict[str, List[int]]):
         self.uploaded = db_results["uploaded"]
         self.favs = db_results["fav"]
 
     def is_admin(self):
-        return self.user_id in config.admin_ids
+        self.is_config_admin
     
     def is_banned(self):
         return self.user_id in config.banned_ids
