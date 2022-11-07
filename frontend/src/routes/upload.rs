@@ -1,4 +1,4 @@
-use crate::components::Auth;
+use crate::{components::Auth, hooks::use_user_context};
 use gloo::file::File;
 use js_sys::Date;
 use reqwest::Method;
@@ -18,6 +18,7 @@ pub struct UploadMsgs {
     pub missing_tags: String,
     pub no_user_terms: String,
     pub successful_upload: String,
+    pub erroneous_division: String,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -47,6 +48,8 @@ pub fn add_zero_pad(num: u32) -> String {
 
 #[function_component(Upload)]
 pub fn upload() -> Html {
+    let user_ctx = use_user_context();
+
     let history = use_history().unwrap();
     let upload_info = use_state(UploadInfo::default);
     let upload_msgs = use_state(UploadMsgs::default);
@@ -199,6 +202,32 @@ pub fn upload() -> Html {
         })
     };
 
+    let ondivisioninput = {
+        let upload_info = upload_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let value = input.value();
+            
+            if value.len() > 3 {
+                e.prevent_default();
+            }
+            
+            let mut info = (*upload_info).clone();
+            info.divison = value;
+            upload_info.set(info);
+        })
+    };
+
+    let onclassinput = {
+        let upload_info = upload_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            let mut info = (*upload_info).clone();
+            //info.class = input.value();
+            upload_info.set(info);
+        })
+    };
+
     html! {
         <div>
             <Auth>
@@ -251,6 +280,21 @@ pub fn upload() -> Html {
                                 name="title">
                                 {"Input"}
                             </textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <h4>{"Abteilung"}</h4>
+                            <span style="color: red;">{ upload_msgs.erroneous_date.clone() }</span>
+                            <input autocomplete="off"
+                                    id="dateinput"
+                                    oninput={ondivisioninput}
+                                    class="form-control"
+                                    style="width: 120px; height: 50px;"
+                                    maxlength="10"
+                                    type="text"
+                                    placeholder={user_ctx.inner.division.clone()}
+                                    name="date"
+                                />
                         </div>
 
                         <div class="mb-3">

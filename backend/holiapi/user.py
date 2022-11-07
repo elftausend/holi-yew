@@ -1,11 +1,32 @@
 from typing import Dict, List
 #from flask_sqlalchemy import SQLAlchemy
-from holiapi.config import config, PATH
 import sqlite3
 import json
+from flask import jsonify
+from flask_restful import request, Resource
+from flask_jwt_extended import jwt_required, current_user
+
+from holiapi.config import config, PATH
+from holiapi.api_limiter import limiter
 
 
 USER_DB = f"{PATH}/db/user_database.db"
+
+class UserRoute(Resource):
+    decorators = [jwt_required(), limiter.limit("20/second")]
+    def get(self):
+        token = request.headers["Authorization"][7:]
+
+        # return entire current_user.as_dict()?
+        return jsonify({
+            "user_id": current_user.username,
+            "division": current_user.htl_division,
+            "token": token,
+            "uploaded": current_user.uploaded,
+            "favs": current_user.favs,
+            "htl_class": current_user.htl_class
+        })
+
 
 #db = SQLAlchemy()
 
@@ -62,13 +83,13 @@ class User():
         self.uploaded = db_results["uploaded"]
         self.favs = db_results["fav"]
 
-    def is_admin(self):
+    def is_admin(self) -> bool:
         return self.is_config_admin
     
-    def is_banned(self):
+    def is_banned(self) -> bool:
         return self.user_id in config.banned_ids
     
-    def is_whitelisted(self):
+    def is_whitelisted(self) -> bool:
         return self.user_id in config.whitelist_ids
 
     def as_dict(self):

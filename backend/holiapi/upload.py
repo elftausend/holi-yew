@@ -2,7 +2,7 @@ import hashlib
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required, current_user
 from datetime import date
-from typing import List
+from typing import List, Tuple
 from holiapi.user import User
 import json
 from holiapi import utils
@@ -19,6 +19,7 @@ MISSING_TITLE = "Der Titel wurde nicht angegeben."
 MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
 ALREADY_UPLOADED = "Dieses File wurde schon hochgeladen."
+ERRORNEOUS_DIVISION = "Ungültige Abteilung -> (ET, IT, ME, MB, WIL, WII)"
 
 def add_upload_id_to_db(upload_id: int, user: User):
     user.uploaded.append(upload_id)
@@ -37,11 +38,11 @@ class UploadMsgs():
     missing_tags = ""
     no_user_terms = ""
     successful_upload = ""
-
+    erroneous_division = ""
 
     def has_errors(self) -> bool:
         return self.missing_file != "" or self.missing_title != "" or self.erroneous_date != "" \
-            or self.missing_tags != "" or self.no_user_terms != ""
+            or self.missing_tags != "" or self.no_user_terms != "" or self.erroneous_division != ""
 
     def as_json(self):
         return {"missing_file": self.missing_file, 
@@ -49,7 +50,8 @@ class UploadMsgs():
                     "erroneous_date": self.erroneous_date,
                     "missing_tags": self.missing_tags,
                     "no_user_terms": self.no_user_terms,
-                    "successful_upload": self.successful_upload
+                    "successful_upload": self.successful_upload,
+                    "erroneous_division": self.erroneous_division
     }
 
 def file_ext(file_name: str):
@@ -91,7 +93,7 @@ def save_upload_dict_as_json(upload_info, uid: int):
         json.dump(upload_info, file)
 
 class UploadDetails:
-    def __init__(self, file: FileDetails, title: str, date: str, tags: str, user: User):
+    def __init__(self, file: FileDetails, title: str, date: str, tags: str, user: User, htl_division: str):
         self.file = file
         self.img_exts = []
         
@@ -101,7 +103,7 @@ class UploadDetails:
         split_tags = tags.split()
         split_tags.append(date)
         # append division of user
-        split_tags.append(user.htl_division)
+        split_tags.append(htl_division)
         self.tags = split_tags
 
         self.uploader = user.user_id
@@ -152,7 +154,33 @@ class UploadDetails:
             "hash": self.file.hash
         }
         save_upload_dict_as_json(upload_info, self.uid)
+
+def division_exist(htl_division: str) -> bool:
+    match htl_division:
+        case "ET":
+            return True
+        case "IT":
+            return True
+        case "ME":
+            return True
+        case "MB":
+            return True
+        case "WIL":
+            return True
+        case "WII":
+            return True
+    return False
+
+def check_division(htl_division: str, user: User) -> Tuple[str, str]:
+    if not htl_division:
+        return (user.htl_division, "")
     
+    # TODO: mind lebensmittel
+    if not division_exist(htl_division):
+        return (htl_division, ERRORNEOUS_DIVISION)
+
+    return (htl_division, "")
+
 class Upload(Resource):
     decorators = [jwt_required(), limiter.limit("3/second")]
     def post(self):
@@ -172,6 +200,11 @@ class Upload(Resource):
         title = json_data["title"]
         returned_date = json_data["date"]
         tags = json_data["tags"]
+
+        htl_division = json_data["htl_division"]
+
+        (htl_division, division_error) = check_division(htl_division, current_user)
+        msg.erroneous_division = division_error
 
 
         if file_name == "" or file_data == []:
@@ -199,7 +232,7 @@ class Upload(Resource):
     
         upload = UploadDetails(
             file, title, current_date, 
-            tags, current_user
+            tags, current_user, htl_division
         )
 
         self.handle_upload(upload)

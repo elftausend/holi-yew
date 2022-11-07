@@ -1,10 +1,8 @@
-import requests
 import os
 import datetime
-from flask import Flask, request, jsonify
-from flask_restful import Resource, Api, request
-from flask_cors import CORS, cross_origin
-from flask_jwt_extended import JWTManager, jwt_required, current_user, create_access_token
+from flask import Flask
+from flask_restful import Api
+from flask_cors import CORS
 #import jwt
 
 from holiapi.entries.entries import Entries, Entry, EntryCount
@@ -16,25 +14,6 @@ from holiapi.upload import *
 from holiapi.user import *
 
 from holiapi.api_limiter import limiter
-
-class UserRoute(Resource):
-    #@jwt_required()
-    decorators = [jwt_required(), limiter.limit("20/second")]
-    def get(self):
-        token = request.headers["Authorization"][7:]
-
-        #user_info = requests.get(f"{USER_INFO_URL}{current_identity.id}").json()
-        #username = user_info["0"]["displayname"]["0"]
-        #return user_info
-
-        # return entire current_user.as_dict()?
-        return jsonify({
-            "user_id": current_user.username,
-            "division": current_user.htl_division,
-            "token": token,
-            "uploaded": current_user.uploaded,
-            "favs": current_user.favs
-        })
 
 
 app = Flask(__name__)
