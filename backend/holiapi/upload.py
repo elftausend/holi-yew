@@ -156,19 +156,19 @@ class UploadDetails:
         save_upload_dict_as_json(upload_info, self.uid)
 
 def division_exist(htl_division: str) -> bool:
-    match htl_division:
-        case "ET":
-            return True
-        case "IT":
-            return True
-        case "ME":
-            return True
-        case "MB":
-            return True
-        case "WIL":
-            return True
-        case "WII":
-            return True
+    if htl_division == "ET":
+        return True
+    elif htl_division == "IT":
+        return True
+    elif htl_division == "ME":
+        return True
+    elif htl_division == "MB":
+        return True
+    elif htl_division == "WIL":
+        return True
+    elif htl_division == "WII":
+        return True
+
     return False
 
 def check_division(htl_division: str, user: User) -> Tuple[str, str]:
