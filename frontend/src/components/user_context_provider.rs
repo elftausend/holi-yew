@@ -2,7 +2,7 @@ use reqwest::Method;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 
-use crate::{api::request, app::set_jwt, routes::htl_auth::UserInfo};
+use crate::{api::request, app::{set_jwt, get_jwt}, routes::htl_auth::UserInfo, error::HoliError};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
@@ -17,14 +17,27 @@ pub fn user_context_provider(props: &Props) -> Html {
     {
         let user_ctx = user_ctx.clone();
         use_mount(move || {
+            log::info!("userinfo: {user_ctx:?}");
+            if get_jwt().is_none() {
+                user_ctx.set(UserInfo::default());
+                return;
+            }
             wasm_bindgen_futures::spawn_local(async move {
-                if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", ()).await {
-                    log::info!("Logged in");
-                    user_ctx.set(user_info)
-                } else {
-                    set_jwt(None);
-                    user_ctx.set(UserInfo::default())
+                match request::<_, UserInfo>(Method::GET, "user", ()).await {
+                    Ok(user_info) => {
+                        user_ctx.set(user_info)
+                    }
+                    Err(e) => {
+                        match e {
+                            HoliError::Unauthorized | HoliError::Forbidden => {
+                                set_jwt(None);
+                                user_ctx.set(UserInfo::default());
+                            },
+                            _ => ()
+                        }
+                    }
                 }
+
             });
         });
     }

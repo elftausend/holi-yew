@@ -17,11 +17,17 @@ pub fn auth(props: &Props) -> Html {
     {
         let logged_in = logged_in.clone();
         use_mount(move || {
+            if user_ctx.inner.is_auth() {
+                logged_in.set(true);
+                return;
+
+            //} else { // TODO: else block: optimal
+            //    let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
+            //    window().unwrap().location().set_href(&href).unwrap();
+            }
+ 
             wasm_bindgen_futures::spawn_local(async move {
-                if user_ctx.inner.is_auth() {
-                    logged_in.set(true);
-                    return;
-                }
+                
                 let is_logged_in = is_logged_in().await;
                 logged_in.set(is_logged_in);
                 if !is_logged_in {
@@ -30,6 +36,7 @@ pub fn auth(props: &Props) -> Html {
                     //log::info!("-  - - - - - - - would redirect !!!");
                 }
             });
+            
             //if !user_ctx.inner.is_auth() {
             //    log::info!("-  - - - - - - - would redirect !!!");
             //    //window().unwrap().location().set_href("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri=https://holi.htl-hl.ac.at/authenticated&state=new").unwrap();

@@ -271,12 +271,13 @@ pub fn search_bar(props: &Props) -> Html {
 
             tag_input.set(tags);
 
-            update_search(
+            // TODO: only on mobile
+            /*update_search(
                 history.clone(),
                 input.value(),
                 tag_input.clone(),
                 props.clone(),
-            );
+            );*/
         })
     };
 
