@@ -243,6 +243,16 @@ pub fn entries() -> Html {
                 </div>
 
                 {
+                    if entries.is_empty() {
+                        html! {
+                            {"Einträge werden geladen..."}
+                        }
+                    } else {
+                        html!{}
+                    } 
+                }
+                {
+                
 
                 entries.chunks(4).map(|chunk|
                     html! {
