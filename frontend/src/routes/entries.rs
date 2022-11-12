@@ -59,7 +59,7 @@ pub fn entries() -> Html {
 
     let location = use_location().unwrap();
 
-    let entries = use_state(Vec::<EntryInfo>::new);
+    let entries = use_state(|| None);
 
     {
         let entries = entries.clone();
@@ -100,11 +100,11 @@ pub fn entries() -> Html {
                         //    total_pages.set(entry_count.entry_count / *ENTRIES_ON_PAGE);
                         //}
 
-                        entries.set(api_entries.entries);
+                        entries.set(Some(api_entries.entries));
                     } else {
                         // else: probably an invalid page
 
-                        entries.set(Vec::new());
+                        entries.set(Some(Vec::new()));
                         total_pages.set(0);
                         history
                             .push_with_query(Route::Entries, SearchQuery::default())
@@ -243,78 +243,74 @@ pub fn entries() -> Html {
                 </div>
 
                 {
-                    if entries.is_empty() {
+                    if entries.is_none() {
                         html! {
                             {"Einträge werden geladen..."}
                         }
                     } else {
-                        html!{}
+                        entries.as_ref().unwrap().chunks(4).map(|chunk|
+                            html! {
+                                <CardGroup>
+                                {
+                                chunk.iter().map(|entry| {
+                                    if !entry.img_exts.is_empty() {
+                                        html! {
+                                            <div class="card">
+                                                <Link<Route, HashQuery>
+                                                    to={Route::ShowUpload}
+                                                    query={Some(HashQuery{uid: entry.uid})}
+                                                >
+                                                    <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">
+                                                            {entry.title.clone()}
+                                                        </h5>
+                                                        <p class="card-text">
+                                                            {
+                                                                entry.tags.iter().map(|tag| {
+                                                                    html! {
+                                                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                                    }
+                                                                }).collect::<Html>()
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </Link<Route, HashQuery>>
+                                            </div>
+                                        }
+                                    } else {
+                                        html! {
+                                            <div class="card">
+                                                <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={"true"}>
+                                                    <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">
+                                                            {entry.title.clone()}
+                                                        </h5>
+                                                        <p class="card-text">
+                                                            {
+                                                                entry.tags.iter().map(|tag| {
+                                                                    html! {
+                                                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                                    }
+                                                                }).collect::<Html>()
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        }
+                                    }
+        
+                                }).collect::<Html>()
+                            }
+                            </CardGroup>
+                            }
+                            ).collect::<Html>()
+        
                     } 
                 }
-                {
                 
-
-                entries.chunks(4).map(|chunk|
-                    html! {
-                        <CardGroup>
-                        {
-                        chunk.iter().map(|entry| {
-                            if !entry.img_exts.is_empty() {
-                                html! {
-                                    <div class="card">
-                                        <Link<Route, HashQuery>
-                                            to={Route::ShowUpload}
-                                            query={Some(HashQuery{uid: entry.uid})}
-                                        >
-                                            <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    {entry.title.clone()}
-                                                </h5>
-                                                <p class="card-text">
-                                                    {
-                                                        entry.tags.iter().map(|tag| {
-                                                            html! {
-                                                                <span class="badge me-1 bg-secondary tag">{tag}</span>
-                                                            }
-                                                        }).collect::<Html>()
-                                                    }
-                                                </p>
-                                            </div>
-                                        </Link<Route, HashQuery>>
-                                    </div>
-                                }
-                            } else {
-                                html! {
-                                    <div class="card">
-                                        <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={"true"}>
-                                            <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    {entry.title.clone()}
-                                                </h5>
-                                                <p class="card-text">
-                                                    {
-                                                        entry.tags.iter().map(|tag| {
-                                                            html! {
-                                                                <span class="badge me-1 bg-secondary tag">{tag}</span>
-                                                            }
-                                                        }).collect::<Html>()
-                                                    }
-                                                </p>
-                                            </div>
-                                        </a>
-                                    </div>
-                                }
-                            }
-
-                        }).collect::<Html>()
-                    }
-                    </CardGroup>
-                    }
-                    ).collect::<Html>()
-
-                }
 
                 <Pagination
                     search_info={SearchQuery {

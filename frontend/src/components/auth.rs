@@ -1,8 +1,9 @@
+use reqwest::Method;
 use web_sys::window;
 use yew::prelude::*;
 use yew_hooks::use_mount;
 
-use crate::{hooks::use_user_context, routes::is_logged_in, REDIRECT};
+use crate::{hooks::use_user_context, routes::{is_logged_in, htl_auth::UserInfo}, REDIRECT, app::set_jwt, request};
 
 #[derive(Properties, Debug, PartialEq)]
 pub struct Props {
@@ -27,14 +28,23 @@ pub fn auth(props: &Props) -> Html {
             }
  
             wasm_bindgen_futures::spawn_local(async move {
-                
-                let is_logged_in = is_logged_in().await;
-                logged_in.set(is_logged_in);
-                if !is_logged_in {
-                    let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
-                    window().unwrap().location().set_href(&href).unwrap();
-                    //log::info!("-  - - - - - - - would redirect !!!");
+                match request::<_, UserInfo>(Method::GET, "user", ()).await {
+                    Ok(user_info) => {
+                        user_ctx.inner.set(user_info);
+                        logged_in.set(true);
+                    }
+                    Err(_e) => {
+                        set_jwt(None);
+                        logged_in.set(false);
+                        let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
+                        window().unwrap().location().set_href(&href).unwrap();
+                    }
                 }
+                //let is_logged_in = is_logged_in().await;
+                //logged_in.set(is_logged_in);
+                //if !is_logged_in {   
+                //    //log::info!("-  - - - - - - - would redirect !!!");
+                //}
             });
             
             //if !user_ctx.inner.is_auth() {

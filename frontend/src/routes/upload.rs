@@ -34,7 +34,7 @@ pub struct UploadInfo {
     title: String,
     date: String,
     // get through api
-    divison: String,
+    htl_division: String,
     tags: String,
 }
 
@@ -213,7 +213,7 @@ pub fn upload() -> Html {
             }
             
             let mut info = (*upload_info).clone();
-            info.divison = value;
+            info.htl_division = value;
             upload_info.set(info);
         })
     };
