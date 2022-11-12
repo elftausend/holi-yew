@@ -3,6 +3,8 @@ import json
 from typing import List
 
 PATH = os.path.dirname(os.path.realpath(__file__))
+FILES_PATH = f"{PATH}/static/files"
+UPLOADED_PATH = f"{PATH}/static/uploaded"
 CONFIG_PATH = f"{PATH}/config.json"
 
 class Config:
@@ -52,4 +54,10 @@ def config_file_setup():
         )
 
 config = config_file_setup()
-    
+
+def create_dirs():
+    if not os.path.exists(FILES_PATH):
+        os.mkdir(FILES_PATH)
+
+    if not os.path.exists(UPLOADED_PATH):
+        os.mkdir(UPLOADED_PATH)

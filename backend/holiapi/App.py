@@ -12,6 +12,7 @@ from holiapi.tags.unique_tags import UniqueTags
 from holiapi.auth import Auth, jwt
 from holiapi.upload import *
 from holiapi.user import *
+from holiapi.config import create_dirs
 
 from holiapi.api_limiter import limiter
 
@@ -21,6 +22,8 @@ jwt.init_app(app)
 
 
 def init_and_run():
+    create_dirs()
+
     # User database init
     # db.init_app(app)
 
