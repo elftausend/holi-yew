@@ -3,14 +3,14 @@ use std::{cell::RefCell, rc::Rc};
 use gloo::utils::document;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::Closure, JsCast};
-use web_sys::{Element, HtmlCollection, HtmlElement, HtmlInputElement};
+use web_sys::{Element, HtmlCollection, HtmlElement, HtmlInputElement, window};
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, AnyHistory, History};
 
 use crate::{
     api::{get_unique_tags, UniqueTag},
-    routes::Route,
+    routes::Route, utils::is_mobile,
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
@@ -128,6 +128,7 @@ fn update_division_tags(props: Props) {
 
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
+    let current_focus = Rc::new(RefCell::new(-1));
     let unique_tags = use_state(Vec::new);
     let tag_input = use_state(|| SearchBarInput {
         tags: props.search_info.tags.clone(),
@@ -145,11 +146,10 @@ pub fn search_bar(props: &Props) -> Html {
         let history = history.clone();
         let tag_input = tag_input.clone();
         let props = props.clone();
+        let current_focus = current_focus.clone();
 
         use_effect_with_deps(
             move |_| {
-                let current_focus = Rc::new(RefCell::new(-1));
-
                 let tags = (*unique_tags1).clone();
 
                 let search_field: HtmlInputElement = document()
@@ -263,6 +263,7 @@ pub fn search_bar(props: &Props) -> Html {
     let on_input_change = {
         let props = props.clone();
         let tag_input = tag_input.clone();
+        let history = history.clone();
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
@@ -271,37 +272,48 @@ pub fn search_bar(props: &Props) -> Html {
 
             tag_input.set(tags);
 
-            // TODO: only on mobile
-            /*update_search(
-                history.clone(),
-                input.value(),
-                tag_input.clone(),
-                props.clone(),
-            );*/
+            if !is_mobile() {
+                update_search(
+                    history.clone(),
+                    input.value(),
+                    tag_input.clone(),
+                    props.clone(),
+                );
+            }
         })
     };
 
     // TODO: conflicts with tag ??
-    /*let onkeypress = {
+    let onkeypress = {
         let props = props.clone();
+        let tag_input = tag_input.clone();
+        let history = history.clone();
         Callback::from(move |e: KeyboardEvent| {
             // check for enter key
             if e.key_code() != 13 {
                 return;
             }
 
+            if *current_focus.borrow() != -1 {
+                return;
+            }
+
+            log::info!("key press!!");
+
+            close_list();
+
             history
                 .push_with_query(
                     props.route.clone(),
                     SearchQuery {
-                        page,
+                        page: props.search_info.page,
                         tags: tag_input.tags.clone(),
                         scroll_to_bar: false,
                     },
                 )
                 .unwrap();
         })
-    };*/
+    };
 
     html! {
         <>
@@ -309,7 +321,7 @@ pub fn search_bar(props: &Props) -> Html {
            <div class="autocomplete">
             <input autocomplete="off"
                 value={tag_input.tags.clone()}
-                //onkeypress={onkeypress}
+                onkeypress={onkeypress}
                 oninput={on_input_change}
                 id="search_field"
                 class="form-control input-field"
@@ -356,19 +368,21 @@ pub fn searchbar_keydown(
             add_active(&tags, &mut current_focus);
         } else if e.key_code() == 13 {
             // enter
-            e.prevent_default();
+            //e.prevent_default();
 
             // could update route
             if *current_focus == -1 {
-            } else {
-                let tag: HtmlElement = tags
-                    .get_with_index(*current_focus as u32)
-                    .unwrap()
-                    .unchecked_into();
-                tag.click();
-                e.prevent_default();
-                *current_focus = -1;
+                return
             }
+            
+            let tag: HtmlElement = tags
+                .get_with_index(*current_focus as u32)
+                .unwrap()
+                .unchecked_into();
+            tag.click();
+            e.prevent_default();
+            *current_focus = -1;
+        
         }
     }) as Box<dyn FnMut(KeyboardEvent)>)
 }

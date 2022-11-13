@@ -8,6 +8,7 @@ mod components;
 mod error;
 mod hooks;
 mod routes;
+mod utils;
 
 pub use api::request;
 use lazy_static::lazy_static;
