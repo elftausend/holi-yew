@@ -74,23 +74,12 @@ pub fn edit() -> Html {
             }
         }
     };
-
-    let history = use_history().unwrap();
-    let onback = {
-        Callback::from(move |e: MouseEvent| {
-            e.prevent_default();
-            history.back();
-        })
-    };
-
+    
     html! {
         <div>
         <Auth>
             <div class="container-fluid mt-3">
                 <div class="d-flex mt-4 mb-4">
-                    <button onclick={onback} class="btn btn-primary me-2">
-                        {"Zurück"}
-                    </button>
                     <SearchBar route={Route::Edit} search_info={SearchQuery {
                         page: search_info.page,
                         tags: search_info.tags.clone(),

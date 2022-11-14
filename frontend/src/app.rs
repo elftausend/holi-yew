@@ -44,8 +44,11 @@ pub fn app() -> Html {
         <UserContextProvider>
             <BrowserRouter>
                 <NavBar />
-                <Switch<Route> render={Switch::render(switch)} />
-                <Footer />
+                // pushes footer down
+                //<div class="flex-wrapper">
+                    <Switch<Route> render={Switch::render(switch)} />
+                    <Footer />
+                //</div>
             </BrowserRouter>
         </UserContextProvider>
     }

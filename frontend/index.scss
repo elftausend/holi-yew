@@ -9,22 +9,22 @@ footer {
 }
 
 .dev-info {
-    padding: 5px;
+    padding: 8px;
     background-color: #252D31;
     color: #C0C9CC;
+    /*prevents buggy nutzungsbedingung link on smartphones*/
+    font-size: 1.5vh;
 }
 
-.login {
-    max-width: 200px;
-}
 
 .input-field {
-    min-width: 200px;
-    max-width: 100%;
+    //min-width: 200px;
+    max-width: 320px;
+    width: 70vw;
 }
 
 #search_field {
- //   max-width: 320px;
+    
 }
 
 #navbar-holi {
@@ -179,3 +179,12 @@ input[type=submit] {
   background-color: DodgerBlue !important; 
   color: #ffffff; 
 }
+
+
+/*pushed footer down 
+.flex-wrapper {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: space-between;
+}*/
