@@ -78,7 +78,7 @@ pub fn show_upload() -> Html {
                                 </button>
                                 <span class="ms-2 me-2">{entry_info.title.clone()}</span>
                                 // download does not work because the link to the download is not the same origin
-                                <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={"true"}>
+                                <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={format!("{}.{}", &entry_info.title, &entry_info.ext)}>
                                     <button class="btn btn-primary">{"download"}</button>
                                 </a>
                                 <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>

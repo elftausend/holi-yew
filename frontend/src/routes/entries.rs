@@ -281,7 +281,7 @@ pub fn entries() -> Html {
                                     } else {
                                         html! {
                                             <div class="card">
-                                                <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={"true"}>
+                                                <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={format!("{}.{}", &entry.title, &entry.ext)}>
                                                     <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
                                                     <div class="card-body">
                                                         <h5 class="card-title">
