@@ -1,4 +1,6 @@
 from holiapi import App
 
-App.init_and_run()
+#host = "192.168.1.109"
+host = "127.0.0.1"
+App.init_and_run(host)
 

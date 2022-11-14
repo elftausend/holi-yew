@@ -19,13 +19,8 @@ pub use upload::Upload;
 pub use user_panel::UserPanel;
 //pub use upload::Upload;
 
-use reqwest::Method;
 use yew::prelude::*;
 use yew_router::prelude::*;
-
-use crate::api::request;
-
-use self::htl_auth::UserInfo;
 
 #[derive(Routable, PartialEq, Eq, Clone, Debug)]
 pub enum Route {
@@ -64,12 +59,6 @@ pub fn switch(routes: &Route) -> Html {
         Route::Edit => html! { <Edit /> },
         Route::EditUpload => html! { <EditUpload /> },
     }
-}
-
-pub async fn is_logged_in() -> bool {
-    request::<_, UserInfo>(Method::GET, "user", ())
-        .await
-        .is_ok()
 }
 
 //pub async fn current_user() -> Result<UserInfo, HoliError>{

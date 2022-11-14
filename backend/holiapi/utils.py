@@ -30,6 +30,7 @@ def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/u
 
             if upload["usid"] == user or user == "admin":
                 if check_if_tags_found(lookup_tags, upload):
+                    upload["usid"] = "anonymous"
                     files_data[upload["uid"]] = upload
         
     #return dict(sorted(files_data.items(), key=sorting, reverse=True))

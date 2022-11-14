@@ -3,7 +3,7 @@ use web_sys::window;
 use yew::prelude::*;
 use yew_hooks::use_mount;
 
-use crate::{hooks::use_user_context, routes::{is_logged_in, htl_auth::UserInfo}, REDIRECT, app::set_jwt, request};
+use crate::{hooks::use_user_context, routes::htl_auth::UserInfo, REDIRECT, app::set_jwt, request};
 
 #[derive(Properties, Debug, PartialEq)]
 pub struct Props {

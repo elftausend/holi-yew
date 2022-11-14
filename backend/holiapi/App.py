@@ -21,7 +21,7 @@ app = Flask(__name__)
 jwt.init_app(app)
 
 
-def init_and_run():
+def init_and_run(host: str):
     create_dirs()
 
     # User database init
@@ -60,8 +60,8 @@ def init_and_run():
     from holiapi.db.setup_db import create_user_db
     create_user_db()
     #from waitress import serve
-    #serve(app, host="127.0.0.1", port=82, threads=16)
-    app.run(debug=True, port=82)
+    #serve(app, host=host, port=82, threads=16)
+    app.run(host=host, debug=True, port=82)
 
 
 

@@ -4,7 +4,7 @@ use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{Auth, CardGroup, Footer, Pagination, SearchBar, SearchQuery};
+use crate::components::{Auth, CardGroup, Pagination, SearchBar, SearchQuery};
 use crate::{api::request, error::HoliError};
 use crate::{image_path, pdf_path};
 
@@ -321,8 +321,6 @@ pub fn entries() -> Html {
                     total_pages={*total_pages}
                     route_to_page={Route::Entries}
                 />
-
-                <Footer />
             </Auth>
         </div>
 

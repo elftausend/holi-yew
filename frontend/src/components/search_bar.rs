@@ -3,7 +3,7 @@ use std::{cell::RefCell, rc::Rc};
 use gloo::utils::document;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{prelude::Closure, JsCast};
-use web_sys::{Element, HtmlCollection, HtmlElement, HtmlInputElement, window};
+use web_sys::{Element, HtmlCollection, HtmlElement, HtmlInputElement};
 use yew::prelude::*;
 use yew_hooks::use_mount;
 use yew_router::prelude::{use_history, AnyHistory, History};
