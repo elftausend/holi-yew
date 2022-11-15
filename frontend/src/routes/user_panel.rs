@@ -11,34 +11,27 @@ pub fn user_panel() -> Html {
     let upload_banned_modal = if user_ctx.inner.upload_banned {
         html! {
             <>
-                <div class="row highlight" >
+                <div class="row highlight" data-bs-toggle="modal" data-bs-target="#noupload">
                     <div class="col banned_bg_color card square">
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Upload"}</h1>
                     </div>
                 </div>
-                
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  {"Launch demo modal"}
-</button>
-
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">{"Modal title"}</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        {"..."}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{"Close"}</button>
-        <button type="button" class="btn btn-primary">{"Save changes"}</button>
-      </div>
-    </div>
-  </div>
-</div>
+                <div class="modal fade" id="noupload" tabindex="-1" aria-labelledby="nouploadLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="nouploadLabel">{"Gesperrt"}</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {"Diesem Nutzer wurde die Berechtigung, Beiträge hochzuladen, entzogen."}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{"Ok"}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </>
         }
     } else {
