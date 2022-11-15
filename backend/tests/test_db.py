@@ -13,12 +13,12 @@ class TestDatabase(unittest.TestCase):
         delete_db()
         create_user_db("db/")
         
-        uids = query_db_results("11111", DB)
+        uids = query_db_results("11111", "A Name", DB)
         assert uids["uploaded"] == []
         assert uids["fav"] == []
 
         # checks if entry in db was created
-        uids = query_db_results("11111", DB)
+        uids = query_db_results("11111", "A Name", DB)
         assert uids["uploaded"] == []
         assert uids["fav"] == []
 
@@ -28,7 +28,7 @@ class TestDatabase(unittest.TestCase):
         delete_db()
         create_user_db("db/")
 
-        uids = query_db_results("11111", DB)
+        uids = query_db_results("11111", "A Name", DB)
         assert uids["uploaded"] == []
         assert uids["fav"] == []
 
@@ -36,7 +36,7 @@ class TestDatabase(unittest.TestCase):
 
         write_entry_info_to_db("11111", uids, db=DB)
 
-        uids = query_db_results("11111", DB)
+        uids = query_db_results("11111", "A Name", DB)
         assert uids["uploaded"] == [2]
         assert uids["fav"] == []
 
@@ -56,7 +56,7 @@ class TestDatabase(unittest.TestCase):
         user = get_user_from_raw(user_info_raw, "notoken")
 
         
-        uids = query_db_results(user.user_id, DB)
+        uids = query_db_results(user.user_id, user.username, DB)
         
         assert uids["uploaded"] == []
         assert uids["fav"] == []

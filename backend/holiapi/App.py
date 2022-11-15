@@ -20,7 +20,6 @@ from holiapi.api_limiter import limiter
 app = Flask(__name__)
 jwt.init_app(app)
 
-
 def init_and_run(host: str):
     create_dirs()
 

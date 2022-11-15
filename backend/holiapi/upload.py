@@ -184,6 +184,9 @@ def check_division(htl_division: str, user: User) -> Tuple[str, str]:
 class Upload(Resource):
     decorators = [jwt_required(), limiter.limit("3/second")]
     def post(self):
+        if current_user.upload_banned:
+            return
+            
         msg = UploadMsgs()
 
         today = str(date.today())

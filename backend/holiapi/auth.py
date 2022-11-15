@@ -6,6 +6,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 from holiapi.utils import file_contents
 from holiapi.user import query_db_results, User, get_user_from_raw
 from holiapi.config import config
+from holiapi.db.db_fns import get_upload_banned
 
 TOKEN_URL = "https://auth.htl-hl.ac.at/token.php"
 CLIENT_ID = "holi.htl-hl.ac.at"
@@ -27,7 +28,8 @@ def user_lookup_callback(_jwt_header, jwt_data):
     user_info_dict = jwt_data["sub"]
     print(f"identity: {user_info_dict}")
     
-    uploaded_and_favs = query_db_results(user_info_dict["user_id"])    
+    uploaded_and_favs = query_db_results(user_info_dict["user_id"], user_info_dict["username"])  
+    is_upload_banned = get_upload_banned(user_info_dict["user_id"])
 
     return User(
         htl_access_token=user_info_dict["htl_access_token"],
@@ -35,6 +37,7 @@ def user_lookup_callback(_jwt_header, jwt_data):
         user_id=user_info_dict["user_id"],
         htl_class=user_info_dict["htl_class"],
         htl_division=user_info_dict["htl_division"],
+        upload_banned=is_upload_banned,
         uploaded=uploaded_and_favs["uploaded"],
         favs=uploaded_and_favs["fav"]
     )
@@ -75,7 +78,7 @@ class Auth(Resource):
         if user.is_banned():
             return
 
-
-        user.set_uploaded_and_favs(query_db_results(user.user_id))
+        user.set_uploaded_and_favs(query_db_results(user.user_id, user.username))
+        user.upload_banned = get_upload_banned(user.user_id)
         access_token = create_access_token(identity=user.as_dict())
         return jsonify(access_token=access_token)

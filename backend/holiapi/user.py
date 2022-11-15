@@ -24,13 +24,14 @@ class UserRoute(Resource):
             "token": token,
             "uploaded": current_user.uploaded,
             "favs": current_user.favs,
-            "htl_class": current_user.htl_class
+            "htl_class": current_user.htl_class,
+            "upload_banned": current_user.upload_banned
         })
 
 
 #db = SQLAlchemy()
 
-def query_db_results(user_id: str, db = USER_DB) -> Dict[str, List[int]]:
+def query_db_results(user_id: str, username: str, db = USER_DB) -> Dict[str, List[int]]:
     # use ORM
     con = sqlite3.connect(db)
     cur = con.cursor()
@@ -40,9 +41,10 @@ def query_db_results(user_id: str, db = USER_DB) -> Dict[str, List[int]]:
     
     db_results = '{"uploaded": [], "fav": []}'
     if data:
-        db_results = data[0][1]
+        db_results = data[0][2]
     else:
-        cur.execute("insert into users (user_id, entry_info) values(?, ?)", (user_id, json.dumps({ "uploaded": [], "fav": [] })))
+        cur.execute("insert into users (user_id, username, entry_info) values(?, ?, ?)",
+        (user_id, username, json.dumps({ "uploaded": [], "fav": [] })))
         con.commit()
     
     con.close()
@@ -69,7 +71,7 @@ class User():
     # list
     # stars = db.Column()
 
-    def __init__(self, htl_access_token: str, username: str, user_id: str, htl_class: str, htl_division: str, uploaded=[], favs = []):
+    def __init__(self, htl_access_token: str, username: str, user_id: str, htl_class: str, htl_division: str,  upload_banned: bool, uploaded=[], favs = []):
         self.htl_access_token = htl_access_token
         self.username = username
         self.user_id = user_id
@@ -78,6 +80,7 @@ class User():
         self.uploaded = uploaded
         self.favs = favs
         self.is_config_admin = self.user_id in config.admin_ids
+        self.upload_banned = upload_banned
 
     def set_uploaded_and_favs(self, db_results: Dict[str, List[int]]):
         self.uploaded = db_results["uploaded"]

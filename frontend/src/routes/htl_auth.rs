@@ -20,7 +20,8 @@ pub struct UserInfo {
     pub token: String,
     pub uploaded: Vec<u32>,
     pub favs: Vec<u32>,
-    pub htl_class: String
+    pub htl_class: String,
+    pub upload_banned: bool,
 }
 
 impl UserInfo {

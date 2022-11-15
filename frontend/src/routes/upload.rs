@@ -51,6 +51,11 @@ pub fn upload() -> Html {
     let user_ctx = use_user_context();
 
     let history = use_history().unwrap();
+
+    if user_ctx.inner.upload_banned {
+        history.back()   
+    }
+
     let upload_info = use_state(UploadInfo::default);
     let upload_msgs = use_state(UploadMsgs::default);
     let date_str = use_state(String::new);
