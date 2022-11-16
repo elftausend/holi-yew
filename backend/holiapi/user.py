@@ -25,7 +25,8 @@ class UserRoute(Resource):
             "uploaded": current_user.uploaded,
             "favs": current_user.favs,
             "htl_class": current_user.htl_class,
-            "upload_banned": current_user.upload_banned
+            "upload_banned": current_user.upload_banned,
+            "is_admin": current_user.is_admin()
         })
 
 

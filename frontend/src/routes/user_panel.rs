@@ -44,6 +44,20 @@ pub fn user_panel() -> Html {
         }
     };
 
+    let users = if user_ctx.inner.is_admin {
+        html! {
+            <>
+            <div class="row highlight">
+                <Link<Route> classes={classes!("col", "wi_bg_color", "card", "square")} to={Route::Users}>
+                    <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Users"}</h1>
+                </Link<Route>>
+            </div>
+            </>
+        }
+    } else {
+        html!()
+    };
+
     html! {
         <>
             <Auth>
@@ -53,6 +67,14 @@ pub fn user_panel() -> Html {
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Edit"}</h1>
                     </Link<Route>>
                 </div>
+
+                <div class="row highlight">
+                    <Link<Route> classes={classes!("col", "el_bg_color", "card", "square")} to={Route::Edit}>
+                        <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Favoriten"}</h1>
+                    </Link<Route>>
+                </div>
+
+                {users}
             </Auth>
         </>
     }

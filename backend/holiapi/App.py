@@ -5,6 +5,7 @@ from flask_restful import Api
 from flask_cors import CORS
 #import jwt
 
+from holiapi.users import Users
 from holiapi.entries.entries import Entries, Entry, EntryCount
 from holiapi.entries.edit import EditEntries, EditEntry
 from holiapi.entries.delete import DeleteEntry
@@ -55,6 +56,7 @@ def init_and_run(host: str):
     api.add_resource(EditEntry, "/edit_entry")
     api.add_resource(DeleteEntry, "/delete")
     api.add_resource(UniqueTags, "/unique_tags")
+    api.add_resource(Users, "/users")
 
     from holiapi.db.setup_db import create_user_db
     create_user_db()

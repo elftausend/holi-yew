@@ -4,6 +4,18 @@ from holiapi.config import PATH
 
 USER_DB = f"{PATH}/db/user_database.db"
 
+def get_users(db = USER_DB):
+    con = sqlite3.connect(db)
+    cur = con.cursor()
+
+    cur.execute("select * from users;")
+    users = cur.fetchall()
+
+    con.commit()
+    con.close()
+
+    return users
+
 def incr_flag_count_by_x(user_id: str, x: int, db = USER_DB):
     con = sqlite3.connect(db)
     cur = con.cursor()
@@ -48,5 +60,5 @@ def get_upload_banned(user_id: str, db = USER_DB) -> bool:
     flag_count = get_flag_count(user_id, db)
     return flag_count >= 3
         
-incr_flag_count_by_x("111111", 2)
-incr_flag_count_by_x("111111", 1)
+#incr_flag_count_by_x("111111", 2)
+#incr_flag_count_by_x("111111", 1)

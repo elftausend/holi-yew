@@ -22,6 +22,7 @@ pub struct UserInfo {
     pub favs: Vec<u32>,
     pub htl_class: String,
     pub upload_banned: bool,
+    pub is_admin: bool,
 }
 
 impl UserInfo {
