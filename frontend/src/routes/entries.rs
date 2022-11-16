@@ -26,7 +26,7 @@ pub struct EntryInfo {
     pub hash: String,
 }
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EntriesWithPages {
     entries: Vec<EntryInfo>,
     page_count: u64,

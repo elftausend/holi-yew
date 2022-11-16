@@ -10,6 +10,7 @@ from holiapi.config import config, PATH
 from holiapi.api_limiter import limiter
 
 
+
 USER_DB = f"{PATH}/db/user_database.db"
 
 class UserRoute(Resource):
@@ -31,25 +32,6 @@ class UserRoute(Resource):
 
 
 #db = SQLAlchemy()
-
-def query_db_results(user_id: str, username: str, db = USER_DB) -> Dict[str, List[int]]:
-    # use ORM
-    con = sqlite3.connect(db)
-    cur = con.cursor()
-
-    cur.execute("select * from users where user_id=?", (user_id,))
-    data = cur.fetchall()
-    
-    db_results = '{"uploaded": [], "fav": []}'
-    if data:
-        db_results = data[0][2]
-    else:
-        cur.execute("insert into users (user_id, username, entry_info) values(?, ?, ?)",
-        (user_id, username, json.dumps({ "uploaded": [], "fav": [] })))
-        con.commit()
-    
-    con.close()
-    return json.loads(db_results)
 
 class UserInfo():
     def __init__(self, access_token: str, username: str, user_id: str, htl_class: str, htl_division: str, htl_type: str, uploaded=[], favs = []):
@@ -136,3 +118,23 @@ def get_user_from_raw(user_info_raw, access_token: str) -> User:
     htl_type = htl_related_ids[3][2:]
 
     return User(access_token, username, user_id, htl_class, htl_division, htl_type)
+
+
+def query_db_results(user: User, db = USER_DB) -> Dict[str, List[int]]:
+    # use ORM
+    con = sqlite3.connect(db)
+    cur = con.cursor()
+
+    cur.execute("select * from users where user_id=?", (user.user_id,))
+    data = cur.fetchall()
+    
+    db_results = '{"uploaded": [], "fav": []}'
+    if data:
+        db_results = data[0][2]
+    else:
+        cur.execute("insert into users (user_id, username, entry_info, class) values(?, ?, ?, ?)",
+        (user.user_id, user.username, json.dumps({ "uploaded": [], "fav": [] }), user.htl_class))
+        con.commit()
+    
+    con.close()
+    return json.loads(db_results)

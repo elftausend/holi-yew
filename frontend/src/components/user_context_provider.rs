@@ -4,7 +4,7 @@ use yew::prelude::*;
 use yew_hooks::prelude::*;
 
 use crate::REDIRECT;
-use crate::{api::request, app::{set_jwt, get_jwt}, routes::htl_auth::UserInfo, error::HoliError};
+use crate::{api::request, app::{set_jwt, get_jwt}, routes::htl_auth::UserInfo};
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {

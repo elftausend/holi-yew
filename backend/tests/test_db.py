@@ -8,17 +8,21 @@ from holiapi.db.entry_info import write_entry_info_to_db
 
 DB = "./db/user_database.db"
 
+user = User(
+    "", "A Name", "11111", "1AHWII", "", False
+)
+
 class TestDatabase(unittest.TestCase):
     def test_query_db(self):
         delete_db()
         create_user_db("db/")
         
-        uids = query_db_results("11111", "A Name", DB)
+        uids = query_db_results(user, DB)
         assert uids["uploaded"] == []
         assert uids["fav"] == []
 
         # checks if entry in db was created
-        uids = query_db_results("11111", "A Name", DB)
+        uids = query_db_results(user, DB)
         assert uids["uploaded"] == []
         assert uids["fav"] == []
 
@@ -28,7 +32,7 @@ class TestDatabase(unittest.TestCase):
         delete_db()
         create_user_db("db/")
 
-        uids = query_db_results("11111", "A Name", DB)
+        uids = query_db_results(user, DB)
         assert uids["uploaded"] == []
         assert uids["fav"] == []
 
@@ -36,7 +40,7 @@ class TestDatabase(unittest.TestCase):
 
         write_entry_info_to_db("11111", uids, db=DB)
 
-        uids = query_db_results("11111", "A Name", DB)
+        uids = query_db_results(user, DB)
         assert uids["uploaded"] == [2]
         assert uids["fav"] == []
 
@@ -56,7 +60,7 @@ class TestDatabase(unittest.TestCase):
         user = get_user_from_raw(user_info_raw, "notoken")
 
         
-        uids = query_db_results(user.user_id, user.username, DB)
+        uids = query_db_results(user, DB)
         
         assert uids["uploaded"] == []
         assert uids["fav"] == []

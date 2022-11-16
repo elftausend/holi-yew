@@ -35,7 +35,7 @@ pub struct SearchBarInput {
     pub tags: String,
 }
 
-#[derive(Debug, Properties, PartialEq, Clone)]
+#[derive(Debug, Properties, Eq, PartialEq, Clone)]
 pub struct Props {
     pub search_info: SearchQuery,
     pub route: Route,
@@ -287,7 +287,6 @@ pub fn search_bar(props: &Props) -> Html {
     let onkeypress = {
         let props = props.clone();
         let tag_input = tag_input.clone();
-        let history = history.clone();
         Callback::from(move |e: KeyboardEvent| {
             // check for enter key
             if e.key_code() != 13 {

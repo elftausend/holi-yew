@@ -27,20 +27,23 @@ def user_identity_lookup(user):
 def user_lookup_callback(_jwt_header, jwt_data):
     user_info_dict = jwt_data["sub"]
     print(f"identity: {user_info_dict}")
-    
-    uploaded_and_favs = query_db_results(user_info_dict["user_id"], user_info_dict["username"])  
-    is_upload_banned = get_upload_banned(user_info_dict["user_id"])
 
-    return User(
+    user = User(
         htl_access_token=user_info_dict["htl_access_token"],
         username=user_info_dict["username"],
         user_id=user_info_dict["user_id"],
         htl_class=user_info_dict["htl_class"],
         htl_division=user_info_dict["htl_division"],
-        upload_banned=is_upload_banned,
-        uploaded=uploaded_and_favs["uploaded"],
-        favs=uploaded_and_favs["fav"]
+        upload_banned=False,
     )
+    
+    uploaded_and_favs = query_db_results(user)  
+
+    user.uploaded = uploaded_and_favs["uploaded"]
+    user.favs = uploaded_and_favs["fav"]
+    user.upload_banned = get_upload_banned(user_info_dict["user_id"])
+
+    return user
 
 class Auth(Resource):
     def post(self):
@@ -78,7 +81,7 @@ class Auth(Resource):
         if user.is_banned():
             return
 
-        user.set_uploaded_and_favs(query_db_results(user.user_id, user.username))
+        user.set_uploaded_and_favs(query_db_results(user))
         user.upload_banned = get_upload_banned(user.user_id)
         access_token = create_access_token(identity=user.as_dict())
         return jsonify(access_token=access_token)

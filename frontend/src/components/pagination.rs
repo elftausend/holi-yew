@@ -13,7 +13,7 @@ pub struct PageQuery {
     pub page: u64,
 }
 
-#[derive(Debug, Properties, PartialEq, Clone)]
+#[derive(Debug, Properties, Eq, PartialEq, Clone)]
 pub struct Props {
     pub search_info: SearchQuery,
     pub total_pages: u64,

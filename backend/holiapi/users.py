@@ -18,6 +18,7 @@ class Users(Resource):
                     "usid": user[0],
                     "username": user[1],
                     "flag_count": user[3],
+                    "class": user[5]
                 }
             )
 
