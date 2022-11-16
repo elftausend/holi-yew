@@ -11,6 +11,7 @@ class Users(Resource):
             return 403
         
         users = get_users()
+        print(f"users: {users}")
         users_json = []
         for user in users:
             users_json.append(

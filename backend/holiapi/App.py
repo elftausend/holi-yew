@@ -5,7 +5,7 @@ from flask_restful import Api
 from flask_cors import CORS
 #import jwt
 
-from holiapi.users import Users
+from holiapi.flagsys.users import Users
 from holiapi.entries.entries import Entries, Entry, EntryCount
 from holiapi.entries.edit import EditEntries, EditEntry
 from holiapi.entries.delete import DeleteEntry

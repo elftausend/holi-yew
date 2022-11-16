@@ -30,7 +30,7 @@ pub fn user_context_provider(props: &Props) -> Html {
                     Ok(user_info) => {
                         user_ctx.set(user_info)
                     }
-                    Err(e) => {
+                    Err(_e) => {
                         set_jwt(None);
                         user_ctx.set(UserInfo::default());
                         

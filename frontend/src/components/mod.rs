@@ -6,6 +6,7 @@ mod pagination;
 mod search_bar;
 mod tag;
 mod user_context_provider;
+mod user_card;
 //mod pagination2;
 
 pub use auth::*;
@@ -16,4 +17,5 @@ pub use pagination::*;
 pub use search_bar::*;
 pub use tag::*;
 pub use user_context_provider::*;
+pub use user_card::*;
 //pub use pagination2::*;

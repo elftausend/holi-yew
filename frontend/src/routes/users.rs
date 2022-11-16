@@ -2,15 +2,15 @@ use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 
-use crate::components::CardGroup;
+use crate::components::{CardGroup, UserCard};
 use crate::request;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct UserListInfo {
-    usid: String,
-    username: String,
-    flag_count: usize,
-    class: String,
+    pub usid: String,
+    pub username: String,
+    pub flag_count: usize,
+    pub class: String,
 }
 
 #[function_component(Users)]
@@ -39,17 +39,7 @@ pub fn user_panel() -> Html {
                         {
                             chunk.iter().map(|user| {
                                 html! {
-                                    <div class = "card">
-                                        <div class="card-body">
-                                            <h5 class="card-title">
-                                                {&user.username}
-                                            </h5>
-                                            <p class="card-text">
-                                                {&user.usid}<br />
-                                                {"Flags: "} {user.flag_count}
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <UserCard user_info={user.clone()} />
                                 }
                             }).collect::<Html>()
                         }
