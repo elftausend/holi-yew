@@ -8,6 +8,7 @@ pub mod show_upload;
 pub mod upload;
 pub mod user_panel;
 pub mod users;
+pub mod favo;
 
 pub use edit::Edit;
 pub use edit_upload::EditUpload;
@@ -19,6 +20,7 @@ pub use show_upload::ShowUpload;
 pub use upload::Upload;
 pub use user_panel::UserPanel;
 pub use users::Users;
+pub use favo::Favo;
 //pub use upload::Upload;
 
 use yew::prelude::*;
@@ -44,6 +46,8 @@ pub enum Route {
     ShowUpload,
     #[at("/users")]
     Users,
+    #[at("/favo")]
+    Favo,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -63,6 +67,7 @@ pub fn switch(routes: &Route) -> Html {
         Route::Edit => html! { <Edit /> },
         Route::EditUpload => html! { <EditUpload /> },
         Route::Users => html! { <Users /> },
+        Route::Favo => html! { <Favo /> }
     }
 }
 

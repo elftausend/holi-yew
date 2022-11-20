@@ -4,11 +4,9 @@ use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{Auth, CardGroup, Pagination, SearchBar, SearchQuery};
+use crate::components::{Auth, CardGroup, Pagination, SearchBar, SearchQuery, EntryCard};
 use crate::{api::request, error::HoliError};
-use crate::{image_path, pdf_path};
 
-use super::show_upload::HashQuery;
 use super::Route;
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -54,9 +52,7 @@ pub fn entries() -> Html {
     //let page = use_state(|| 1);
     let search_info = use_state(SearchQuery::default);
     let history = use_history().unwrap();
-
     let total_pages = use_state(|| 0);
-
     let location = use_location().unwrap();
 
     let entries = use_state(|| None);
@@ -70,7 +66,7 @@ pub fn entries() -> Html {
         use_effect_with_deps(
             move |_| {
                 let search_query = location_inner.query::<SearchQuery>().unwrap_or_default();
-
+                
                 // scroll to search bar
                 if search_query.scroll_to_bar {
                     let doc = window().unwrap().document().unwrap();
@@ -111,7 +107,6 @@ pub fn entries() -> Html {
                             .unwrap();
                     }
                 });
-
                 || ()
             },
             location.query::<SearchQuery>().unwrap_or_default(),
@@ -252,59 +247,13 @@ pub fn entries() -> Html {
                             html! {
                                 <CardGroup>
                                 {
-                                chunk.iter().map(|entry| {
-                                    if !entry.img_exts.is_empty() {
+                                    chunk.iter().map(|entry| {
                                         html! {
-                                            <div class="card">
-                                                <Link<Route, HashQuery>
-                                                    to={Route::ShowUpload}
-                                                    query={Some(HashQuery{uid: entry.uid})}
-                                                >
-                                                    <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">
-                                                            {entry.title.clone()}
-                                                        </h5>
-                                                        <p class="card-text">
-                                                            {
-                                                                entry.tags.iter().map(|tag| {
-                                                                    html! {
-                                                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
-                                                                    }
-                                                                }).collect::<Html>()
-                                                            }
-                                                        </p>
-                                                    </div>
-                                                </Link<Route, HashQuery>>
-                                            </div>
+                                            <EntryCard entry={entry.clone()} />
                                         }
-                                    } else {
-                                        html! {
-                                            <div class="card">
-                                                <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={format!("{}.{}", &entry.title, &entry.ext)}>
-                                                    <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">
-                                                            {entry.title.clone()}
-                                                        </h5>
-                                                        <p class="card-text">
-                                                            {
-                                                                entry.tags.iter().map(|tag| {
-                                                                    html! {
-                                                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
-                                                                    }
-                                                                }).collect::<Html>()
-                                                            }
-                                                        </p>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        }
-                                    }
-        
-                                }).collect::<Html>()
-                            }
-                            </CardGroup>
+                                    }).collect::<Html>()
+                                }
+                                </CardGroup>
                             }
                             ).collect::<Html>()
         

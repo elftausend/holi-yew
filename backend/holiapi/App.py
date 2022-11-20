@@ -5,6 +5,7 @@ from flask_restful import Api
 from flask_cors import CORS
 #import jwt
 
+from holiapi.flagsys.update_flags import FlagUpdate
 from holiapi.flagsys.users import Users
 from holiapi.entries.entries import Entries, Entry, EntryCount
 from holiapi.entries.edit import EditEntries, EditEntry
@@ -57,6 +58,7 @@ def init_and_run(host: str):
     api.add_resource(DeleteEntry, "/delete")
     api.add_resource(UniqueTags, "/unique_tags")
     api.add_resource(Users, "/users")
+    api.add_resource(FlagUpdate, "/incr_flag")
 
     from holiapi.db.setup_db import create_user_db
     create_user_db()

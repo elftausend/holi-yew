@@ -9,7 +9,7 @@ use crate::request;
 pub struct UserListInfo {
     pub usid: String,
     pub username: String,
-    pub flag_count: usize,
+    pub flag_count: i32,
     pub class: String,
 }
 
