@@ -19,28 +19,26 @@ pub fn entry_card(props: &Props) -> Html {
     if !entry.img_exts.is_empty() {
         html! {
             <div class="card">
-                <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
-                <div class="card-body">
-                    <h5 class="card-title">
-                        {entry.title.clone()}
-                    </h5>
-
-                    <Link<Route, HashQuery>
+                <Link<Route, HashQuery>
                     to={Route::ShowUpload}
                     query={Some(HashQuery{uid: entry.uid})}
                 >
-                    <p class="card-text">
-                        {
-                            entry.tags.iter().map(|tag| {
-                                html! {
-                                    <span class="badge me-1 bg-secondary tag">{tag}</span>
-                                }
-                            }).collect::<Html>()
-                        }
-                    </p>
-                    </Link<Route, HashQuery>>
-                </div>
-            
+                    <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {entry.title.clone()}
+                        </h5>
+                        <p class="card-text">
+                            {
+                                entry.tags.iter().map(|tag| {
+                                    html! {
+                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                    }
+                                }).collect::<Html>()
+                            }
+                        </p>
+                    </div>
+                </Link<Route, HashQuery>>
             </div>
         }
     } else {

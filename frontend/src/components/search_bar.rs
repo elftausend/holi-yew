@@ -30,7 +30,7 @@ impl Default for SearchQuery {
     }
 }
 
-#[derive(Default, Clone, PartialEq, Eq)]
+#[derive(Default, Clone, PartialEq, Eq, Debug)]
 pub struct SearchBarInput {
     pub tags: String,
 }
@@ -56,10 +56,10 @@ fn close_list() {
 fn update_search(
     history: AnyHistory,
     value: String,
-    tag_input: UseStateHandle<SearchBarInput>,
+    tag_input: Rc<RefCell<SearchBarInput>>,
     props: Props,
 ) {
-    let mut info = (*tag_input).clone();
+    let mut info = tag_input.borrow_mut();
     info.tags = value;
 
     history
@@ -73,7 +73,7 @@ fn update_search(
         )
         .unwrap();
 
-    tag_input.set(info);
+    //tag_input.set(info);
 }
 
 fn mount_tags(unique_tags: UseStateHandle<Vec<UniqueTag>>) {
@@ -93,7 +93,7 @@ fn mount_tags(unique_tags: UseStateHandle<Vec<UniqueTag>>) {
 fn on_search_callback(
     history: AnyHistory,
     props: Props,
-    tag_input: UseStateHandle<SearchBarInput>,
+    tag_input: Rc<RefCell<SearchBarInput>>,
 ) -> Callback<MouseEvent> {
     Callback::from(move |e: MouseEvent| {
         e.prevent_default();
@@ -102,7 +102,7 @@ fn on_search_callback(
                 props.route.clone(),
                 SearchQuery {
                     page: props.search_info.page,
-                    tags: tag_input.tags.clone(),
+                    tags: tag_input.borrow().tags.clone(),
                     scroll_to_bar: false,
                 },
             )
@@ -128,11 +128,18 @@ fn update_division_tags(props: Props) {
 
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
+    
     let current_focus = Rc::new(RefCell::new(-1));
     let unique_tags = use_state(Vec::new);
-    let tag_input = use_state(|| SearchBarInput {
+    // this does not work
+    //let tag_input = use_state(|| SearchBarInput {
+    //    tags: props.search_info.tags.clone(),
+    //});
+    let tag_input = Rc::new(RefCell::new(SearchBarInput {
         tags: props.search_info.tags.clone(),
-    });
+    }));
+
+    log::info!("serach bar value: {}, 2: {:?}", props.search_info.tags, (*tag_input).clone());
 
     let history = use_history().unwrap();
 
@@ -267,10 +274,10 @@ pub fn search_bar(props: &Props) -> Html {
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            let mut tags = (*tag_input).clone();
-            tags.tags = input.value();
-
-            tag_input.set(tags);
+            {
+                let mut tags = tag_input.borrow_mut();
+                tags.tags = input.value();
+            }
 
             if !is_mobile() {
                 update_search(
@@ -306,7 +313,7 @@ pub fn search_bar(props: &Props) -> Html {
                     props.route.clone(),
                     SearchQuery {
                         page: props.search_info.page,
-                        tags: tag_input.tags.clone(),
+                        tags: tag_input.borrow().tags.clone(),
                         scroll_to_bar: false,
                     },
                 )
@@ -319,7 +326,7 @@ pub fn search_bar(props: &Props) -> Html {
         //<div class="d-flex mt-4 mb-4">
            <div class="autocomplete">
             <input autocomplete="off"
-                value={tag_input.tags.clone()}
+                value={tag_input.clone().borrow().tags.clone()}
                 onkeypress={onkeypress}
                 oninput={on_input_change}
                 id="search_field"
@@ -419,7 +426,7 @@ pub fn click_tag(
     props: Props,
     history: AnyHistory,
     search_field: HtmlInputElement,
-    tag_input: UseStateHandle<SearchBarInput>,
+    tag_input: Rc<RefCell<SearchBarInput>>,
     idx: usize,
     tag_idx: usize,
 ) -> Closure<dyn FnMut(MouseEvent)> {
