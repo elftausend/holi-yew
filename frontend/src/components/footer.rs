@@ -24,7 +24,9 @@ pub fn footer() -> Html {
                             {"GitHub"}
                         </a>
                         <div style="float: right;">
-                            {"Nutzungsbedingungen"}
+                            <Link<Route> to={Route::Tos}>
+                                {"Nutzungsbedingungen"}
+                            </Link<Route>>
                         </div>
                     </div>
 
