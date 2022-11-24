@@ -19,15 +19,15 @@ pub fn entry_card(props: &Props) -> Html {
 
     if !entry.img_exts.is_empty() {
         html! {
+            
             <div class="card">
+                <Link<Route, HashQuery>
+                    to={Route::ShowUpload}
+                    query={Some(HashQuery{uid: entry.uid})}
+                >
                 <div>
                     <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&format!("{}_0.{}", entry.hash.clone(), entry.img_exts.first().unwrap_or(&"".into())))} alt="picture" />
-                    <button style="float: right;">{"Test"}</button>
                 </div>
-                    <Link<Route, HashQuery>
-                        to={Route::ShowUpload}
-                        query={Some(HashQuery{uid: entry.uid})}
-                    >
                     <div class="card-body">
                         <h5 class="card-title">
                             {entry.title.clone()}

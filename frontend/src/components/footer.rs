@@ -29,7 +29,6 @@ pub fn footer() -> Html {
                             </Link<Route>>
                         </div>
                     </div>
-
                 </div>
             </footer>
         }

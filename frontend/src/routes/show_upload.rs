@@ -70,6 +70,7 @@ pub fn show_upload() -> Html {
                                 </a>
 
                                 <br/>
+                            
 
                                 {
                                     entry_info.tags.iter().map(|tag| {
@@ -80,7 +81,9 @@ pub fn show_upload() -> Html {
                                         }
                                     }).collect::<Html>()
                                 }
+                                </div>
                                 <br />
+                                
                                 <p class="mt-3">
                                     <h4>{"Extrahierte Bilder"}</h4>
                                     {
@@ -103,7 +106,7 @@ pub fn show_upload() -> Html {
 
                                     }
                                 </p>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
