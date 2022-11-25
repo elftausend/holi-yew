@@ -11,7 +11,7 @@ use super::Route;
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EntryInfo {
-    pub uid: i32,
+    pub uid: u32,
     pub title: String,
     pub date: String,
     pub tags: Vec<String>,

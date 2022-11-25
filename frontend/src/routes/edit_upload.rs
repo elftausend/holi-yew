@@ -16,14 +16,14 @@ pub struct EditInfo {
     tags: String,
 }
 
-pub async fn get_edit_entry(uid: i32) -> Result<EntryInfo, HoliError> {
+pub async fn get_edit_entry(uid: u32) -> Result<EntryInfo, HoliError> {
     request(Method::GET, &format!("edit_entry?uid={uid}"), ()).await
 }
 
 fn mount_entry_to_edit(
     history: AnyHistory,
     edit_info: UseStateHandle<EditInfo>,
-    uid: UseStateHandle<Option<i32>>,
+    uid: UseStateHandle<Option<u32>>,
 ) {
     use_mount(move || {
         wasm_bindgen_futures::spawn_local(async move {
