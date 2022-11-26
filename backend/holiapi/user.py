@@ -14,7 +14,7 @@ from holiapi.api_limiter import limiter
 USER_DB = f"{PATH}/db/user_database.db"
 
 class UserRoute(Resource):
-    decorators = [jwt_required(), limiter.limit("20/second")]
+    decorators = [jwt_required(), limiter.limit("35/second")]
     def get(self):
         token = request.headers["Authorization"][7:]
 

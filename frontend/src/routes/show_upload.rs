@@ -32,24 +32,48 @@ pub async fn unfavo_request(uid: u32) -> Result<(), HoliError> {
     request(Method::POST, &format!("unfavo?uid={uid}"), ()).await
 }
 
-fn favo(uid: u32) -> Callback<MouseEvent> {
+fn favo(uid: u32, fav: UseStateHandle<bool>) -> Callback<MouseEvent> {
     Callback::from(move |_e: MouseEvent| {
+        let fav = fav.clone();
         wasm_bindgen_futures::spawn_local(async move {
             if let Ok(_) = favo_request(uid).await {
-
+                fav.set(true)
             }
         });
     })
 }
 
-fn unfavo(uid: u32) -> Callback<MouseEvent> {
+fn unfavo(uid: u32, fav: UseStateHandle<bool>) -> Callback<MouseEvent> {
     Callback::from(move |_e: MouseEvent| {
+        let fav = fav.clone();
         wasm_bindgen_futures::spawn_local(async move {
             if let Ok(_) = unfavo_request(uid).await {
-                
+                fav.set(false);
             }
         });
     })
+}
+
+fn favo_button(entry_info: UseStateHandle<EntryInfo>, fav: UseStateHandle<bool>) -> Html {
+    if *fav {
+        html! {
+            <button onclick={unfavo(entry_info.uid, fav.clone())} class="btn btn-secondary"> 
+                <svg style="fill: rgb(227, 179, 65);" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
+                    <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+                </svg>
+                {"Gemerkt"}
+            </button>
+        }
+    } else {
+        html! {
+            <button onclick={favo(entry_info.uid, fav.clone())} class="btn btn-secondary"> 
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
+                    <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+                </svg>
+                {"Merken"}
+            </button>
+        }
+    }
 }
 
 #[function_component(ShowUpload)]
@@ -57,7 +81,8 @@ pub fn show_upload() -> Html {
     let user_ctx = use_user_context();
     let entry_info = use_state(EntryInfo::default);
     let history = use_history().unwrap();
-
+    let fav = use_state(|| false);
+    
     let onback = {
         let history = history.clone();
         Callback::from(move |e: MouseEvent| {
@@ -69,11 +94,14 @@ pub fn show_upload() -> Html {
     let location = use_location().unwrap();
     {
         let entry_info = entry_info.clone();
+        let user_ctx = user_ctx.clone();
+        let fav = fav.clone();
         use_mount(move || {
             wasm_bindgen_futures::spawn_local(async move {
                 let hash = location.query::<HashQuery>().unwrap_or_default();
                 if let Ok(entry) = get_entry(hash.uid as i32).await {
                     log::info!("ENTRY {entry:?}");
+                    fav.set(user_ctx.inner.favs.contains(&entry.uid));
                     entry_info.set(entry)
                 } else {
                     entry_info.set(EntryInfo::default());
@@ -82,25 +110,8 @@ pub fn show_upload() -> Html {
             });
         });
     }
-    let favo_button = if user_ctx.inner.favs.contains(&entry_info.uid) {
-        html! {
-            <button onclick={unfavo(entry_info.uid)} class="btn btn-secondary"> 
-                <svg style="fill: rgb(227, 179, 65);" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
-                    <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
-                </svg>
-                {"Gemerkt"}
-            </button>
-        }
-    } else {
-        html! {
-            <button onclick={favo(entry_info.uid)} class="btn btn-secondary"> 
-                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
-                    <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
-                </svg>
-                {"Merken"}
-            </button>
-        }
-    };
+
+    let favo_button = favo_button(entry_info.clone(), fav.clone());
     
     html! {
         <div>

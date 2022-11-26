@@ -25,8 +25,8 @@ def delete_entry(uid: int):
 
     try:
         # remove extracted images of the pdf
-        for img_ext in entry_info["img_exts"]:
-            remove(f"{PATH}/static/images/{entry_info['hash']}{img_ext}")
+        for idx, img_ext in enumerate(entry_info["img_exts"]):
+            remove(f"{PATH}/static/images/{entry_info['hash']}_{idx}.{img_ext}")
     except:
         pass
 

@@ -84,8 +84,6 @@ def save_upload_dict_as_json(upload_info, uid: int):
     with open(f"{PATH}/static/uploaded/{uid}.json", mode="w") as file:
         utils.entries[uid] = upload_info
 
-        print(f"before: {utils.entries}")
-
         # ordering is done by the frontend
         #utils.entries = dict(sorted(utils.entries.items(), key=sort_by_id, reverse=True))
         #entries.insert(0, upload_info)
@@ -151,6 +149,7 @@ class UploadDetails:
             "usid": self.uploader,
             "ut": upload_type,
             "ext": self.file.ext,
+            "favs": 0,
             "hash": self.file.hash
         }
         save_upload_dict_as_json(upload_info, self.uid)
@@ -249,5 +248,4 @@ class Upload(Resource):
     
     def handle_upload(self, upload: UploadDetails):
         upload.save_to_disk()
-        pass
         

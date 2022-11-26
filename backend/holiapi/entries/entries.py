@@ -23,7 +23,7 @@ class Entries(Resource):
             try:
                 page = int(request.args.get("page"))
             except:
-                pass
+                return 400
 
         tags = request.args.get("tags")
         if tags:
