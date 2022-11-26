@@ -18,6 +18,9 @@ class Favo(Resource):
         except:
             return 400
 
+        if uid in current_user.favs:
+            return
+
         entry_info = utils.entries[uid]
         entry_info["favs"] += 1
         save_upload_dict_as_json(entry_info, uid)

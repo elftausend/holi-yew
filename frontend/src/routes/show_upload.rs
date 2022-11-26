@@ -6,7 +6,7 @@ use yew_router::prelude::{use_history, use_location, History, Location};
 
 use crate::{
     components::{Auth, Tag},
-    image_path, pdf_path, hooks::use_user_context, request, error::HoliError,
+    image_path, pdf_path, hooks::{use_user_context, UseUserContextHandle}, request, error::HoliError,
 };
 
 use super::{
@@ -32,32 +32,41 @@ pub async fn unfavo_request(uid: u32) -> Result<(), HoliError> {
     request(Method::POST, &format!("unfavo?uid={uid}"), ()).await
 }
 
-fn favo(uid: u32, fav: UseStateHandle<bool>) -> Callback<MouseEvent> {
+fn favo(uid: u32, user_ctx: UseUserContextHandle) -> Callback<MouseEvent> {
     Callback::from(move |_e: MouseEvent| {
-        let fav = fav.clone();
+        let user_ctx = user_ctx.clone();
         wasm_bindgen_futures::spawn_local(async move {
             if let Ok(_) = favo_request(uid).await {
-                fav.set(true)
+                let mut user_info = (*(user_ctx.inner)).clone();
+                user_info.favs.push(uid);
+                user_ctx.inner.set(user_info);
+                
+                //fav.set(true)
             }
         });
     })
 }
 
-fn unfavo(uid: u32, fav: UseStateHandle<bool>) -> Callback<MouseEvent> {
+fn unfavo(uid: u32, user_ctx: UseUserContextHandle) -> Callback<MouseEvent> {
     Callback::from(move |_e: MouseEvent| {
-        let fav = fav.clone();
+        let user_ctx = user_ctx.clone();
         wasm_bindgen_futures::spawn_local(async move {
             if let Ok(_) = unfavo_request(uid).await {
-                fav.set(false);
+                
+                let mut user_info = (*(user_ctx.inner)).clone();
+                let idx = user_info.favs.binary_search(&uid).unwrap();
+                user_info.favs.remove(idx);
+
+                user_ctx.inner.set(user_info);
             }
         });
     })
 }
 
-fn favo_button(entry_info: UseStateHandle<EntryInfo>, fav: UseStateHandle<bool>) -> Html {
-    if *fav {
+fn favo_button(entry_info: UseStateHandle<EntryInfo>, user_ctx: UseUserContextHandle) -> Html {
+    if user_ctx.inner.favs.contains(&entry_info.uid) {
         html! {
-            <button onclick={unfavo(entry_info.uid, fav.clone())} class="btn btn-secondary"> 
+            <button onclick={unfavo(entry_info.uid, user_ctx.clone())} class="btn btn-secondary"> 
                 <svg style="fill: rgb(227, 179, 65);" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
                     <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
                 </svg>
@@ -66,7 +75,7 @@ fn favo_button(entry_info: UseStateHandle<EntryInfo>, fav: UseStateHandle<bool>)
         }
     } else {
         html! {
-            <button onclick={favo(entry_info.uid, fav.clone())} class="btn btn-secondary"> 
+            <button onclick={favo(entry_info.uid, user_ctx.clone())} class="btn btn-secondary"> 
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
                     <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
                 </svg>
@@ -94,13 +103,13 @@ pub fn show_upload() -> Html {
     let location = use_location().unwrap();
     {
         let entry_info = entry_info.clone();
+        let user_ctx1 = user_ctx.clone();
         let user_ctx = user_ctx.clone();
         let fav = fav.clone();
-        use_mount(move || {
+        use_effect_with_deps(move |_| {
             wasm_bindgen_futures::spawn_local(async move {
                 let hash = location.query::<HashQuery>().unwrap_or_default();
                 if let Ok(entry) = get_entry(hash.uid as i32).await {
-                    log::info!("ENTRY {entry:?}");
                     fav.set(user_ctx.inner.favs.contains(&entry.uid));
                     entry_info.set(entry)
                 } else {
@@ -108,10 +117,11 @@ pub fn show_upload() -> Html {
                     history.back();
                 }
             });
-        });
+            || {}
+        }, user_ctx1);
     }
 
-    let favo_button = favo_button(entry_info.clone(), fav.clone());
+    let favo_button = favo_button(entry_info.clone(), user_ctx.clone());
     
     html! {
         <div>

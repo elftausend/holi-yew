@@ -28,7 +28,7 @@ class Config:
             }, config_file, indent=4)
         
 def count_uploads() -> int:
-    return len(os.listdir(f"{PATH}/static/uploaded/"))
+    return len(os.listdir(UPLOADED_PATH))
     
 def config_file_setup():
     if not os.path.exists(CONFIG_PATH):

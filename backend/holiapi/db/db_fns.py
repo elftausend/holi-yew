@@ -63,9 +63,6 @@ def get_upload_banned(user_id: str, db = USER_DB) -> bool:
     return flag_count >= 3
 
 def add_uid_to_favs(uid: int, user: User):
-    if uid in user.favs:
-        return
-
     user.favs.append(uid)
 
     entry_info = {
@@ -77,9 +74,6 @@ def add_uid_to_favs(uid: int, user: User):
     write_entry_info_to_db(user.user_id, entry_info)
 
 def remove_uid_from_favs(uid: int, user: User):
-    if uid not in user.favs:
-        return    
-
     user.favs.remove(uid)
 
     entry_info = {
