@@ -20,18 +20,21 @@ def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
     times = int(max_len / 16)
     return (start, end, times)
 
+def read_entry(entry, entry_path = f"{PATH}/static/uploaded/"):
+    with open(f"{entry_path}{entry}", mode="r") as file:
+        return json.load(file)
+
 def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/uploaded/"):
     entries = os.listdir(entry_path)
     files_data = {}
     
     for entry in entries:
-        with open(f"{entry_path}{entry}", mode="r") as file:
-            upload = json.load(file)
-
-            if upload["usid"] == user or user == "admin":
-                if check_if_tags_found(lookup_tags, upload):
-                    upload["usid"] = "anonymous"
-                    files_data[upload["uid"]] = upload
+        upload = read_entry(entry, entry_path)
+        if upload["usid"] == user or user == "admin":
+            if check_if_tags_found(lookup_tags, upload):
+                upload["usid"] = "anonymous"
+                files_data[upload["uid"]] = upload
+            
         
     #return dict(sorted(files_data.items(), key=sorting, reverse=True))
     return files_data

@@ -21,6 +21,7 @@ pub struct EntryInfo {
     pub usid: String,
     pub ut: String,
     pub ext: String,
+    pub favs: usize,
     pub hash: String,
 }
 
@@ -112,9 +113,6 @@ pub fn entries() -> Html {
             location.query::<SearchQuery>().unwrap_or_default(),
         );
     }
-    //let card = move |title: String| -> Html {
-    //    html! {}
-    //};
 
     html! {
         <div>

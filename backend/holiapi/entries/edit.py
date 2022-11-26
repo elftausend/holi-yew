@@ -25,6 +25,9 @@ class EditEntry(Resource):
         if not (uid in current_user.uploaded) and not current_user.is_admin():
             return 400
 
+        if current_user.is_admin():
+            return utils.read_entry(f"{uid}.json")
+
         return entries[uid]
 
     decorators = [jwt_required(), limiter.limit("10/second")]
