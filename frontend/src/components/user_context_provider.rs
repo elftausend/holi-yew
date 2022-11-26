@@ -19,7 +19,6 @@ pub fn user_context_provider(props: &Props) -> Html {
     {
         let user_ctx = user_ctx.clone();
         use_mount(move || {
-            log::info!("userinfo: {user_ctx:?}");
             if get_jwt().is_none() {
                 user_ctx.set(UserInfo::default());
                 return;
@@ -28,9 +27,11 @@ pub fn user_context_provider(props: &Props) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 match request::<_, UserInfo>(Method::GET, "user", ()).await {
                     Ok(user_info) => {
+                        log::info!("user_info {user_info:?}");
                         user_ctx.set(user_info)
                     }
-                    Err(_e) => {
+                    Err(e) => {
+                        log::warn!("login error!: {e:?}");
                         set_jwt(None);
                         user_ctx.set(UserInfo::default());
                         

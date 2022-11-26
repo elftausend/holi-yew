@@ -44,7 +44,6 @@ where
             };
         }
 
-        //log::info!("from {data:?} to json: ");
         let data: Result<T, _> = data.json::<T>().await;
         //log::info!(".... json {data:?}");
 

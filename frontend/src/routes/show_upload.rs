@@ -25,11 +25,11 @@ pub struct FavoInfo {
 }
 
 pub async fn favo_request(uid: u32) -> Result<(), HoliError> {
-    request::<FavoInfo, ()>(Method::POST, "favo", FavoInfo { uid }).await
+    request(Method::POST, &format!("favo?uid={uid}"), ()).await
 }
 
 pub async fn unfavo_request(uid: u32) -> Result<(), HoliError> {
-    request::<FavoInfo, ()>(Method::POST, "unfavo", FavoInfo { uid }).await
+    request(Method::POST, &format!("unfavo?uid={uid}"), ()).await
 }
 
 fn favo(uid: u32) -> Callback<MouseEvent> {
@@ -94,11 +94,11 @@ pub fn show_upload() -> Html {
     } else {
         html! {
             <button onclick={favo(entry_info.uid)} class="btn btn-secondary"> 
-            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
-                <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
-            </svg>
-            {"Merken"}
-        </button>
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
+                    <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
+                </svg>
+                {"Merken"}
+            </button>
         }
     };
     

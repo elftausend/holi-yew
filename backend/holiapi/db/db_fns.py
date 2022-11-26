@@ -1,6 +1,8 @@
 import sqlite3
 
 from holiapi.config import PATH
+from holiapi.user import User
+from holiapi.db.entry_info import write_entry_info_to_db
 
 USER_DB = f"{PATH}/db/user_database.db"
 
@@ -59,6 +61,27 @@ def set_banned(user_id: str, banned: int, db = USER_DB):
 def get_upload_banned(user_id: str, db = USER_DB) -> bool:
     flag_count = get_flag_count(user_id, db)
     return flag_count >= 3
-        
+
+def add_uid_to_favs(uid: int, user: User):
+    user.favs.append(uid)
+
+    entry_info = {
+        "uploaded": user.uploaded,
+        "fav": user.favs
+    }
+    print(f"entry_info: {entry_info}")
+
+    write_entry_info_to_db(user.user_id, entry_info)
+
+def remove_uid_from_favs(uid: int, user: User):
+    user.favs.remove(uid)
+
+    entry_info = {
+        "uploaded": user.uploaded,
+        "fav": user.favs
+    }
+
+    write_entry_info_to_db(user.user_id, entry_info)
+
 #incr_flag_count_by_x("111111", 2)
 #incr_flag_count_by_x("111111", 1)

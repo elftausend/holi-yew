@@ -19,7 +19,7 @@ class UserRoute(Resource):
         token = request.headers["Authorization"][7:]
 
         # return entire current_user.as_dict()?
-        return jsonify({
+        dict= {
             "user_id": current_user.username,
             "division": current_user.htl_division,
             "token": token,
@@ -28,7 +28,9 @@ class UserRoute(Resource):
             "htl_class": current_user.htl_class,
             "upload_banned": current_user.upload_banned,
             "is_admin": current_user.is_admin()
-        })
+        }
+        print(f"user info: {dict}")
+        return dict
 
 
 #db = SQLAlchemy()
@@ -136,5 +138,6 @@ def query_db_results(user: User, db = USER_DB) -> Dict[str, List[int]]:
         (user.user_id, user.username, json.dumps({ "uploaded": [], "fav": [] }), user.htl_class))
         con.commit()
     
+    print(f"db_results: {db_results}")
     con.close()
     return json.loads(db_results)
