@@ -1,5 +1,7 @@
+from flask_jwt_extended import jwt_required
 from flask_restful import Resource
 from holiapi.utils import entries
+from holiapi.api_limiter import limiter
 
 def get_unique_tags(entries):
     tags = {}
@@ -30,6 +32,7 @@ class UniqueTag:
         self.count = count
 
 class UniqueTags(Resource):
+    decorators = [jwt_required(), limiter.limit("45/second")]
     def get(self):
         unique_tags = get_unique_dict_tags(entries)
         return unique_tags

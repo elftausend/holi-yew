@@ -1,4 +1,3 @@
-
 #import holiapi.entries.filter_tags
 from holiapi import utils
 from holiapi.entries import filter_tags

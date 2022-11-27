@@ -17,9 +17,9 @@ from holiapi.user import *
 from holiapi.config import create_dirs
 from holiapi.favo.favo import Favo
 from holiapi.favo.unfavo import UnFavo
+from holiapi.favo.favo_entries import FavoEntries
 
 from holiapi.api_limiter import limiter
-
 
 app = Flask(__name__)
 jwt.init_app(app)
@@ -63,6 +63,7 @@ def init_and_run(host: str):
     api.add_resource(FlagUpdate, "/incr_flag")
     api.add_resource(Favo, "/favo")
     api.add_resource(UnFavo, "/unfavo")
+    api.add_resource(FavoEntries, "/favos")
 
     from holiapi.db.setup_db import create_user_db
     create_user_db()

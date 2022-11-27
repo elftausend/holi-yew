@@ -5,14 +5,16 @@ from holiapi.entries import filter_tags
 from holiapi.api_limiter import limiter
 from holiapi import utils
 
-class Favo(Resource):
+class FavoEntries(Resource):
     decorators = [jwt_required(), limiter.limit("40/second")]
     def get(self):
         local_entries = {}
 
         for fav in current_user.favs:
-            local_entries[fav] = utils.entries[fav]
-        
+            entry = utils.entries.get(fav)
+            if entry:
+                local_entries[fav] = entry
+            
         page = 0
         if request.args.get("page"):
             try:
