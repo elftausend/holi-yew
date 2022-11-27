@@ -74,7 +74,7 @@ pub fn auth() -> Html {
                         });
 
                         if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", ()).await
-                        {   
+                        {
                             log::info!("user_info: {user_info:?}");
                             user_ctx.inner.set(user_info);
                         }

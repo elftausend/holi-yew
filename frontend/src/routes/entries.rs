@@ -1,10 +1,12 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
-use web_sys::window;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{Auth, CardGroup, Pagination, SearchBar, SearchQuery, EntryCard};
+use crate::components::{
+    Auth, EntryList, Pagination, SearchBar, SearchQuery,
+};
+use crate::utils::entries_from_fn;
 use crate::{api::request, error::HoliError};
 
 use super::Route;
@@ -27,8 +29,8 @@ pub struct EntryInfo {
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct EntriesWithPages {
-    entries: Vec<EntryInfo>,
-    page_count: u64,
+    pub entries: Vec<EntryInfo>,
+    pub page_count: u64,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -44,75 +46,32 @@ pub async fn get_entry(uid: i32) -> Result<EntryInfo, HoliError> {
     request(Method::GET, &format!("entry/{uid}"), ()).await
 }
 
-pub async fn get_entries_with_total(page: u64, tags: &str) -> Result<EntriesWithPages, HoliError> {
+pub async fn get_entries_with_total(
+    page: u64,
+    tags: String,
+) -> Result<EntriesWithPages, HoliError> {
     request(Method::GET, &format!("entries?page={page}&tags={tags}"), ()).await
 }
+
+pub enum Sort {}
 
 #[function_component(Entries)]
 pub fn entries() -> Html {
     //let page = use_state(|| 1);
+
     let search_info = use_state(SearchQuery::default);
     let history = use_history().unwrap();
     let total_pages = use_state(|| 0);
-    let location = use_location().unwrap();
 
     let entries = use_state(|| None);
 
-    {
-        let entries = entries.clone();
-        let search_info1 = search_info.clone();
-
-        let location_inner = location.clone();
-        let total_pages = total_pages.clone();
-        use_effect_with_deps(
-            move |_| {
-                let search_query = location_inner.query::<SearchQuery>().unwrap_or_default();
-                
-                // scroll to search bar
-                if search_query.scroll_to_bar {
-                    let doc = window().unwrap().document().unwrap();
-
-                    if let Some(search) = doc.get_element_by_id("search_field") {
-                        search.scroll_into_view();
-                    }
-                }
-
-                search_info1.set(search_query.clone());
-
-                log::info!("page: {search_query:?}");
-
-                wasm_bindgen_futures::spawn_local(async move {
-                    if let Ok(mut api_entries) =
-                        get_entries_with_total(search_query.page, &search_query.tags).await
-                    {
-                        api_entries.entries.sort_by(|a, b| b.uid.cmp(&a.uid));
-                        total_pages.set(api_entries.page_count);
-                        //let page_count = api_entries.len() as u64 / *ENTRIES_ON_PAGE;
-                        //total_pages.set(page_count);
-                        //if search_query.page > page_count {
-                        //    log::info!("invalid page");
-                        //}
-
-                        //if let Ok(entry_count) = get_entry_count().await {
-                        //    total_pages.set(entry_count.entry_count / *ENTRIES_ON_PAGE);
-                        //}
-
-                        entries.set(Some(api_entries.entries));
-                    } else {
-                        // else: probably an invalid page
-
-                        entries.set(Some(Vec::new()));
-                        total_pages.set(0);
-                        history
-                            .push_with_query(Route::Entries, SearchQuery::default())
-                            .unwrap();
-                    }
-                });
-                || ()
-            },
-            location.query::<SearchQuery>().unwrap_or_default(),
-        );
-    }
+    entries_from_fn(
+        search_info.clone(),
+        entries.clone(),
+        history,
+        total_pages.clone(),
+        get_entries_with_total,
+    );
 
     html! {
         <div>
@@ -235,29 +194,7 @@ pub fn entries() -> Html {
                     </div>
                 </div>
 
-                {
-                    if entries.is_none() {
-                        html! {
-                            {"Einträge werden geladen..."}
-                        }
-                    } else {
-                        entries.as_ref().unwrap().chunks(4).map(|chunk|
-                            html! {
-                                <CardGroup>
-                                {
-                                    chunk.iter().map(|entry| {
-                                        html! {
-                                            <EntryCard entry={entry.clone()} />
-                                        }
-                                    }).collect::<Html>()
-                                }
-                                </CardGroup>
-                            }
-                            ).collect::<Html>()
-        
-                    } 
-                }
-                
+                <EntryList entries={(*entries).clone()} />
 
                 <Pagination
                     search_info={SearchQuery {

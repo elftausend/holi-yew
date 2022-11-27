@@ -41,8 +41,6 @@ pub fn navbar() -> Html {
             </nav>
         }
     } else {
-        html!{}
+        html! {}
     }
-
-    
 }

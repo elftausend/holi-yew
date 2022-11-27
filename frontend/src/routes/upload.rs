@@ -53,7 +53,7 @@ pub fn upload() -> Html {
     let history = use_history().unwrap();
 
     if user_ctx.inner.upload_banned {
-        history.back()   
+        history.back()
     }
 
     let upload_info = use_state(UploadInfo::default);
@@ -212,11 +212,11 @@ pub fn upload() -> Html {
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             let value = input.value();
-            
+
             if value.len() > 3 {
                 e.prevent_default();
             }
-            
+
             let mut info = (*upload_info).clone();
             info.htl_division = value;
             upload_info.set(info);

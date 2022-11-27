@@ -10,7 +10,8 @@ use yew_router::prelude::{use_history, AnyHistory, History};
 
 use crate::{
     api::{get_unique_tags, UniqueTag},
-    routes::Route, utils::is_mobile,
+    routes::Route,
+    utils::is_mobile,
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
@@ -128,7 +129,6 @@ fn update_division_tags(props: Props) {
 
 #[function_component(SearchBar)]
 pub fn search_bar(props: &Props) -> Html {
-    
     let current_focus = Rc::new(RefCell::new(-1));
     let unique_tags = use_state(Vec::new);
     // this does not work
@@ -139,7 +139,11 @@ pub fn search_bar(props: &Props) -> Html {
         tags: props.search_info.tags.clone(),
     }));
 
-    log::info!("serach bar value: {}, 2: {:?}", props.search_info.tags, (*tag_input).clone());
+    log::info!(
+        "serach bar value: {}, 2: {:?}",
+        props.search_info.tags,
+        (*tag_input).clone()
+    );
 
     let history = use_history().unwrap();
 
@@ -378,9 +382,9 @@ pub fn searchbar_keydown(
 
             // could update route
             if *current_focus == -1 {
-                return
+                return;
             }
-            
+
             let tag: HtmlElement = tags
                 .get_with_index(*current_focus as u32)
                 .unwrap()
@@ -388,7 +392,6 @@ pub fn searchbar_keydown(
             tag.click();
             e.prevent_default();
             *current_focus = -1;
-        
         }
     }) as Box<dyn FnMut(KeyboardEvent)>)
 }
@@ -492,7 +495,7 @@ pub fn create_tag_div_if_match(value: &str, tag: &UniqueTag) -> Option<Element> 
         &input[..value.len()],
         &input[value.len()..],
         input,
-        tag_count = tag.count        
+        tag_count = tag.count
     ));
 
     Some(div)

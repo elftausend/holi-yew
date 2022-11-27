@@ -7,7 +7,6 @@ use yew_router::prelude::*;
 pub fn user_panel() -> Html {
     let user_ctx = use_user_context();
 
-
     let upload_banned_modal = if user_ctx.inner.upload_banned {
         html! {
             <>
@@ -69,7 +68,7 @@ pub fn user_panel() -> Html {
                 </div>
 
                 <div class="row highlight">
-                    <Link<Route> classes={classes!("col", "el_bg_color", "card", "square")} to={Route::Edit}>
+                    <Link<Route> classes={classes!("col", "el_bg_color", "card", "square")} to={Route::Favo}>
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Favoriten"}</h1>
                     </Link<Route>>
                 </div>

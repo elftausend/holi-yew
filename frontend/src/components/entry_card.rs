@@ -1,25 +1,23 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::{routes::{entries::EntryInfo, Route, show_upload::HashQuery}, image_path, pdf_path};
-
+use crate::{
+    image_path, pdf_path,
+    routes::{entries::EntryInfo, show_upload::HashQuery, Route},
+};
 
 #[derive(Debug, Properties, PartialEq, Eq)]
 pub struct Props {
-    pub entry: EntryInfo
+    pub entry: EntryInfo,
 }
 
 #[function_component(EntryCard)]
 pub fn entry_card(props: &Props) -> Html {
-    
-    let Props {
-        entry,
-    } = props.clone();
-
+    let Props { entry } = props.clone();
 
     if !entry.img_exts.is_empty() {
         html! {
-            
+
             <div class="card">
                 <Link<Route, HashQuery>
                     to={Route::ShowUpload}
@@ -80,6 +78,4 @@ pub fn entry_card(props: &Props) -> Html {
             </div>
         }
     }
-
-
-}       
+}
