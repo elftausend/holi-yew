@@ -28,6 +28,7 @@ pub fn favo() -> Html {
         entries.clone(),
         history.clone(),
         total_pages.clone(),
+        Route::Favo,
         get_favos_with_total,
     );
 

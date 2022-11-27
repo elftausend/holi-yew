@@ -13,14 +13,12 @@ pub fn entry_list(props: &Props) -> Html {
     let Props { entries } = props.clone();
 
     {
-        if entries.is_none() {
-            html! {
+        match entries {
+            None => html! {
                 {"Einträge werden geladen..."}
-            }
-        } else {
-            entries
-                .as_ref()
-                .unwrap()
+            },
+            Some(entries) => 
+                entries
                 .chunks(4)
                 .map(|chunk| {
                     html! {
@@ -37,5 +35,5 @@ pub fn entry_list(props: &Props) -> Html {
                 })
                 .collect::<Html>()
         }
-    }
+            }
 }

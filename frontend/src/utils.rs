@@ -25,6 +25,7 @@ pub fn entries_from_fn<'a, T, F>(
     entries: UseStateHandle<Option<Vec<EntryInfo>>>,
     history: AnyHistory,
     total_pages: UseStateHandle<u64>,
+    route: Route,
     f: F,
 ) where
     T: Future<Output = Result<EntriesWithPages, HoliError>>,
@@ -62,7 +63,7 @@ pub fn entries_from_fn<'a, T, F>(
                     entries.set(Some(Vec::new()));
                     total_pages.set(0);
                     history
-                        .push_with_query(Route::Favo, SearchQuery::default())
+                        .push_with_query(route, SearchQuery::default())
                         .unwrap();
                 }
             });

@@ -67,9 +67,9 @@ def init_and_run(host: str):
 
     from holiapi.db.setup_db import create_user_db
     create_user_db()
-    #from waitress import serve
-    #serve(app, host=host, port=82, threads=16)
-    app.run(host=host, debug=True, port=82)
+    from waitress import serve
+    serve(app, host=host, port=82, threads=16)
+    #app.run(host=host, debug=True, port=82)
 
 
 

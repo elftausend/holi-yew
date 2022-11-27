@@ -70,6 +70,7 @@ pub fn entries() -> Html {
         entries.clone(),
         history,
         total_pages.clone(),
+        Route::Entries,
         get_entries_with_total,
     );
 
