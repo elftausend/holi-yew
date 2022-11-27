@@ -16,7 +16,7 @@ class Favo(Resource):
         try:
             uid = int(uid)
         except:
-            return 400
+            return
 
         if uid in current_user.favs:
             return
@@ -26,4 +26,5 @@ class Favo(Resource):
         save_upload_dict_as_json(entry_info, uid)
 
         add_uid_to_favs(uid, current_user)
+        return
     

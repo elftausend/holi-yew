@@ -37,13 +37,17 @@ fn favo(uid: u32, user_ctx: UseUserContextHandle) -> Callback<MouseEvent> {
     Callback::from(move |_e: MouseEvent| {
         let user_ctx = user_ctx.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            if let Ok(_) = favo_request(uid).await {
-                let mut user_info = (*(user_ctx.inner)).clone();
-                user_info.favs.push(uid);
-                user_ctx.inner.set(user_info);
+            favo_request(uid).await.unwrap();
+            let mut user_info = (*(user_ctx.inner)).clone();
+            user_info.favs.push(uid);
+            user_ctx.inner.set(user_info);
 
-                //fav.set(true)
-            }
+            //if let Ok(_) = favo_request(uid).await {
+            //    let mut user_info = (*(user_ctx.inner)).clone();
+            //    user_info.favs.push(uid);
+            //    user_ctx.inner.set(user_info);
+            //    //fav.set(true)
+            //}
         });
     })
 }
@@ -52,13 +56,14 @@ fn unfavo(uid: u32, user_ctx: UseUserContextHandle) -> Callback<MouseEvent> {
     Callback::from(move |_e: MouseEvent| {
         let user_ctx = user_ctx.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            if let Ok(_) = unfavo_request(uid).await {
-                let mut user_info = (*(user_ctx.inner)).clone();
-                let idx = user_info.favs.binary_search(&uid).unwrap();
-                user_info.favs.remove(idx);
+            unfavo_request(uid).await.unwrap();
+            let mut user_info = (*(user_ctx.inner)).clone();
+            
+            user_info.favs.sort();
+            let idx = user_info.favs.binary_search(&uid).unwrap();
+            user_info.favs.remove(idx);
+            user_ctx.inner.set(user_info);
 
-                user_ctx.inner.set(user_info);
-            }
         });
     })
 }
@@ -120,7 +125,7 @@ pub fn show_upload() -> Html {
                 });
                 || {}
             },
-            user_ctx1,
+            user_ctx1.inner.favs.clone(),
         );
     }
 

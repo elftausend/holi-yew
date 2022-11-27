@@ -15,10 +15,10 @@ class UnFavo(Resource):
         try:
             uid = int(uid)
         except:
-            return 400
+            return
 
         if uid not in current_user.favs:
-            return 400
+            return
 
         entry_info = utils.entries[uid]
 
@@ -28,4 +28,5 @@ class UnFavo(Resource):
         save_upload_dict_as_json(entry_info, uid)
         
         remove_uid_from_favs(uid, current_user)
+        return
     
