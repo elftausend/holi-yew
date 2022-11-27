@@ -24,23 +24,22 @@ pub async fn flag_incr_req(flag_info: FlagInfo) -> Result<FlagCount, HoliError> 
     request::<_, FlagCount>(Method::POST, "incr_flag", flag_info).await
 }
 
-fn incr_flag_button(
+pub fn incr_flag_button(
     flag_incr: i32,
-    user_info: &UserListInfo,
+    usid: &str,
     flag_count: UseStateHandle<i32>,
 ) -> Callback<MouseEvent> {
-    let user_info = user_info.clone();
-
+    let usid = usid.to_string();
     Callback::from(move |e: MouseEvent| {
         let flag_count = flag_count.clone();
 
-        let user_info = user_info.clone();
+        let usid = usid.to_string();
         e.prevent_default();
         wasm_bindgen_futures::spawn_local(async move {
             flag_count.set(
                 flag_incr_req(FlagInfo {
                     flag_incr,
-                    usid: user_info.usid.clone(),
+                    usid
                 })
                 .await
                 .unwrap()
@@ -56,8 +55,8 @@ pub fn user_card(props: &Props) -> Html {
 
     let flag_count = use_state(|| user_info.flag_count);
 
-    let on_incr_flag = incr_flag_button(1, &user_info, flag_count.clone());
-    let on_decr_flag = incr_flag_button(-1, &user_info, flag_count.clone());
+    let on_incr_flag = incr_flag_button(1, &user_info.usid, flag_count.clone());
+    let on_decr_flag = incr_flag_button(-1, &user_info.usid, flag_count.clone());
 
     html! {
         <div class = "card">

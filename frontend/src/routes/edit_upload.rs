@@ -1,4 +1,4 @@
-use crate::{components::Auth, error::HoliError, request};
+use crate::{components::{Auth, incr_flag_button}, error::HoliError, request, hooks::{UseUserContextHandle, use_user_context}};
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
@@ -14,10 +14,25 @@ const FAILED_DELETE_MSG: &str = "Dieser Upload konnte nicht gelöscht werden.";
 pub struct EditInfo {
     title: String,
     tags: String,
+    usid: String,
 }
 
 pub async fn get_edit_entry(uid: u32) -> Result<EntryInfo, HoliError> {
     request(Method::GET, &format!("edit_entry?uid={uid}"), ()).await
+}
+
+pub fn flag_buttons(user_ctx: UseUserContextHandle, usid: &str, flag_count: UseStateHandle<i32>) -> Html {
+    if user_ctx.inner.is_admin {
+        let on_incr_flag = incr_flag_button(1, usid, flag_count.clone());
+        let on_decr_flag = incr_flag_button(-1, usid, flag_count.clone());
+        return html! {
+            <>
+                <button onclick={on_decr_flag} style="width: 37px;" class="btn btn-primary">{"-"}</button>
+                <button onclick={on_incr_flag} style="width: 37px;" class="btn btn-primary ms-1">{"+"}</button>
+            </>
+        }
+    }
+    html!()
 }
 
 fn mount_entry_to_edit(
@@ -38,6 +53,7 @@ fn mount_entry_to_edit(
                         .iter()
                         .map(|tag| format!("{tag} "))
                         .collect::<String>(),
+                    usid: entry.usid
                 })
             } else {
                 edit_info.set(EditInfo::default());
@@ -49,6 +65,7 @@ fn mount_entry_to_edit(
 
 #[function_component(EditUpload)]
 pub fn edit_upload() -> Html {
+    let flag_count = use_state(|| 0);
     let history = use_history().unwrap();
     let edit_info = use_state(EditInfo::default);
     let disable_edit = use_state(|| false);
@@ -152,6 +169,8 @@ pub fn edit_upload() -> Html {
             });
         })
     };
+    let user_ctx = use_user_context();
+    let flag_buttons = flag_buttons(user_ctx, &edit_info.usid, flag_count);
 
     html! {
         <div>
@@ -178,6 +197,7 @@ pub fn edit_upload() -> Html {
                         </textarea>
                     </div>
 
+
                     <div class="mb-3">
                         <h3>{"Ändere die Tags*"}</h3>
                         <span style="color: red;">{ upload_msgs.missing_tags.clone() }</span>
@@ -202,9 +222,10 @@ pub fn edit_upload() -> Html {
                         </button>
 
                         {&*(delete_error)}
-                        <button onclick={ondelete} class="btn btn-danger ms-2">
+                        <button onclick={ondelete} class="btn btn-danger ms-2 me-2">
                             {"Löschen"}
                         </button>
+                        {flag_buttons}
                         <br />
                         <span style="color: red; font-style: italic;">
                             { "Felder markiert mit '*' müssen ausgefüllt werden."}

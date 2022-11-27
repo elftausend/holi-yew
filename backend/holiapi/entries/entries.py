@@ -5,7 +5,6 @@ from flask import jsonify
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required
 from holiapi.utils import entries
-from holiapi.config import PATH
 
 from holiapi.api_limiter import limiter
 
