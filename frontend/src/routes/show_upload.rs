@@ -143,15 +143,6 @@ pub fn show_upload() -> Html {
                                     {"Zurück"}
                                 </button>
                                 <span class="ms-2 me-2">{entry_info.title.clone()}</span>
-                                // download does not work because the link to the download is not the same origin
-                                <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={format!("{}.{}", &entry_info.title, &entry_info.ext)}>
-                                    <button class="btn btn-primary">{"download"}</button>
-                                </a>
-                                <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
-                                    <button class="btn btn-danger me-2">
-                                    {"PDF anzeigen"}
-                                    </button>
-                                </a>
                                 {favo_button}
                                 <br/>
                                 {
@@ -163,8 +154,22 @@ pub fn show_upload() -> Html {
                                         }
                                     }).collect::<Html>()
                                 }
+                                <p class="mt-1">
+                                    // download does not work because the link to the download is not the same origin
+                                    <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={format!("{}.{}", &entry_info.title, &entry_info.ext)}>
+                                        <button class="btn btn-primary">{"download"}</button>
+                                    </a>
+                                
+                                    <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
+                                        <button class="btn btn-danger me-2">
+                                        {"PDF anzeigen"}
+                                        </button>
+                                    </a>
+                                </p>
                                 </div>
 
+                                <br />
+                                <br />
                                 <br />
                                 <br />
 
@@ -181,7 +186,7 @@ pub fn show_upload() -> Html {
                                                         <>
                                                             <img
                                                                 class="mb-3"
-                                                                style="width: 80%;"
+                                                                style="width: 55%;"
                                                                 src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))}
                                                                 alt="Some holi image"
                                                             />

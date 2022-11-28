@@ -10,8 +10,8 @@ pub fn user_panel() -> Html {
     let upload_banned_modal = if user_ctx.inner.upload_banned {
         html! {
             <>
-                <div class="row highlight" data-bs-toggle="modal" data-bs-target="#noupload">
-                    <div class="col banned_bg_color card square">
+                <div class="highlight" data-bs-toggle="modal" data-bs-target="#noupload">
+                    <div class="col banned_bg_color card rectangle">
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Upload"}</h1>
                     </div>
                 </div>
@@ -35,8 +35,8 @@ pub fn user_panel() -> Html {
         }
     } else {
         html! {
-            <div class="row highlight">
-                <Link<Route> classes={classes!("col", "et_bg_color", "card", "square")} to={Route::Upload}>
+            <div class="highlight">
+                <Link<Route> classes={classes!("col", "et_bg_color", "card", "rectangle")} to={Route::Upload}>
                     <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Upload"}</h1>
                 </Link<Route>>
             </div>
@@ -46,8 +46,8 @@ pub fn user_panel() -> Html {
     let users = if user_ctx.inner.is_admin {
         html! {
             <>
-            <div class="row highlight">
-                <Link<Route> classes={classes!("col", "wi_bg_color", "card", "square")} to={Route::Users}>
+            <div class="highlight">
+                <Link<Route> classes={classes!("col", "wi_bg_color", "card", "rectangle")} to={Route::Users}>
                     <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Users"}</h1>
                 </Link<Route>>
             </div>
@@ -61,14 +61,14 @@ pub fn user_panel() -> Html {
         <>
             <Auth>
                 {upload_banned_modal}
-                <div class="row highlight">
-                    <Link<Route> classes={classes!("col", "it_bg_color", "card", "square")} to={Route::Edit}>
+                <div class="highlight">
+                    <Link<Route> classes={classes!("col", "it_bg_color", "card", "rectangle")} to={Route::Edit}>
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Edit"}</h1>
                     </Link<Route>>
                 </div>
 
-                <div class="row highlight">
-                    <Link<Route> classes={classes!("col", "el_bg_color", "card", "square")} to={Route::Favo}>
+                <div class="highlight">
+                    <Link<Route> classes={classes!("col", "el_bg_color", "card", "rectangle")} to={Route::Favo}>
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"Favoriten"}</h1>
                     </Link<Route>>
                 </div>

@@ -76,6 +76,12 @@ footer {
     background-color: rgba(206,0,55,1);
 }
 
+.et_color {
+    color: rgba(206,0,55,1);
+}
+
+
+
 
 
 
@@ -85,8 +91,13 @@ footer {
     width: 10rem;
     height: 10rem;
     min-width: 10rem;
-    
-    
+}
+
+.rectangle {
+    border-radius: 0 !important;
+    width: 100%;
+    height: 10rem;
+    min-width: 10rem;
 }
 
 a, a:focus, a:active {
