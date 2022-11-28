@@ -115,4 +115,7 @@ class EditEntries(Resource):
         if page > page_count or page < 0:
             return 400
 
-        return list(own_entries.values())[start:end]
+        return {
+            "entries": list(own_entries.values())[start:end],
+            "page_count": page_count
+        }

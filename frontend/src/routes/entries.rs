@@ -168,14 +168,14 @@ pub fn entries() -> Html {
                         </Link<Route, SearchQuery>>
 
                         <Link<Route, SearchQuery>
-                        classes={classes!("col", "wi_bg_color", "card", "square")}
-                        to={Route::Entries}
-                        query={Some(SearchQuery {
-                            page: 0,
-                            tags: "WII".into(),
-                            scroll_to_bar: true
-                        })}
-                    >
+                            classes={classes!("col", "wi_bg_color", "card", "square")}
+                            to={Route::Entries}
+                            query={Some(SearchQuery {
+                                page: 0,
+                                tags: "WII".into(),
+                                scroll_to_bar: true
+                            })}
+                        >
 
                         <div class="">
                         <h1 class="text-center push-down text-white" style="margin-top: 56px;">{"WII"}</h1>
