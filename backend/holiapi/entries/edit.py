@@ -112,8 +112,6 @@ class EditEntries(Resource):
         else:
             tags = ""
 
-        if page*16 >= len(own_entries):
-            return {}
         start, end, page_count = utils.limit_end_len(page, len(own_entries))
         if page > page_count or page < 0:
             return 400
