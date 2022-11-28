@@ -48,14 +48,16 @@ pub fn pagination(props: &Props) -> Html {
                             }
                         } else {
                             html!{
-                                <Link<Route, SearchQuery>
-                                    classes={classes!("page-link")}
-                                    disabled={search_info.page==1}
-                                    to={route_to_page.clone()}
-                                    query={Some(SearchQuery{page: search_info.page-1, tags: "".to_string(), scroll_to_bar: true})}
-                                >
-                                    { "<" }
-                                </Link<Route, SearchQuery>>
+                                <div style="width: 37.5px; height: 38px;">
+                                    <Link<Route, SearchQuery>
+                                        classes={classes!("page-link", "btn", "btn-secondary")}
+                                        disabled={search_info.page==1}
+                                        to={route_to_page.clone()}
+                                        query={Some(SearchQuery{page: search_info.page-1, tags: "".to_string(), scroll_to_bar: true})}
+                                    >
+                                        { "<" }
+                                    </Link<Route, SearchQuery>>
+                                </div>
                             }
                         }
                     }
@@ -70,16 +72,17 @@ pub fn pagination(props: &Props) -> Html {
                             }
                         } else {
                             html! {
-                                <a href="#">
-                                <Link<Route, SearchQuery>
-                                    classes={classes!("page-link")}
-                                    disabled={true}
-                                    to={route_to_page}
-                                    query={Some(SearchQuery{page: search_info.page+1, tags: search_info.tags, scroll_to_bar: true})}
-                                >
+                                <div style="width: 37.5px; height: 38px;">
+                                    <Link<Route, SearchQuery>
+                                        classes={classes!("page-link", "btn", "btn-secondary")}
+                                        disabled={true}
+                                        to={route_to_page}
+                                        query={Some(SearchQuery{page: search_info.page+1, tags: search_info.tags, scroll_to_bar: true})}
+                                    >
+                                    //<button style="width: 37.5px; height: 38px;"></button>
                                     { ">" }
-                                </Link<Route, SearchQuery>>
-                                </a>
+                                    </Link<Route, SearchQuery>>
+                                </div>
                             }
                         }
                     }
