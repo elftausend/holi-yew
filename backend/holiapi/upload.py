@@ -80,11 +80,16 @@ class FileDetails:
 def sort_by_id(entry):
     return entry[1]["uid"]
 
+def add_upload_to_dicts(upload_info, uid):
+    utils.entries[uid] = upload_info
+    utils.usid_dict[uid] = upload_info["usid"]
+
+
 def save_upload_dict_as_json(upload_info, uid: int):
     with open(f"{PATH}/static/uploaded/{uid}.json", mode="w") as file:
         # that the usid is not overwritten with anonymous
         utils.entries[uid]["usid"] = utils.usid_dict[uid]
-        utils.entries[uid] = upload_info
+        
 
         # ordering is done by the frontend
         #utils.entries = dict(sorted(utils.entries.items(), key=sort_by_id, reverse=True))
@@ -154,6 +159,8 @@ class UploadDetails:
             "favs": 0,
             "hash": self.file.hash
         }
+        # registers upload to entries and usid_dict
+        add_upload_to_dicts(upload_info, self.uid)
         save_upload_dict_as_json(upload_info, self.uid)
 
 def division_exist(htl_division: str) -> bool:
