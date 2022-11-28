@@ -169,23 +169,34 @@ pub fn show_upload() -> Html {
                                 <br />
 
                                 <p class="mt-5">
-                                    <h4 style="float: left;">{"Extrahierte Bilder"}</h4><br />
+                                    
                                     {
                                         if !entry_info.img_exts.is_empty() {
-                                            (0..entry_info.img_exts.len()).into_iter().map(|idx| {
-                                                html!{
-                                                    <>
-                                                        <img
-                                                            class="mb-3"
-                                                            style="width: 80%;"
-                                                            src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))}
-                                                            alt="Some holi image"
-                                                        />
-                                                    </>
-                                                }
-                                            }).collect::<Html>()
+                                            html! {
+                                                <>
+                                                    <h4 style="float: left;">{"Extrahierte Bilder"}</h4><br /><br />                                               
+                                                {    
+                                                (0..entry_info.img_exts.len()).into_iter().map(|idx| {
+                                                    html!{
+                                                        <>
+                                                            <img
+                                                                class="mb-3"
+                                                                style="width: 80%;"
+                                                                src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))}
+                                                                alt="Some holi image"
+                                                            />
+                                                        </>
+                                                    }
+                                                }).collect::<Html>()
+    }  
+                                            </> }
                                         } else {
-                                            html!()
+                                            html! {
+                                                <div class="container-fluid">
+                                                    {"PDF Preview"}<br /><br />
+                                                    <iframe class="pdf-preview" src={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} />
+                                                </div>
+                                            }
                                         }
 
                                     }

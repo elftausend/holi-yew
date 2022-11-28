@@ -52,7 +52,11 @@ pub fn entry_card(props: &Props) -> Html {
     } else {
         html! {
             <div class="card">
-                <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={format!("{}.{}", &entry.title, &entry.ext)}>
+                <Link<Route, HashQuery>
+                to={Route::ShowUpload}
+                query={Some(HashQuery{uid: entry.uid})}
+                >
+               // <a href={pdf_path(&format!("{}.{}", &entry.hash, &entry.ext))} download={format!("{}.{}", &entry.title, &entry.ext)}>
                     <img style="max-width: 50%; max-width: 10rem;" class="card-img-top " src={image_path(&entry.view)} alt="picture" />
                     <div style="float: right;">
                         <svg style="fill: rgb(25,25,25);" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
@@ -74,7 +78,8 @@ pub fn entry_card(props: &Props) -> Html {
                             }
                         </p>
                     </div>
-                </a>
+//                </a>
+                </Link<Route, HashQuery>>
             </div>
         }
     }

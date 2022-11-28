@@ -89,7 +89,6 @@ def add_upload_to_dicts(upload_info, uid):
     
     utils.entries.usid_dict[uid] = upload_info["usid"]
 
-
 def save_upload_dict_as_json(upload_info, uid: int):
     with open(f"{PATH}/static/uploaded/{uid}.json", mode="w") as file:
         # that the usid is not overwritten with anonymous
