@@ -24,12 +24,15 @@ def read_entry(entry, entry_path = f"{PATH}/static/uploaded/"):
     with open(f"{entry_path}{entry}", mode="r") as file:
         return json.load(file)
 
+def sort_by_id(entry):
+    return entry[1]["uid"]
+
 def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/uploaded/"):
     entries = os.listdir(entry_path)
     files_data = {}
     usid_dict = {}
     
-    for entry in entries:
+    for entry in reversed(entries):
         upload = read_entry(entry, entry_path)
         
         usid_dict[upload["uid"]] = upload["usid"]
@@ -41,9 +44,24 @@ def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/u
             
         
     #return dict(sorted(files_data.items(), key=sorting, reverse=True))
+    #files_data = dict(sorted(files_data.items(), reverse=True))
     return files_data, usid_dict
 
-entries, usid_dict = get_upload_entries([])
+class Dicts:
+    def __init__(self) -> None:
+        entries, usid_dict = get_upload_entries([])        
+        self.entries = entries
+        self.usid_dict = usid_dict
+    
+    def set_entries(self, entries):
+        self.entries = entries
+
+    def __getitem__(self, key):
+        return self.entries[key]
+
+
+#entries, usid_dict = get_upload_entries([])
+entries = Dicts()
 
 def check_date(today, returned_date):
     if len(returned_date) == 0:
@@ -88,7 +106,7 @@ def file_contents(filename):
         print(f"{filename} file not found")
 
 def is_hash_in_file(hash: str) -> bool:
-    for value in entries.values():
+    for value in entries.entries.values():
         if hash in value["hash"]:
             return True
     return False

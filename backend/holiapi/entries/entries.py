@@ -13,7 +13,7 @@ class Entries(Resource):
     decorators = [jwt_required(), limiter.limit("40/second")]
     def get(self):
 
-        local_entries = entries
+        local_entries = entries.entries
 
         page = 0
         if request.args.get("page"):
@@ -26,12 +26,13 @@ class Entries(Resource):
         if tags:
             returned_tags = tags.split()
             print(returned_tags)
-            local_entries = filter_tags.filter_for_tags(returned_tags, entries)
+            local_entries = filter_tags.filter_for_tags(returned_tags, local_entries)
         else:
             tags = ""
 
-        if page*16 >= len(entries):
+        if page*16 >= len(local_entries):
             return {}
+
         start, end, page_count = utils.limit_end_len(page, len(local_entries))
         if page > page_count or page < 0:
             return 400

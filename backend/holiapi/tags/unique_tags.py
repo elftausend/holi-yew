@@ -34,5 +34,5 @@ class UniqueTag:
 class UniqueTags(Resource):
     decorators = [jwt_required(), limiter.limit("45/second")]
     def get(self):
-        unique_tags = get_unique_dict_tags(entries)
+        unique_tags = get_unique_dict_tags(entries.entries)
         return unique_tags

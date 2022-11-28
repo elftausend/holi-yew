@@ -12,7 +12,7 @@ from flask_restful import Resource
 
 def delete_entry(uid: int):
     entry_info = entries[uid]
-    entries.pop(uid)
+    entries.entries.pop(uid)
 
     # remove entry info json file
     remove(f"{PATH}/static/uploaded/{uid}.json")

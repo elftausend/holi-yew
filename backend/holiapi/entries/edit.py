@@ -1,7 +1,7 @@
 from holiapi.upload import UploadMsgs, MISSING_TAGS, MISSING_TITLE, save_upload_dict_as_json
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required, current_user
-from holiapi.utils import entries, usid_dict
+from holiapi.utils import entries
 from holiapi.logger import log
 from holiapi.user import User
 from holiapi import utils
@@ -24,7 +24,7 @@ class EditEntry(Resource):
         # show usid if admin
         if current_user.is_admin():
             entry = entries[uid]
-            entry["usid"] = usid_dict[uid]
+            entry["usid"] = entries.usid_dict[uid]
             return entry
 
         # has not uploaded this entry    
@@ -80,7 +80,7 @@ class EditEntry(Resource):
 
 def get_editable_entries(user: User):
     if user.is_admin():
-        return entries
+        return entries.entries
 
     uploaded_entry_ids = user.uploaded
     print(f"uploaded_entry_ids: {uploaded_entry_ids}")
@@ -112,9 +112,9 @@ class EditEntries(Resource):
         else:
             tags = ""
 
-        if page*16 >= len(entries):
+        if page*16 >= len(own_entries):
             return {}
-        start, end, page_count = utils.limit_end_len(page, len(entries))
+        start, end, page_count = utils.limit_end_len(page, len(own_entries))
         if page > page_count or page < 0:
             return 400
 
