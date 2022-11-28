@@ -1,7 +1,7 @@
 from holiapi.upload import UploadMsgs, MISSING_TAGS, MISSING_TITLE, save_upload_dict_as_json
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required, current_user
-from holiapi.utils import entries
+from holiapi.utils import entries, usid_dict
 from holiapi.logger import log
 from holiapi.user import User
 from holiapi import utils
@@ -21,12 +21,15 @@ class EditEntry(Resource):
         except:
             return 400
 
-        # has not uploaded this entry    
-        if not (uid in current_user.uploaded) and not current_user.is_admin():
-            return 400
-
+        # show usid if admin
         if current_user.is_admin():
-            return utils.read_entry(f"{uid}.json")
+            entry = entries[uid]
+            entry["usid"] = usid_dict[uid]
+            return entry
+
+        # has not uploaded this entry    
+        if not uid in current_user.uploaded:
+            return 400
 
         return entries[uid]
 

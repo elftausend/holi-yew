@@ -27,19 +27,23 @@ def read_entry(entry, entry_path = f"{PATH}/static/uploaded/"):
 def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/uploaded/"):
     entries = os.listdir(entry_path)
     files_data = {}
+    usid_dict = {}
     
     for entry in entries:
         upload = read_entry(entry, entry_path)
+        
+        usid_dict[upload["uid"]] = upload["usid"]
+        upload["usid"] = "anonymous"
+        
         if upload["usid"] == user or user == "admin":
             if check_if_tags_found(lookup_tags, upload):
-                upload["usid"] = "anonymous"
                 files_data[upload["uid"]] = upload
             
         
     #return dict(sorted(files_data.items(), key=sorting, reverse=True))
-    return files_data
+    return files_data, usid_dict
 
-entries = get_upload_entries([])
+entries, usid_dict = get_upload_entries([])
 
 def check_date(today, returned_date):
     if len(returned_date) == 0:
