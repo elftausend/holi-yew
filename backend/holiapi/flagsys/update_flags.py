@@ -10,7 +10,7 @@ class FlagUpdate(Resource):
             return 403
         
         json_data = request.get_json(force=True)
-
+        
         flag_incr = json_data["flag_incr"]
         usid = json_data["usid"]
 
