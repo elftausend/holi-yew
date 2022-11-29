@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::{
-    image_path, pdf_path,
+    image_path,
     routes::{entries::EntryInfo, show_upload::HashQuery, Route},
 };
 
@@ -40,7 +40,7 @@ pub fn entry_card(props: &Props) -> Html {
                             {
                                 entry.tags.iter().map(|tag| {
                                     html! {
-                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                        <span class="badge me-1 bg-secondary tag mt-1">{tag}</span>
                                     }
                                 }).collect::<Html>()
                             }
@@ -72,7 +72,7 @@ pub fn entry_card(props: &Props) -> Html {
                             {
                                 entry.tags.iter().map(|tag| {
                                     html! {
-                                        <span class="badge me-1 bg-secondary tag">{tag}</span>
+                                        <span class="badge me-1 bg-secondary tag mt-1">{tag}</span>
                                     }
                                 }).collect::<Html>()
                             }
