@@ -51,23 +51,23 @@ class Auth(Resource):
         
         # auth with htlhl
         print(f"received code: {code}")
-        
-        payload = {
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "grant_type": GRANT_TYPE,
-            "code": code,
-            "redirect_uri": REDIRECT_URI,
-        }
-        answer = requests.post(TOKEN_URL, json=payload)
-        if not answer:
-            return
-        token = answer.json()["access_token"]
-        user_info_raw = requests.get(f"{USER_INFO_URL}{token}").json()
 
-        #user_info_raw = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
+        #payload = {
+        #    "client_id": CLIENT_ID,
+        #    "client_secret": CLIENT_SECRET,
+        #    "grant_type": GRANT_TYPE,
+        #    "code": code,
+        #    "redirect_uri": REDIRECT_URI,
+        #}
+        #answer = requests.post(TOKEN_URL, json=payload)
+        #if not answer:
+        #    return
+        #token = answer.json()["access_token"]
+        #user_info_raw = requests.get(f"{USER_INFO_URL}{token}").json()
+
+        user_info_raw = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'A Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=111111,ou=1AFET,ou=ET,o=HTBL'}}
         #user_info_raw = {'count': 1, '0': {'mail': {'count': 2, '0': 'email1', '1': 'email2'}, '0': 'mail', 'displayname': {'count': 1, '0': 'B Name'}, '1': 'displayname', 'count': 2, 'dn': 'cn=221111,ou=1AFET,ou=ET,o=HTBL'}}
-        #token = "asdfas"
+        token = "asdfas"
 
         user = get_user_from_raw(user_info_raw, token)
 

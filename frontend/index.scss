@@ -13,7 +13,7 @@ footer {
     background-color: #252D31;
     color: #C0C9CC;
     /*prevents buggy nutzungsbedingung link on smartphones*/
-    font-size: 1.5vh;
+    font-size: 2.2vh;
 }
 
 
@@ -60,16 +60,32 @@ footer {
     background-color: rgba(0,97,160,1);
 }
 
+.wi_color {
+    color: rgba(0,97,160,1);
+}
+
 .me_bg_color {
     background-color: rgba(147,201,14,1);
+}
+
+.me_color {
+    color: rgba(147,201,14,1);
 }
 
 .el_bg_color {
     background-color: rgba(255,209,0,1);
 }
 
+.el_color {
+    color: rgba(255,209,0,1);
+}
+
 .mb_bg_color {
     background-color: rgba(0,150,94,1);
+}
+
+.mb_color {
+    color: rgba(0,150,94,1);
 }
 
 .et_bg_color {

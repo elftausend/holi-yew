@@ -16,17 +16,29 @@ pub fn footer() -> Html {
                     </Link<Route>>
                 </div>
                 <div class="dev-info">
-                    <div>
+                    <div class="row">
 
+                        <div class="col">
                         {"Entwickler: Florian Nagy, 3B"}
                         <span class="it_color">{"HITS"}</span>{", "}
                         <a style="color: yellow;" href="https://github.com/elftausend" target="_blank" rel="noopener noreferrer">
                             {"GitHub"}
                         </a>
-                        <div style="float: right;">
-                            <Link<Route> to={Route::Tos}>
-                                {"Nutzungsbedingungen"}
-                            </Link<Route>>
+                        </div>
+                        <div class="col">
+                            <div style="float: right;">
+                                <Link<Route> to={Route::Tos}>
+                                    {"Über "}
+                                    <span class="et_color">{"h"}</span>
+                                    <span class="it_color">{"o"}</span>
+                                    <span class="el_color">{"l"}</span>
+                                    <span class="me_color">{"i"}</span>
+                                    <span class="mb_color">{"."}</span>
+                                    <br />
+                                    
+                                    {"Nutzungsbedingungen"}
+                                </Link<Route>>
+                            </div>
                         </div>
                     </div>
                 </div>
