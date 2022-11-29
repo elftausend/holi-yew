@@ -53,7 +53,9 @@ pub fn user_panel() -> Html {
             })
             .collect::<Html>(),
         None => {
-            html!()
+            html! {
+                {"Nutzerdaten werden geladen..."}
+            }
         }
     }
 }

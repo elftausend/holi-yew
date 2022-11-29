@@ -68,7 +68,7 @@ fn unfavo(uid: u32, user_ctx: UseUserContextHandle) -> Callback<MouseEvent> {
     })
 }
 
-fn favo_button(entry_info: UseStateHandle<EntryInfo>, user_ctx: UseUserContextHandle) -> Html {
+fn favo_button(entry_info: &EntryInfo, user_ctx: UseUserContextHandle) -> Html {
     if user_ctx.inner.favs.contains(&entry_info.uid) {
         html! {
             <button onclick={unfavo(entry_info.uid, user_ctx.clone())} class="btn btn-secondary">
@@ -93,7 +93,7 @@ fn favo_button(entry_info: UseStateHandle<EntryInfo>, user_ctx: UseUserContextHa
 #[function_component(ShowUpload)]
 pub fn show_upload() -> Html {
     let user_ctx = use_user_context();
-    let entry_info = use_state(EntryInfo::default);
+    let entry_info = use_state(|| None);
     let history = use_history().unwrap();
     let fav = use_state(|| false);
 
@@ -117,9 +117,9 @@ pub fn show_upload() -> Html {
                     let hash = location.query::<HashQuery>().unwrap_or_default();
                     if let Ok(entry) = get_entry(hash.uid as i32).await {
                         fav.set(user_ctx.inner.favs.contains(&entry.uid));
-                        entry_info.set(entry)
+                        entry_info.set(Some(entry))
                     } else {
-                        entry_info.set(EntryInfo::default());
+                        entry_info.set(None);
                         history.back();
                     }
                 });
@@ -129,89 +129,98 @@ pub fn show_upload() -> Html {
         );
     }
 
-    let favo_button = favo_button(entry_info.clone(), user_ctx.clone());
+    match (*entry_info).clone() {
+        Some(entry_info) => {
+            let favo_button = favo_button(&entry_info, user_ctx.clone());
 
-    html! {
-        <div>
-            <Auth>
+            html! {
                 <div>
-                    <div class="container-fluid mt-3">
-
-                        <div style="font-weight: bold; font-size: x-large;" class="mt-3">
-                            <div style="float: left;" class="mb-3">
-                                <button onclick={onback} class="btn btn-primary">
-                                    {"Zurück"}
-                                </button>
-                                <span class="ms-2 me-2">{entry_info.title.clone()}</span>
-                                {favo_button}
-                                <br/>
-                                {
-                                    entry_info.tags.iter().map(|tag| {
-                                        html! {
-                                            <Tag name={tag.clone()} route={Route::Entries} />
-                                            //<span class="badge me-1 bg-secondary tag">{tag}</span>
-                                            //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
-                                        }
-                                    }).collect::<Html>()
-                                }
-                                <p class="mt-1">
-                                    // download does not work because the link to the download is not the same origin
-                                    <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={format!("{}.{}", &entry_info.title, &entry_info.ext)}>
-                                        <button class="btn btn-primary">{"download"}</button>
-                                    </a>
-                                
-                                    <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
-                                        <button class="btn btn-danger me-2">
-                                        {"PDF anzeigen"}
+                    <Auth>
+                        <div>
+                            <div class="container-fluid mt-3">
+        
+                                <div style="font-weight: bold; font-size: x-large;" class="mt-3">
+                                    <div style="float: left;" class="mb-3">
+                                        <button onclick={onback} class="btn btn-primary">
+                                            {"Zurück"}
                                         </button>
-                                    </a>
-                                </p>
-                                </div>
-
-                                <br />
-                                <br />
-                                <br />
-                                <br />
-
-                                <p class="mt-5">
-                                    
-                                    {
-                                        if !entry_info.img_exts.is_empty() {
-                                            html! {
-                                                <>
-                                                    <h4 style="float: left;">{"Extrahierte Bilder"}</h4><br /><br />                                               
-                                                {    
-                                                (0..entry_info.img_exts.len()).into_iter().map(|idx| {
-                                                    html!{
-                                                        <>
-                                                            <img
-                                                                class="mb-3"
-                                                                style="width: 55%;"
-                                                                src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))}
-                                                                alt="Some holi image"
-                                                            />
-                                                        </>
-                                                    }
-                                                }).collect::<Html>()
-    }  
-                                            </> }
-                                        } else {
-                                            html! {
-                                                <div class="container-fluid">
-                                                    {"PDF Preview"}<br /><br />
-                                                    <iframe class="pdf-preview" src={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} />
-                                                </div>
-                                            }
+                                        <span class="ms-2 me-2">{entry_info.title.clone()}</span>
+                                        {favo_button}
+                                        <br/>
+                                        {
+                                            entry_info.tags.iter().map(|tag| {
+                                                html! {
+                                                    <Tag name={tag.clone()} route={Route::Entries} />
+                                                    //<span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                    //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
+                                                }
+                                            }).collect::<Html>()
                                         }
-
-                                    }
-                                </p>
-
+                                        <p class="mt-1">
+                                            // download does not work because the link to the download is not the same origin
+                                            <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={format!("{}.{}", &entry_info.title, &entry_info.ext)}>
+                                                <button class="btn btn-primary">{"download"}</button>
+                                            </a>
+                                        
+                                            <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
+                                                <button class="btn btn-danger me-2">
+                                                {"PDF anzeigen"}
+                                                </button>
+                                            </a>
+                                        </p>
+                                        </div>
+        
+                                        <br />
+                                        <br />
+                                        <br />
+                                        <br />
+        
+                                        <p class="mt-5">
+                                            
+                                            {                                        
+                                                if !entry_info.img_exts.is_empty() {
+                                                    html! {
+                                                        <>
+                                                            <h4 style="float: left;">{"Extrahierte Bilder"}</h4><br /><br />                                               
+                                                        {    
+                                                        (0..entry_info.img_exts.len()).into_iter().map(|idx| {
+                                                            html!{
+                                                                <>
+                                                                    <img
+                                                                        class="mb-3"
+                                                                        style="width: 55%;"
+                                                                        src={image_path(&format!("{}_{idx}.{}", &entry_info.hash, &entry_info.img_exts[idx]))}
+                                                                        alt="Some holi image"
+                                                                    />
+                                                                </>
+                                                            }
+                                                        }).collect::<Html>()
+            }  
+                                                    </> }
+                                                } else {
+                                                    html! {
+                                                        <div class="container-fluid">
+                                                            {"PDF Preview"}<br /><br />
+                                                            <iframe class="pdf-preview" src={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} />
+                                                        </div>
+                                                    }
+                                                }
+        
+                                            }
+                                        </p>
+        
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <br />
+                    </Auth>
                 </div>
-                <br />
-            </Auth>
-        </div>
+            }
+        }
+        None => {
+            html! {
+                {"Beitrag wird geladen..."}
+            }
+        }
     }
 }
