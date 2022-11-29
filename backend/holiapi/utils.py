@@ -57,7 +57,7 @@ class Dicts:
         self.entries = entries
 
     def __getitem__(self, key):
-        return self.entries[key]
+        return self.entries.get(key)
 
 
 #entries, usid_dict = get_upload_entries([])

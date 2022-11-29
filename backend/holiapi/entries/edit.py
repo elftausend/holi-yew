@@ -88,7 +88,9 @@ def get_editable_entries(user: User):
     own_entries = {}
     
     for entry_id in uploaded_entry_ids:
-        own_entries[entry_id] = entries[entry_id]
+        entry = entries[entry_id]
+        if entry:
+            own_entries[entry_id] = entry
 
     return own_entries
 

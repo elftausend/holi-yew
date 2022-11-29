@@ -11,7 +11,7 @@ class FavoEntries(Resource):
         local_entries = {}
 
         for fav in current_user.favs:
-            entry = utils.entries.entries.get(fav)
+            entry = utils.entries[fav]
             if entry:
                 local_entries[fav] = entry
             
