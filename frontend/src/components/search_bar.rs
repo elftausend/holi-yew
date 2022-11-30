@@ -102,7 +102,7 @@ fn on_search_callback(
     })
 }
 
-fn update_division_tags(props: Props, render_input: UseStateHandle<SearchBarInput>) {
+fn update_bar_by_props(props: Props, render_input: UseStateHandle<SearchBarInput>) {
     let props1 = props.clone();
     use_effect_with_deps(
         move |_| {
@@ -139,8 +139,8 @@ pub fn search_bar(props: &Props) -> Html {
 
     let on_search = on_search_callback(history.clone(), props.clone(), tag_input.clone());
 
-    // updates the search field
-    update_division_tags(props.clone(), tag_input.clone());
+    // updates the search field for clicked tags in show_upload view and division 
+    update_bar_by_props(props.clone(), tag_input.clone());
     mount_tags(unique_tags.clone());
 
     {
