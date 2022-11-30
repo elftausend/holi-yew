@@ -24,13 +24,15 @@ pub fn tos() -> Html {
                         <li>{"Auswahl eines passenden Titels"}</li>
                         <li>{"Konventionen bei der Tagvergabe:"}</li>
                         <ol>
+                            <li>{"Klasse Bsp.: 2AFET"}</li>
                             <li>{"Angabe von Lehrperson via Kürzel und Nachname Bsp.: FIMI Fischer"}</li>
                             <li>{"Fach, Kürzel und ausgeschrieben Bsp.: AM Mathematik"}</li>
                             <li>{"Die Tags sollten kurz sein."}</li>
                             <li>{"Weiters passende Tags hinzufügen, die das Thema beschreiben sollen."}</li>
                             {"Überprüfen, ob ähnliche Tags bereits vorhanden sind. Wenn ja, sollten diese ähnlichen Tags ebenfalls angehängt werden."}
-                            <li>{"Die Klasse und Abteilung des Uploaders wird automatisch hinzugefügt."}</li>
-                            {r#"Wenn bspw. eine andere Klasse angegeben werden muss, können nachträglich die Tags unter dem Menü "Edit" geändert werden."#}
+                            <li>{"Die Abteilung des Uploaders wird automatisch hinzugefügt."}</li>
+                            //{r#"Wenn bspw. eine andere Klasse angegeben werden muss, können nachträglich die Tags unter dem Menü "Edit" geändert werden."#}
+                            <li>{"Für einen für reguläre Nutzer anonymen Upload sollten Name aus bspw. Kopfzeile entfernt werden."}</li>
                             <br />
                         </ol>
                     </ul>

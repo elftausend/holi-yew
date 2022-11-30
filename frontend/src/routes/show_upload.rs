@@ -170,11 +170,8 @@ pub fn show_upload() -> Html {
                                         </div>
 
                                         <br />
-                                        <br />
-                                        <br />
-                                        <br />
 
-                                        <p class="mt-5">
+                                        <p style="margin-top: 120px">
 
                                             {
                                                 if !entry_info.img_exts.is_empty() {
@@ -198,7 +195,7 @@ pub fn show_upload() -> Html {
                                                     </> }
                                                 } else {
                                                     html! {
-                                                        <div class="container-fluid">
+                                                        <div style="margin-top: 120px" class="container-fluid">
                                                             {"PDF Preview"}<br /><br />
                                                             <iframe class="pdf-preview" src={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} />
                                                         </div>
