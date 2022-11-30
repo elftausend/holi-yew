@@ -171,13 +171,13 @@ pub fn show_upload() -> Html {
 
                                         <br />
 
-                                        <p style="margin-top: 120px">
+                                        <p style="margin-top: 100px">
 
                                             {
                                                 if !entry_info.img_exts.is_empty() {
                                                     html! {
                                                         <>
-                                                            <h4 style="float: left;">{"Extrahierte Bilder"}</h4><br /><br /><br />
+                                                            <h4 >{"Extrahierte Bilder"}</h4>
                                                         {
                                                         (0..entry_info.img_exts.len()).into_iter().map(|idx| {
                                                             html!{

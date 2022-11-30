@@ -100,10 +100,19 @@ pub fn edit() -> Html {
                                                             to={Route::EditUpload}
                                                             query={Some(HashQuery{uid: entry.uid})}
                                                         >
-                                                            <button class="btn btn-primary">
+                                                            <button class="btn btn-primary me-2 mt-1">
                                                                 {"editieren"}
                                                             </button>
 
+                                                        </Link<Route, HashQuery>>
+
+                                                        <Link<Route, HashQuery>
+                                                            to={Route::ShowUpload}
+                                                            query={Some(HashQuery{uid: entry.uid})}
+                                                        >
+                                                            <button class="btn btn-primary mt-1">
+                                                                {"ansehen"}
+                                                            </button>
                                                         </Link<Route, HashQuery>>
                                                     </p>
                                                 </div>
