@@ -54,25 +54,13 @@ fn close_list() {
     }
 }
 
-fn update_search(
-    history: AnyHistory,
-    value: String,
-    //tag_input: Rc<RefCell<SearchBarInput>>,
-    tag_input: UseStateHandle<SearchBarInput>,
-    props: Props,
-) {
-    //let mut info = tag_input.borrow_mut();
-    let mut info = (*tag_input).clone();
-    info.tags = value;
-
-    //tag_input.set(info.clone());
-
+fn update_search(history: AnyHistory, value: String, props: Props) {
     history
         .push_with_query(
             props.route.clone(),
             SearchQuery {
                 page: props.search_info.page,
-                tags: info.tags.clone(),
+                tags: value,
                 scroll_to_bar: false,
             },
         )
@@ -118,13 +106,6 @@ fn update_division_tags(props: Props, render_input: UseStateHandle<SearchBarInpu
     let props1 = props.clone();
     use_effect_with_deps(
         move |_| {
-            let search_field: HtmlInputElement = document()
-                .get_element_by_id("search_field")
-                .unwrap()
-                .unchecked_into();
-
-            //search_field.set_value(&props1.search_info.tags);
-
             let mut info = (*render_input).clone();
             info.tags = props1.search_info.tags;
             render_input.set(info.clone());
@@ -169,8 +150,6 @@ pub fn search_bar(props: &Props) -> Html {
         let props = props.clone();
         let current_focus = current_focus.clone();
 
-        let tag_input_dep = tag_input.clone();
-
         use_effect_with_deps(
             move |_| {
                 let tags = (*unique_tags1).clone();
@@ -197,10 +176,16 @@ pub fn search_bar(props: &Props) -> Html {
 
                         close_list();
 
-                        create_tag_suggestions(search_field.clone(), &tags, &value, tag_input.clone(), &props, history.clone());
+                        create_tag_suggestions(
+                            search_field.clone(),
+                            &tags,
+                            &value,
+                            &props,
+                            history.clone(),
+                        );
 
                         if !is_mobile() {
-                            update_search(history.clone(), value, tag_input.clone(), props.clone());
+                            update_search(history.clone(), value, props.clone());
                         }
                     }) as Box<dyn FnMut(_)>)
                 };
@@ -225,35 +210,9 @@ pub fn search_bar(props: &Props) -> Html {
 
                 || {}
             },
-            (unique_tags /*tag_input_dep.clone()*/,),
+            unique_tags,
         );
     }
-
-    let on_input_change = {
-        let props = props.clone();
-        let tag_input = tag_input.clone();
-        let history = history.clone();
-
-        Callback::from(move |e: InputEvent| {
-            let input: HtmlInputElement = e.target_unchecked_into();
-            //{
-            //    let mut tags = tag_input.borrow_mut();
-            //    tags.tags = input.value();
-            //}
-            //let mut tags = (*tag_input).clone();
-            //tags.tags = input.value();
-            //tag_input.set(tags);
-
-            if !is_mobile() && false {
-                //update_search(
-                //    history.clone(),
-                //    //input.value(),
-                //    tag_input.clone(),
-                //    props.clone(),
-                //);
-            }
-        })
-    };
 
     // TODO: conflicts with tag ??
     let onkeypress = {
@@ -300,7 +259,7 @@ pub fn search_bar(props: &Props) -> Html {
                 //    tag_input.tags.clone()
                 //}}
                 onkeypress={onkeypress}
-                oninput={on_input_change}
+                //oninput={on_input_change}
                 id="search_field"
                 class="form-control input-field"
                 type="search"
@@ -397,8 +356,6 @@ pub fn click_tag(
     props: Props,
     history: AnyHistory,
     search_field: HtmlInputElement,
-    //tag_input: Rc<RefCell<SearchBarInput>>,
-    tag_input: UseStateHandle<SearchBarInput>,
     idx: usize,
     tag_idx: usize,
 ) -> Closure<dyn FnMut(MouseEvent)> {
@@ -421,7 +378,7 @@ pub fn click_tag(
             .map(|tag| format!("{tag} "))
             .collect::<String>();
 
-        update_search(history.clone(), tags, tag_input.clone(), props.clone());
+        update_search(history.clone(), tags, props.clone());
 
         close_list();
     }) as Box<dyn FnMut(MouseEvent)>)
@@ -486,11 +443,9 @@ pub fn create_tag_suggestions(
     search_field: HtmlInputElement,
     tags: &[UniqueTag],
     value: &str,
-    tag_input: UseStateHandle<SearchBarInput>,
     props: &Props,
     history: AnyHistory,
 ) {
-
     if value.is_empty() {
         return;
     }
@@ -545,7 +500,6 @@ pub fn create_tag_suggestions(
             props.clone(),
             history.clone(),
             search_field.clone(),
-            tag_input.clone(),
             idx,
             tag_pos,
         );
