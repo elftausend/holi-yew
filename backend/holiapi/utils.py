@@ -7,10 +7,10 @@ from holiapi.config import PATH
 
 from collections import OrderedDict
 
-def sorting(entry):
-    # entry[1]: because an entry is a tuple with (hash, <values>)
-    splitup = entry[1]["date"].split('.')
-    return (splitup[2], splitup[1], splitup[0])
+#def sorting(entry):
+#    # entry[1]: because an entry is a tuple with (hash, <values>)
+#    splitup = entry[1]["date"].split('.')
+#    return (splitup[2], splitup[1], splitup[0])
 
 def limit_end_len(page: int, max_len: int) -> Tuple[int, int, int]:
     start = page*16
@@ -44,8 +44,7 @@ def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/u
             if check_if_tags_found(lookup_tags, upload):
                 files_data[upload["uid"]] = upload
             
-        
-    files_data = dict(sorted(files_data.items(), key=sorting, reverse=True))
+    files_data = dict(sorted(files_data.items(), key=sort_by_id, reverse=True))
     #files_data = dict(sorted(files_data.items(), reverse=True))
     return files_data, usid_dict
 
