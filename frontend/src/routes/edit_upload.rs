@@ -1,4 +1,9 @@
-use crate::{components::{Auth, incr_flag_button}, error::HoliError, request, hooks::{UseUserContextHandle, use_user_context}};
+use crate::{
+    components::{incr_flag_button, Auth},
+    error::HoliError,
+    hooks::{use_user_context, UseUserContextHandle},
+    request,
+};
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
@@ -21,7 +26,11 @@ pub async fn get_edit_entry(uid: u32) -> Result<EntryInfo, HoliError> {
     request(Method::GET, &format!("edit_entry?uid={uid}"), ()).await
 }
 
-pub fn flag_buttons(user_ctx: UseUserContextHandle, usid: &str, flag_count: UseStateHandle<i32>) -> Html {
+pub fn flag_buttons(
+    user_ctx: UseUserContextHandle,
+    usid: &str,
+    flag_count: UseStateHandle<i32>,
+) -> Html {
     if user_ctx.inner.is_admin {
         let on_incr_flag = incr_flag_button(1, usid, flag_count.clone());
         let on_decr_flag = incr_flag_button(-1, usid, flag_count.clone());
@@ -30,7 +39,7 @@ pub fn flag_buttons(user_ctx: UseUserContextHandle, usid: &str, flag_count: UseS
                 <button onclick={on_decr_flag} style="width: 37px;" class="btn btn-primary">{"-"}</button>
                 <button onclick={on_incr_flag} style="width: 37px;" class="btn btn-primary ms-1">{"+"}</button>
             </>
-        }
+        };
     }
     html!()
 }
@@ -53,7 +62,7 @@ fn mount_entry_to_edit(
                         .iter()
                         .map(|tag| format!("{tag} "))
                         .collect::<String>(),
-                    usid: entry.usid
+                    usid: entry.usid,
                 })
             } else {
                 edit_info.set(EditInfo::default());

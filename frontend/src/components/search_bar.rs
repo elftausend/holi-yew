@@ -57,11 +57,15 @@ fn close_list() {
 fn update_search(
     history: AnyHistory,
     value: String,
-    tag_input: Rc<RefCell<SearchBarInput>>,
+    //tag_input: Rc<RefCell<SearchBarInput>>,
+    tag_input: UseStateHandle<SearchBarInput>,
     props: Props,
 ) {
-    let mut info = tag_input.borrow_mut();
+    //let mut info = tag_input.borrow_mut();
+    let mut info = (*tag_input).clone();
     info.tags = value;
+
+    //tag_input.set(info.clone());
 
     history
         .push_with_query(
@@ -73,18 +77,15 @@ fn update_search(
             },
         )
         .unwrap();
-
-    //tag_input.set(info);
 }
 
 fn mount_tags(unique_tags: UseStateHandle<Vec<UniqueTag>>) {
     use_mount(|| {
         wasm_bindgen_futures::spawn_local(async move {
-            let tags = get_unique_tags().await.unwrap();
-            log::info!("tags: {tags:?}");
             let Ok(mut tags) = get_unique_tags().await else {
                 return;
             };
+            log::info!("tags: {tags:?}");
             tags.sort_by(|a, b| b.count.cmp(&a.count));
             unique_tags.set(tags);
         });
@@ -94,7 +95,8 @@ fn mount_tags(unique_tags: UseStateHandle<Vec<UniqueTag>>) {
 fn on_search_callback(
     history: AnyHistory,
     props: Props,
-    tag_input: Rc<RefCell<SearchBarInput>>,
+    //tag_input: Rc<RefCell<SearchBarInput>>,
+    tag_input: UseStateHandle<SearchBarInput>,
 ) -> Callback<MouseEvent> {
     Callback::from(move |e: MouseEvent| {
         e.prevent_default();
@@ -103,7 +105,8 @@ fn on_search_callback(
                 props.route.clone(),
                 SearchQuery {
                     page: props.search_info.page,
-                    tags: tag_input.borrow().tags.clone(),
+                    //tags: tag_input.borrow().tags.clone(),
+                    tags: tag_input.tags.clone(),
                     scroll_to_bar: false,
                 },
             )
@@ -111,7 +114,7 @@ fn on_search_callback(
     })
 }
 
-fn update_division_tags(props: Props) {
+fn update_division_tags(props: Props, render_input: UseStateHandle<SearchBarInput>) {
     let props1 = props.clone();
     use_effect_with_deps(
         move |_| {
@@ -120,7 +123,12 @@ fn update_division_tags(props: Props) {
                 .unwrap()
                 .unchecked_into();
 
-            search_field.set_value(&props1.search_info.tags);
+            //search_field.set_value(&props1.search_info.tags);
+
+            let mut info = (*render_input).clone();
+            info.tags = props1.search_info.tags;
+            render_input.set(info.clone());
+
             || {}
         },
         props.search_info.tags,
@@ -132,24 +140,26 @@ pub fn search_bar(props: &Props) -> Html {
     let current_focus = Rc::new(RefCell::new(-1));
     let unique_tags = use_state(Vec::new);
     // this does not work
-    //let tag_input = use_state(|| SearchBarInput {
-    //    tags: props.search_info.tags.clone(),
-    //});
-    let tag_input = Rc::new(RefCell::new(SearchBarInput {
+    let tag_input = use_state(|| SearchBarInput {
         tags: props.search_info.tags.clone(),
-    }));
+    });
+
+    //let tag_input = Rc::new(RefCell::new(SearchBarInput {
+    //    tags: props.search_info.tags.clone(),
+    //}));
 
     log::info!(
         "serach bar value: {}, 2: {:?}",
         props.search_info.tags,
-        (*tag_input).clone()
+        (*tag_input).clone().tags
     );
 
     let history = use_history().unwrap();
 
     let on_search = on_search_callback(history.clone(), props.clone(), tag_input.clone());
 
-    update_division_tags(props.clone());
+    // updates the search field
+    update_division_tags(props.clone(), tag_input.clone());
     mount_tags(unique_tags.clone());
 
     {
@@ -158,6 +168,8 @@ pub fn search_bar(props: &Props) -> Html {
         let tag_input = tag_input.clone();
         let props = props.clone();
         let current_focus = current_focus.clone();
+
+        let tag_input_dep = tag_input.clone();
 
         use_effect_with_deps(
             move |_| {
@@ -177,73 +189,18 @@ pub fn search_bar(props: &Props) -> Html {
                         let tags = tags.clone();
                         let value = search_field.value();
 
+                        tag_input.set(SearchBarInput {
+                            tags: value.clone(),
+                        });
+
+                        //let value = tag_input.tags.clone();
+
                         close_list();
-                        if value.is_empty() {
-                            return;
-                        }
-                        let list_div = document().create_element("div").unwrap();
-                        list_div
-                            .set_attribute("id", &format!("{}autocomplete-list", search_field.id()))
-                            .unwrap();
 
-                        list_div
-                            .set_attribute("class", "autocomplete-items")
-                            .unwrap();
+                        create_tag_suggestions(search_field.clone(), &tags, &value, tag_input.clone(), &props, history.clone());
 
-                        search_field
-                            .parent_node()
-                            .unwrap()
-                            .append_child(&list_div)
-                            .unwrap();
-
-                        let selection_start = search_field.selection_start().unwrap().unwrap();
-
-                        let mut idx = 0;
-                        for tag in tags {
-                            log::info!("{selection_start:?}");
-                            let split_inputs = value.split(' ').collect::<Vec<&str>>();
-
-                            let tag_pos = tag_idx_at_cursor(selection_start, &split_inputs);
-
-                            // if a tag was already written in the search field, then
-                            // do not add this tag to the tag autocompletion again.
-                            // if the tag that is currently edited/written, do not skip it -> (tag_pos)
-                            if is_tag_in_search_bar(&split_inputs, &tag, tag_pos) {
-                                continue;
-                            }
-
-                            let Some(value) = split_inputs.get(tag_pos) else {
-                                continue;
-                            };
-
-                            let Some(div) = create_tag_div_if_match(value, &tag) else {
-                                continue;
-                            };
-
-                            // do not show more than 6 tags at a time
-                            if idx == 6 {
-                                break;
-                            }
-
-                            idx += 1;
-
-                            let click_tag = click_tag(
-                                props.clone(),
-                                history.clone(),
-                                search_field.clone(),
-                                tag_input.clone(),
-                                idx,
-                                tag_pos,
-                            );
-
-                            div.add_event_listener_with_callback(
-                                "click",
-                                click_tag.as_ref().unchecked_ref(),
-                            )
-                            .unwrap();
-
-                            list_div.append_child(&div).unwrap();
-                            click_tag.forget();
+                        if !is_mobile() {
+                            update_search(history.clone(), value, tag_input.clone(), props.clone());
                         }
                     }) as Box<dyn FnMut(_)>)
                 };
@@ -265,9 +222,10 @@ pub fn search_bar(props: &Props) -> Html {
                     )
                     .unwrap();
                 keydown_callback.forget();
+
                 || {}
             },
-            unique_tags,
+            (unique_tags /*tag_input_dep.clone()*/,),
         );
     }
 
@@ -278,18 +236,21 @@ pub fn search_bar(props: &Props) -> Html {
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            {
-                let mut tags = tag_input.borrow_mut();
-                tags.tags = input.value();
-            }
+            //{
+            //    let mut tags = tag_input.borrow_mut();
+            //    tags.tags = input.value();
+            //}
+            //let mut tags = (*tag_input).clone();
+            //tags.tags = input.value();
+            //tag_input.set(tags);
 
-            if !is_mobile() {
-                update_search(
-                    history.clone(),
-                    input.value(),
-                    tag_input.clone(),
-                    props.clone(),
-                );
+            if !is_mobile() && false {
+                //update_search(
+                //    history.clone(),
+                //    //input.value(),
+                //    tag_input.clone(),
+                //    props.clone(),
+                //);
             }
         })
     };
@@ -317,7 +278,8 @@ pub fn search_bar(props: &Props) -> Html {
                     props.route.clone(),
                     SearchQuery {
                         page: props.search_info.page,
-                        tags: tag_input.borrow().tags.clone(),
+                        //tags: tag_input.borrow().tags.clone(),
+                        tags: tag_input.tags.clone(),
                         scroll_to_bar: false,
                     },
                 )
@@ -330,7 +292,13 @@ pub fn search_bar(props: &Props) -> Html {
         //<div class="d-flex mt-4 mb-4">
            <div class="autocomplete">
             <input autocomplete="off"
-                value={tag_input.clone().borrow().tags.clone()}
+                //value={tag_input.clone().borrow().tags.clone()}
+                //value={props.search_info.tags.clone()}
+                value={tag_input.tags.clone()}
+                //value={{
+                //    let tag_input = tag_input.borrow();
+                //    tag_input.tags.clone()
+                //}}
                 onkeypress={onkeypress}
                 oninput={on_input_change}
                 id="search_field"
@@ -429,7 +397,8 @@ pub fn click_tag(
     props: Props,
     history: AnyHistory,
     search_field: HtmlInputElement,
-    tag_input: Rc<RefCell<SearchBarInput>>,
+    //tag_input: Rc<RefCell<SearchBarInput>>,
+    tag_input: UseStateHandle<SearchBarInput>,
     idx: usize,
     tag_idx: usize,
 ) -> Closure<dyn FnMut(MouseEvent)> {
@@ -511,4 +480,80 @@ fn is_tag_in_search_bar(split_inputs: &[&str], tag: &UniqueTag, tag_idx: usize) 
         }
     }
     false
+}
+
+pub fn create_tag_suggestions(
+    search_field: HtmlInputElement,
+    tags: &[UniqueTag],
+    value: &str,
+    tag_input: UseStateHandle<SearchBarInput>,
+    props: &Props,
+    history: AnyHistory,
+) {
+
+    if value.is_empty() {
+        return;
+    }
+
+    let list_div = document().create_element("div").unwrap();
+    list_div
+        .set_attribute("id", &format!("{}autocomplete-list", search_field.id()))
+        .unwrap();
+
+    list_div
+        .set_attribute("class", "autocomplete-items")
+        .unwrap();
+
+    search_field
+        .parent_node()
+        .unwrap()
+        .append_child(&list_div)
+        .unwrap();
+
+    let selection_start = search_field.selection_start().unwrap().unwrap();
+
+    let mut idx = 0;
+    for tag in tags {
+        log::info!("{selection_start:?}");
+        let split_inputs = value.split(' ').collect::<Vec<&str>>();
+
+        let tag_pos = tag_idx_at_cursor(selection_start, &split_inputs);
+
+        // if a tag was already written in the search field, then
+        // do not add this tag to the tag autocompletion again.
+        // if the tag that is currently edited/written, do not skip it -> (tag_pos)
+        if is_tag_in_search_bar(&split_inputs, &tag, tag_pos) {
+            continue;
+        }
+
+        let Some(value) = split_inputs.get(tag_pos) else {
+            continue;
+        };
+
+        let Some(div) = create_tag_div_if_match(value, &tag) else {
+            continue;
+        };
+
+        // do not show more than 6 tags at a time
+        if idx == 6 {
+            break;
+        }
+
+        idx += 1;
+
+        let click_tag = click_tag(
+            props.clone(),
+            history.clone(),
+            search_field.clone(),
+            tag_input.clone(),
+            idx,
+            tag_pos,
+        );
+
+        div.add_event_listener_with_callback("click", click_tag.as_ref().unchecked_ref())
+            .unwrap();
+
+        list_div.append_child(&div).unwrap();
+        click_tag.forget();
+    }
 }

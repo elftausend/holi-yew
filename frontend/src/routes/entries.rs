@@ -3,9 +3,7 @@ use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::{
-    Auth, EntryList, Pagination, SearchBar, SearchQuery,
-};
+use crate::components::{Auth, EntryList, Pagination, SearchBar, SearchQuery};
 use crate::utils::entries_from_fn;
 use crate::{api::request, error::HoliError};
 

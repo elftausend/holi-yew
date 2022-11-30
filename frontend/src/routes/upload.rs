@@ -281,7 +281,7 @@ pub fn upload() -> Html {
                                 style="width: 300px; height: 70px;"
                                 type="text"
                                 value={upload_info.tags.clone()}
-                                placeholder="z.B.: 2BHITS Mathematik AM LAN Langer Funktionen Steigung-zwei-Punkte"
+                                placeholder="z.B.: Mathematik AM LAN Langer Funktionen Steigung-zwei-Punkte"
                                 name="title">
                                 {"Input"}
                             </textarea>

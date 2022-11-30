@@ -4,7 +4,7 @@ use yew_router::prelude::*;
 
 use super::entries::EntriesWithPages;
 use crate::{
-    components::{Auth, Pagination, SearchBar, SearchQuery, EntryList},
+    components::{Auth, EntryList, Pagination, SearchBar, SearchQuery},
     error::HoliError,
     request,
     routes::Route,

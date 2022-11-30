@@ -17,8 +17,7 @@ pub fn entry_list(props: &Props) -> Html {
             None => html! {
                 {"Einträge werden geladen..."}
             },
-            Some(entries) => 
-                entries
+            Some(entries) => entries
                 .chunks(4)
                 .map(|chunk| {
                     html! {
@@ -33,7 +32,7 @@ pub fn entry_list(props: &Props) -> Html {
                         </CardGroup>
                     }
                 })
-                .collect::<Html>()
+                .collect::<Html>(),
         }
-            }
+    }
 }

@@ -1,8 +1,13 @@
-use super::{entries::{EntryInfo, EntriesWithPages}, show_upload::HashQuery, Route};
+use super::{
+    entries::{EntriesWithPages, EntryInfo},
+    show_upload::HashQuery,
+    Route,
+};
 use crate::{
-    components::{Auth, CardGroup, SearchBar, SearchQuery, Tag, Pagination},
+    components::{Auth, CardGroup, Pagination, SearchBar, SearchQuery, Tag},
     error::HoliError,
-    image_path, request, utils::entries_from_fn,
+    image_path, request,
+    utils::entries_from_fn,
 };
 use reqwest::Method;
 use yew::prelude::*;
@@ -64,7 +69,7 @@ pub fn edit() -> Html {
             </div>
 
 
-            {   
+            {
                 match (*entries).clone() {
                     Some(entries) => {
                         entries.chunks(4).map(|chunk| {
@@ -72,7 +77,7 @@ pub fn edit() -> Html {
                                 <CardGroup>
                                 {
                                     chunk.iter().map(|entry| {
-        
+
                                         html! {
                                             <div class="card">
                                                 {has_view_or_not(entry)}
@@ -98,13 +103,13 @@ pub fn edit() -> Html {
                                                             <button class="btn btn-primary">
                                                                 {"editieren"}
                                                             </button>
-        
+
                                                         </Link<Route, HashQuery>>
                                                     </p>
                                                 </div>
                                             </div>
                                         }
-        
+
                                     }).collect::<Html>()
                                 }
                                 </CardGroup>
@@ -114,7 +119,7 @@ pub fn edit() -> Html {
                         {"Einträge werden geladen..."}
                     }
                 }
-                
+
             }
             <Pagination
                 search_info={SearchQuery {

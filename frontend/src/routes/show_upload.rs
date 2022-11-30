@@ -58,12 +58,11 @@ fn unfavo(uid: u32, user_ctx: UseUserContextHandle) -> Callback<MouseEvent> {
         wasm_bindgen_futures::spawn_local(async move {
             unfavo_request(uid).await.unwrap();
             let mut user_info = (*(user_ctx.inner)).clone();
-            
+
             user_info.favs.sort();
             let idx = user_info.favs.binary_search(&uid).unwrap();
             user_info.favs.remove(idx);
             user_ctx.inner.set(user_info);
-
         });
     })
 }
@@ -138,7 +137,7 @@ pub fn show_upload() -> Html {
                     <Auth>
                         <div>
                             <div class="container-fluid mt-3">
-        
+
                                 <div style="font-weight: bold; font-size: x-large;" class="mt-3">
                                     <div style="float: left;" class="mb-3">
                                         <button onclick={onback} class="btn btn-primary">
@@ -161,7 +160,7 @@ pub fn show_upload() -> Html {
                                             <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={format!("{}.{}", &entry_info.title, &entry_info.ext)}>
                                                 <button class="btn btn-primary">{"download"}</button>
                                             </a>
-                                        
+
                                             <a href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))}>
                                                 <button class="btn btn-danger me-2">
                                                 {"PDF anzeigen"}
@@ -169,20 +168,20 @@ pub fn show_upload() -> Html {
                                             </a>
                                         </p>
                                         </div>
-        
+
                                         <br />
                                         <br />
                                         <br />
                                         <br />
-        
+
                                         <p class="mt-5">
-                                            
-                                            {                                        
+
+                                            {
                                                 if !entry_info.img_exts.is_empty() {
                                                     html! {
                                                         <>
-                                                            <h4 style="float: left;">{"Extrahierte Bilder"}</h4><br /><br />                                               
-                                                        {    
+                                                            <h4 style="float: left;">{"Extrahierte Bilder"}</h4><br /><br />
+                                                        {
                                                         (0..entry_info.img_exts.len()).into_iter().map(|idx| {
                                                             html!{
                                                                 <>
@@ -195,7 +194,7 @@ pub fn show_upload() -> Html {
                                                                 </>
                                                             }
                                                         }).collect::<Html>()
-            }  
+            }
                                                     </> }
                                                 } else {
                                                     html! {
@@ -205,10 +204,10 @@ pub fn show_upload() -> Html {
                                                         </div>
                                                     }
                                                 }
-        
+
                                             }
                                         </p>
-        
+
                                 </div>
                             </div>
                         </div>

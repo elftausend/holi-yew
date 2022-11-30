@@ -2,8 +2,8 @@ mod unique_tag;
 pub use unique_tag::*;
 
 use crate::REDIRECT;
-use serde::{de::DeserializeOwned, Serialize};
 use crate::{app::get_jwt, error::HoliError, API_ROOT};
+use serde::{de::DeserializeOwned, Serialize};
 
 pub async fn request<B, T>(method: reqwest::Method, url: &str, body: B) -> Result<T, HoliError>
 where
@@ -42,7 +42,11 @@ where
                 500 => Err(HoliError::InternalServerError),
                 422 => {
                     let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
-                    web_sys::window().unwrap().location().set_href(&href).unwrap();
+                    web_sys::window()
+                        .unwrap()
+                        .location()
+                        .set_href(&href)
+                        .unwrap();
                     Err(HoliError::Unauthorized)
                 }
                 _ => Err(HoliError::RequestError),

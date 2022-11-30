@@ -35,7 +35,7 @@ pub fn footer() -> Html {
                                     <span class="me_color">{"i"}</span>
                                     <span class="mb_color">{"."}</span>
                                     <br />
-                                    
+
                                     {"Nutzungsbedingungen"}
                                 </Link<Route>>
                             </div>

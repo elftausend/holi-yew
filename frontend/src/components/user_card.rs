@@ -37,13 +37,10 @@ pub fn incr_flag_button(
         e.prevent_default();
         wasm_bindgen_futures::spawn_local(async move {
             flag_count.set(
-                flag_incr_req(FlagInfo {
-                    flag_incr,
-                    usid
-                })
-                .await
-                .unwrap()
-                .flag_count,
+                flag_incr_req(FlagInfo { flag_incr, usid })
+                    .await
+                    .unwrap()
+                    .flag_count,
             );
         });
     })

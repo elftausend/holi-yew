@@ -15,7 +15,7 @@ pub fn tos() -> Html {
                 </h1>
                 <h5>
                     <p>
-                        {r#"Holi ist eine Wissensdatenbank für Tests und Lernunterlagen. 
+                        {r#"Holi ist eine Wissensdatenbank für Tests und Lernunterlagen.
                         Jede Person kann selbst Tests und Mitschriften über das "User Panel" unter dem Menü "Upload" allen anderen Schülern und Schülerinnen zur Verfügung stellen."#}<br/>
                     </p>
                     {r#"Um die Suche nach Beiträgen zu vereinfachen, müssen beim Upload folgende Punkte beachtet werden:"#}
