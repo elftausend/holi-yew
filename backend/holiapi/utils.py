@@ -5,6 +5,8 @@ from holiapi.entries.filter_tags import check_if_tags_found
 import re
 from holiapi.config import PATH
 
+from collections import OrderedDict
+
 def sorting(entry):
     # entry[1]: because an entry is a tuple with (hash, <values>)
     splitup = entry[1]["date"].split('.')
@@ -32,7 +34,7 @@ def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/u
     files_data = {}
     usid_dict = {}
     
-    for entry in reversed(entries):
+    for entry in entries:
         upload = read_entry(entry, entry_path)
         
         usid_dict[upload["uid"]] = upload["usid"]
@@ -43,7 +45,7 @@ def get_upload_entries(lookup_tags, user="admin", entry_path = f"{PATH}/static/u
                 files_data[upload["uid"]] = upload
             
         
-    #return dict(sorted(files_data.items(), key=sorting, reverse=True))
+    files_data = dict(sorted(files_data.items(), key=sorting, reverse=True))
     #files_data = dict(sorted(files_data.items(), reverse=True))
     return files_data, usid_dict
 

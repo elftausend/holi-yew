@@ -84,7 +84,7 @@ def add_upload_to_dicts(upload_info, uid):
     entries = utils.entries.entries
     entries[uid] = upload_info
 
-    entries = dict(sorted(entries.items(), reverse=True))
+    entries = dict(sorted(entries.items(), key=sort_by_id, reverse=True))
     utils.entries.set_entries(entries)
     
     utils.entries.usid_dict[uid] = upload_info["usid"]
