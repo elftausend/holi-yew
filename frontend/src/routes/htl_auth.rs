@@ -29,6 +29,10 @@ impl UserInfo {
     pub fn is_auth(&self) -> bool {
         !self.token.is_empty()
     }
+
+    pub fn is_editable(&self, uid: u32) -> bool {
+        self.uploaded.contains(&uid)
+    }
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, Eq, PartialEq)]

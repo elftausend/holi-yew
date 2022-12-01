@@ -56,6 +56,8 @@ pub fn upload() -> Html {
         history.back()
     }
 
+    let subject_error = use_state(String::new);
+    let subject_info = use_state(String::new);
     let upload_info = use_state(UploadInfo::default);
     let upload_msgs = use_state(UploadMsgs::default);
     let date_str = use_state(String::new);
@@ -121,6 +123,8 @@ pub fn upload() -> Html {
     let on_click_upload = {
         let upload_msgs = upload_msgs.clone();
         let upload_info = upload_info.clone();
+        let subject_info = subject_info.clone();
+        let subject_error = subject_error.clone();
 
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
@@ -131,6 +135,19 @@ pub fn upload() -> Html {
             //log::info!("{:?}", upload_info.file);
 
             let upload_info = upload_info.clone();
+            let mut upload_info_data = (*upload_info).clone();
+
+            //if subject_info.is_empty() {
+            //    subject_error.set("Mindestens ein Fach muss angegeben werden.".into());
+            //    return;
+            //} else {
+            //    subject_error.set(String::new());
+            //}
+
+            upload_info_data.tags = format!("{} {}", upload_info.tags, &*subject_info);
+
+            upload_info.set(upload_info_data);
+
             let upload_msgs = upload_msgs.clone();
             let file_select = file_select.clone();
 
@@ -233,6 +250,14 @@ pub fn upload() -> Html {
         })
     };
 
+    let onsubjectinput = {
+        let subject_info = subject_info.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            subject_info.set(input.value());
+        })
+    };
+
     html! {
         <div>
             <Auth>
@@ -281,15 +306,49 @@ pub fn upload() -> Html {
                                 style="width: 300px; height: 70px;"
                                 type="text"
                                 value={upload_info.tags.clone()}
-                                placeholder="z.B.: Mathematik AM LAN Langer Funktionen Steigung-zwei-Punkte"
+                                placeholder="z.B.: 2BHITS LAN Langer Funktionen Steigung-zwei-Punkte"
                                 name="title">
                                 {"Input"}
                             </textarea>
                         </div>
 
+                        /*<div class="mb-3">
+                            <h3>{"Fach*"}</h3>
+                            <h6>{"(Kürzel Ausgeschrieben)"}</h6>
+                            <span style="color: red;">{ &*subject_error }</span>
+                            <textarea
+                                oninput={onsubjectinput}
+                                class="form-control"
+                                autocomplete="off"
+                                style="max-width: 300px; height: 50px;"
+                                type="text"
+                                value={(*subject_info).clone()}
+                                placeholder="z.B.: AM Mathematik"
+                                name="title">
+                                {"Input"}
+                            </textarea>
+                        </div>*/
+
+                        /* 
+                        <div class="mb-3">
+                            <h3>{"Lehrperson*"}</h3>
+                            <h6>{"(Kürzel Ausgeschrieben)"}</h6>
+                            <textarea
+                            //    oninput={on_tag_input}
+                                class="form-control"
+                                autocomplete="off"
+                                style="max-width: 300px; height: 50px;"
+                                type="text"
+                                value={upload_info.tags.clone()}
+                                placeholder="z.B.: LAN Langer"
+                                name="title">
+                                {"Input"}
+                            </textarea>
+                        </div>*/
+
                         <div class="mb-3">
                             <h4>{"Abteilung"}</h4>
-                            <span style="color: red;">{ upload_msgs.erroneous_date.clone() }</span>
+                            <span style="color: red;">{ upload_msgs.erroneous_division.clone() }</span>
                             <input autocomplete="off"
                                     id="dateinput"
                                     oninput={ondivisioninput}

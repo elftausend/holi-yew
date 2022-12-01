@@ -1,7 +1,7 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-use yew_router::prelude::{use_history, use_location, History, Location};
+use yew_router::prelude::{use_history, use_location, History, Location, Link};
 
 use crate::{
     components::{Auth, Tag},
@@ -70,7 +70,7 @@ fn unfavo(uid: u32, user_ctx: UseUserContextHandle) -> Callback<MouseEvent> {
 fn favo_button(entry_info: &EntryInfo, user_ctx: UseUserContextHandle) -> Html {
     if user_ctx.inner.favs.contains(&entry_info.uid) {
         html! {
-            <button onclick={unfavo(entry_info.uid, user_ctx.clone())} class="btn btn-secondary">
+            <button onclick={unfavo(entry_info.uid, user_ctx.clone())} class="btn btn-secondary mt-1 me-2">
                 <svg style="fill: rgb(227, 179, 65);" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
                     <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
                 </svg>
@@ -79,7 +79,7 @@ fn favo_button(entry_info: &EntryInfo, user_ctx: UseUserContextHandle) -> Html {
         }
     } else {
         html! {
-            <button onclick={favo(entry_info.uid, user_ctx.clone())} class="btn btn-secondary">
+            <button onclick={favo(entry_info.uid, user_ctx.clone())} class="btn btn-secondary mt-1 me-2">
                 <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="me-1">
                     <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
                 </svg>
@@ -128,6 +128,21 @@ pub fn show_upload() -> Html {
         );
     }
 
+    let edit_button = |uid: u32| if user_ctx.inner.is_editable(uid) {
+        html! {
+            <Link<Route, HashQuery>
+                to={Route::EditUpload}
+                query={Some(HashQuery{uid})}
+            >
+                <button class="btn btn-primary me-2 mt-1">
+                    {"editieren"}
+                </button>
+            </Link<Route, HashQuery>>
+        }
+    } else {
+        html!()
+    };
+
     match (*entry_info).clone() {
         Some(entry_info) => {
             let favo_button = favo_button(&entry_info, user_ctx.clone());
@@ -136,25 +151,28 @@ pub fn show_upload() -> Html {
                 <div>
                     <Auth>
                         <div>
-                            <div class="container-fluid mt-3">
+                            <div class="container-fluid mt-1">
 
-                                <div style="font-weight: bold; font-size: x-large;" class="mt-3">
+                                <div style="font-weight: bold; font-size: x-large;">
                                     <div style="float: left;" class="mb-3">
-                                        <button onclick={onback} class="btn btn-primary">
+                                        <button onclick={onback} class="btn btn-primary mt-1">
                                             {"Zurück"}
                                         </button>
-                                        <span class="ms-2 me-2">{entry_info.title.clone()}</span>
+                                        <span class="ms-2 me-2 mt-3">{entry_info.title.clone()}</span>
                                         {favo_button}
+                                        {edit_button(entry_info.uid)}
                                         <br/>
-                                        {
-                                            entry_info.tags.iter().map(|tag| {
-                                                html! {
-                                                    <Tag name={tag.clone()} route={Route::Entries} />
-                                                    //<span class="badge me-1 bg-secondary tag">{tag}</span>
-                                                    //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
-                                                }
-                                            }).collect::<Html>()
-                                        }
+                                        <div class="mt-1">
+                                            {
+                                                entry_info.tags.iter().map(|tag| {
+                                                    html! {
+                                                        <Tag name={tag.clone()} route={Route::Entries} />
+                                                        //<span class="badge me-1 bg-secondary tag">{tag}</span>
+                                                        //<a href="it?page=0&tags={{ tag }}" style="font-size: 14px;" class="badge tag">{{ tag }}</a>
+                                                    }
+                                                }).collect::<Html>()
+                                            }
+                                        </div>
                                         <p class="mt-1">
                                             // download does not work because the link to the download is not the same origin
                                             <a class="me-2" href={pdf_path(&format!("{}.{}", &entry_info.hash, &entry_info.ext))} download={format!("{}.{}", &entry_info.title, &entry_info.ext)}>
@@ -171,13 +189,13 @@ pub fn show_upload() -> Html {
 
                                         <br />
 
-                                        <p style="margin-top: 100px">
+                                        <p style="margin-top: 130px; font-size:x-large;">
 
                                             {
                                                 if !entry_info.img_exts.is_empty() {
                                                     html! {
                                                         <>
-                                                            <h4 >{"Extrahierte Bilder"}</h4>
+                                                            <h4>{"Extrahierte Bilder"}</h4>
                                                         {
                                                         (0..entry_info.img_exts.len()).into_iter().map(|idx| {
                                                             html!{

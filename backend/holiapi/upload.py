@@ -19,7 +19,7 @@ MISSING_TITLE = "Der Titel wurde nicht angegeben."
 MISSING_TAGS = "Tags müssen noch hinzugefügt werden."
 SUCCESSFUL_UPLOAD = "Upload wurde erfolgreich durchgeführt."
 ALREADY_UPLOADED = "Dieses File wurde schon hochgeladen."
-ERRORNEOUS_DIVISION = "Ungültige Abteilung -> (ET, IT, ME, MB, WIL, WII)"
+ERRORNEOUS_DIVISION = "Ungültige Abteilung -> (L, ET, IT, ME, MB, WIL, WII)"
 
 def add_upload_id_to_db(upload_id: int, user: User):
     user.uploaded.append(upload_id)
@@ -179,6 +179,8 @@ def division_exist(htl_division: str) -> bool:
     elif htl_division == "WIL":
         return True
     elif htl_division == "WII":
+        return True
+    elif htl_division == "L":
         return True
 
     return False

@@ -112,9 +112,9 @@ def get_user_from_raw(user_info_raw, access_token: str) -> User:
     if htl_division == "WI":
         htl_division = htl_class[3:]
 
-    # no access for lebenmittel
-    if htl_division == "L":
-        return None
+    # no access for lebensmittel
+    #if htl_division == "L":
+    #    return None
 
     # root, useless (HTBL) 
     htl_type = htl_related_ids[3][2:]
