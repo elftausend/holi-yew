@@ -172,6 +172,8 @@ def division_exist(htl_division: str) -> bool:
         return True
     elif htl_division == "IT":
         return True
+    elif htl_division == "EL":
+        return True
     elif htl_division == "ME":
         return True
     elif htl_division == "MB":

@@ -4,6 +4,7 @@ def check_if_tags_found(tags, entry):
     for tag in tags:
         
         is_in_tags = False
+
         if tag.lower() in entry["title"].lower() and not division_exist(tag.upper()):
             is_in_tags = True
 

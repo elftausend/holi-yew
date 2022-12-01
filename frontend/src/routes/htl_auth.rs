@@ -31,7 +31,7 @@ impl UserInfo {
     }
 
     pub fn is_editable(&self, uid: u32) -> bool {
-        self.uploaded.contains(&uid)
+        self.uploaded.contains(&uid) || self.is_admin
     }
 }
 
