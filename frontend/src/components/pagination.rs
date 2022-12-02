@@ -53,7 +53,7 @@ pub fn pagination(props: &Props) -> Html {
                                         classes={classes!("page-link", "btn", "btn-secondary")}
                                         disabled={search_info.page==1}
                                         to={route_to_page.clone()}
-                                        query={Some(SearchQuery{page: search_info.page-1, tags: "".to_string(), scroll_to_bar: true})}
+                                        query={Some(SearchQuery{page: search_info.page-1, tags: search_info.tags.clone(), scroll_to_bar: true})}
                                     >
                                         { "<" }
                                     </Link<Route, SearchQuery>>

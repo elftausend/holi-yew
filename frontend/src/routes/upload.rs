@@ -402,6 +402,8 @@ pub fn upload() -> Html {
                             <span style="color: red; font-style: italic;">{ "Felder markiert mit '*' müssen ausgefüllt werden."}
                                 <br />
                                 {"Die Abteilung des Uploaders wird automatisch als Tag hinzugefügt."}
+                                <br />
+                                {"Beachte beim Upload die Nutzungsbedingungen."}
                             </span>
                         </div>
 
