@@ -12,6 +12,7 @@ pub fn tos() -> Html {
                     <span class="el_color">{"l"}</span>
                     <span class="me_color">{"i"}</span>
                     <span class="mb_color">{"."}</span>
+                    {" & Nutzungsbedingungen"}
                 </h1>
                 <h5>
                     <p>
@@ -32,12 +33,12 @@ pub fn tos() -> Html {
                             {"Überprüfen, ob ähnliche Tags bereits vorhanden sind. Wenn ja, sollten diese ähnlichen Tags ebenfalls angehängt werden."}
                             <li>{"Die Abteilung des Uploaders wird automatisch hinzugefügt."}</li>
                             //{r#"Wenn bspw. eine andere Klasse angegeben werden muss, können nachträglich die Tags unter dem Menü "Edit" geändert werden."#}
-                            <li>{"Für einen für reguläre Nutzer anonymen Upload sollten Name aus bspw. Kopfzeile entfernt werden."}</li>
-                            <br />
+                            //<br />
                         </ol>
+                        <li>{"Für einen für reguläre Nutzer anonymen Upload sollten Name aus bspw. der Kopfzeile entfernt werden."}</li>
                     </ul>
                 </h5>
-                <h1>{"Nutzungsbedingungen"}</h1>
+                
                 <h4>{"I: "}</h4>{"Mit dem Verwenden von holi. erklären Sie sich mit allen folgenden Punkten einverstanden."}<br /><br />
                 <h4>{"II: "}</h4>{"holi ist ein unabhängiges System, das einen Austausch von Lehrmitteln ermöglichen will. holi agiert als eigene Instanz, trotz Kooperation mit der HTL Hollabrunn und Ihrer Schülervertretung."}<br /><br />
                 <h4>{"III: "}</h4>{"(1.) Bei einem Verstoß gegen eine der angeführten Bedingungen behält sich holi vor Beiträge selbständig zu löschen bzw. NutzerInnen auszuschließen."}<br />

@@ -1,4 +1,5 @@
 use crate::{components::Auth, hooks::use_user_context};
+use yew_router::prelude::*;
 use gloo::file::File;
 use js_sys::Date;
 use reqwest::Method;
@@ -6,9 +7,11 @@ use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_mount;
-use yew_router::prelude::{use_history, History};
+
 
 use crate::request;
+
+use super::Route;
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct UploadMsgs {
@@ -145,7 +148,7 @@ pub fn upload() -> Html {
             //}
 
             upload_info_data.tags = format!("{} {}", upload_info.tags, &*subject_info);
-
+            upload_info_data.tags = upload_info_data.tags.replace(',', "");
             upload_info.set(upload_info_data);
 
             let upload_msgs = upload_msgs.clone();
@@ -393,17 +396,27 @@ pub fn upload() -> Html {
 
                         <div class="mb-3">
                             <p>
-                                <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
+                            <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
                             </p>
-                            <button onclick={on_click_upload} class="btn btn-primary">
-                                {"Upload"}
-                            </button>
-                            <br />
-                            <span style="color: red; font-style: italic;">{ "Felder markiert mit '*' müssen ausgefüllt werden."}
-                                <br />
+                            <p>
+                                <button onclick={on_click_upload} class="btn btn-primary">
+                                    {"Upload"}
+                                </button>
+                                <span class="ms-2">
+                                    {"Beachte beim Upload die "}
+                                    <Link<Route>
+                                        to={Route::Tos}
+                                    >
+                                        <span style="font-weight: bold;">{"Nutzungsbedingungen"}</span>
+                                    </Link<Route>>
+                                    {"."}
+                                </span>
+                            </p>
+                        
+                            <span style="color: red; font-style: italic;">
                                 {"Die Abteilung des Uploaders wird automatisch als Tag hinzugefügt."}
                                 <br />
-                                {"Beachte beim Upload die Nutzungsbedingungen."}
+                                { "Felder markiert mit '*' müssen ausgefüllt werden."}
                             </span>
                         </div>
 
