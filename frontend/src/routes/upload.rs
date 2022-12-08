@@ -395,22 +395,19 @@ pub fn upload() -> Html {
                         </div>*/
 
                         <div class="mb-3">
+
+                            <p>
+                                {"Dokumente (Tests, WHs, Skripten) von Lehrpersonen nur mit ausdrücklicher Genehmigung hochladen."}<br/>
+                                {"Eigene Mitschriften können bedenkenlos hochgeladen werden."}
+                            </p>
                             <p>
                             <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
                             </p>
+                            
                             <p>
                                 <button onclick={on_click_upload} class="btn btn-primary">
                                     {"Upload"}
                                 </button>
-                                <span class="ms-2">
-                                    {"Beachte beim Upload die "}
-                                    <Link<Route>
-                                        to={Route::Tos}
-                                    >
-                                        <span style="font-weight: bold;">{"Nutzungsbedingungen"}</span>
-                                    </Link<Route>>
-                                    {"."}
-                                </span>
                             </p>
                         
                             <span style="color: red; font-style: italic;">
