@@ -41,6 +41,7 @@ pub fn user_context_provider(props: &Props) -> Html {
 
                         let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
                         window().unwrap().location().set_href(&href).unwrap();
+                        
                         //match e {
                         //    HoliError::Unauthorized | HoliError::Forbidden => {
                         //        set_jwt(None);

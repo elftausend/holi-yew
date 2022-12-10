@@ -1,6 +1,9 @@
-mod jwt;
+mod auth;
 mod db;
+mod jwt;
+mod user;
 
+use auth::auth;
 use axum::{
     routing::{get, post},
     Json, Router,
@@ -18,22 +21,23 @@ use db::schema::users::dsl::*;
 const TOKEN_URL: &'static str = "https://auth.htl-hl.ac.at/token.php";
 const CLIENT_ID: &'static str = "holi.htl-hl.ac.at";
 
-static CLIENT_SECRET: Lazy<String> = Lazy::new(|| {
-    std::fs::read_to_string("../backend/holiapi/client_secret").unwrap()
-});
+static CLIENT_SECRET: Lazy<String> =
+    Lazy::new(|| std::fs::read_to_string("../backend/holiapi/client_secret").unwrap());
 
 //const CLIENT_SECRET: &'static str = file_contents("client_secret");
 const GRANT_TYPE: &'static str = "authorization_code";
 const REDIRECT_URI: &'static str = "https://holi.htl-hl.ac.at/authenticated";
 
-const USER_INFO_URL: &'static str = "https://auth.htl-hl.ac.at/getUserInformation.php?access_token=";
-
+const USER_INFO_URL: &'static str =
+    "https://auth.htl-hl.ac.at/getUserInformation.php?access_token=";
 
 #[tokio::main]
 async fn main() {
+    //auth("8a6a3e43ac07b48c30461cc75ded3b06e848be49".to_string()).await.unwrap();
+
     let connection = &mut establish_connection();
     let a = users.load::<User>(connection).expect("msg");
-    
+
     let app = Router::new()
         .route("/protected", get(protected))
         .route("/auth", post(authorize));

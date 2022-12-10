@@ -1,4 +1,3 @@
-
 use axum::{
     async_trait,
     extract::{FromRequestParts, TypedHeader},
@@ -10,9 +9,12 @@ use axum::{
 
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use once_cell::sync::Lazy;
+use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::fmt::Display;
+
+use crate::auth;
 
 static KEYS: Lazy<Keys> = Lazy::new(|| {
     //let secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
@@ -25,10 +27,17 @@ pub async fn authorize(Json(payload): Json<AuthPayload>) -> Result<Json<AuthBody
     if payload.username.is_empty() || payload.code.is_empty() {
         return Err(AuthError::MissingCredentials);
     }
-    // Here you can check the user credentials from a database
-    if payload.username != "foo" || payload.code != "bar" {
+
+    let Ok(user_info) = auth(payload.code).await else {
         return Err(AuthError::WrongCredentials);
-    }
+    };
+
+    println!("user_info: {user_info:?}");
+
+    // Here you can check the user credentials from a database
+    //if payload.username != "foo" || payload.code != "bar" {
+    //    return Err(AuthError::WrongCredentials);
+    //}
 
     let claims = Claims {
         sub: payload.username,

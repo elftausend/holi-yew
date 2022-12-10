@@ -7,5 +7,5 @@ pub struct User {
     pub entry_info: String,
     pub flag_count: i32,
     pub banned: i32,
-    pub class: String
+    pub class: String,
 }
