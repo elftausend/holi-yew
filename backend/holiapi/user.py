@@ -127,7 +127,7 @@ def update_user_class(user: User, db = USER_DB):
     cur = con.cursor()
 
     cur.execute("UPDATE users SET class = ? WHERE user_id = ?", (user.htl_class, user.user_id))
-    cur.commit()
+    con.commit()
 
     con.close()
 
