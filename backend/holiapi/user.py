@@ -121,6 +121,15 @@ def get_user_from_raw(user_info_raw, access_token: str) -> User:
 
     return User(access_token, username, user_id, htl_class, htl_division, htl_type)
 
+def update_user_class(user: User, db = USER_DB):
+    # connecting every time - sounds like fun
+    con = sqlite3.connect(db)
+    cur = con.cursor()
+
+    cur.execute("UPDATE users SET class = ? WHERE user_id = ?", (user.htl_class, user.user_id))
+    cur.commit()
+
+    con.close()
 
 def query_db_results(user: User, db = USER_DB) -> Dict[str, List[int]]:
     # use ORM

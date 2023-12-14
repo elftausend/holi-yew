@@ -4,7 +4,7 @@ from flask import jsonify
 from flask_restful import Resource, request
 from flask_jwt_extended import JWTManager, create_access_token
 from holiapi.utils import file_contents
-from holiapi.user import query_db_results, User, get_user_from_raw
+from holiapi.user import query_db_results, User, get_user_from_raw, update_user_class
 from holiapi.config import config
 from holiapi.db.db_fns import get_upload_banned
 
@@ -81,7 +81,11 @@ class Auth(Resource):
         # if user is banned, don't authenticate
         if user.is_banned():
             return
-
+        
+        if user.htl_class == "TEACHERS":
+            return
+        
+        update_user_class(user)
         user.set_uploaded_and_favs(query_db_results(user))
         user.upload_banned = get_upload_banned(user.user_id)
         access_token = create_access_token(identity=user.as_dict())

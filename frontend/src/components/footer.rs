@@ -19,7 +19,7 @@ pub fn footer() -> Html {
                     <div class="row">
 
                         <div class="col">
-                        {"Entwickler: Florian Nagy, 3B"}
+                        {"Entwickler: Florian Nagy, 4B"}
                         <span class="it_color">{"HITS"}</span>{", "}
                         <a style="color: yellow;" href="https://github.com/elftausend" target="_blank" rel="noopener noreferrer">
                             {"GitHub"}
