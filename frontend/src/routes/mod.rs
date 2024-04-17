@@ -56,7 +56,7 @@ pub enum Route {
     Favo,
     #[at("/tos")]
     Tos,
-    #[at("redirect")]
+    #[at("/redirect_local")]
     Redirect,
     #[not_found]
     #[at("/404")]

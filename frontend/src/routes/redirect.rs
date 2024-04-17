@@ -16,6 +16,7 @@ pub fn redirect() -> Html {
         use_effect_with_deps(
             move |_| {
                 let code_query = location_inner.query::<CodeQuery>().unwrap_or_default();
+                // mind http
                 let href = format!("http://127.0.0.1:4932/authenticated?code={}", code_query.code);
                 window().unwrap().location().set_href(&href).unwrap();
 
