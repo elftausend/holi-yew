@@ -1,3 +1,4 @@
+use gloo::storage::{LocalStorage, Storage};
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use web_sys::window;
@@ -69,6 +70,13 @@ pub fn auth() -> Html {
                 let code_query = location_inner.query::<CodeQuery>().unwrap_or_default();
 
                 let code_info = CodeInfo::new(code_query.code);
+
+                if let Ok(val) = LocalStorage::get::<String>("req_local_redirect") {
+                    if val == "true" {
+                        let href = format!("http://127.0.0.1:4932/authenticated?code={}", code_info.code);
+                        window().unwrap().location().set_href(&href).unwrap();
+                    }
+                }
 
                 wasm_bindgen_futures::spawn_local(async move {
                     if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info).await {

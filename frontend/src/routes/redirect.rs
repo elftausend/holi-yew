@@ -1,30 +1,19 @@
+use gloo::storage::{LocalStorage, Storage};
 use web_sys::window;
 use yew::{function_component, html, use_effect_with_deps};
-use yew_router::{history::Location, hooks::use_location};
+use yew_router::{history::{History, Location}, hooks::{use_history, use_location}};
 
-use crate::routes::htl_auth::CodeQuery;
+use crate::{app::set_jwt, routes::htl_auth::CodeQuery};
+
+use super::Route;
 
 
 #[function_component(RedirectLocal)]
 pub fn redirect() -> Html {
 
-
-    let location = use_location().unwrap();
-    {
-        let location_inner = location.clone();
-        // try with use_mount
-        use_effect_with_deps(
-            move |_| {
-                let code_query = location_inner.query::<CodeQuery>().unwrap_or_default();
-                // mind http
-                let href = format!("http://127.0.0.1:4932/authenticated?code={}", code_query.code);
-                window().unwrap().location().set_href(&href).unwrap();
-
-               || ()
-            },
-            location.query::<CodeQuery>().unwrap_or_default(),
-        );
-    }
+    LocalStorage::set("req_local_redirect", "true").expect("failed to set");
+    let history = use_history().unwrap();
+    history.push(Route::Auth);
 
     html!{
 
