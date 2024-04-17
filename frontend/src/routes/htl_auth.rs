@@ -9,8 +9,8 @@ use crate::{hooks::use_user_context, request, REDIRECT};
 use super::Route;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
-struct CodeQuery {
-    code: String,
+pub struct CodeQuery {
+    pub code: String,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, Eq, PartialEq)]

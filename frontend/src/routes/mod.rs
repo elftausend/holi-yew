@@ -10,6 +10,7 @@ pub mod terms_of_service;
 pub mod upload;
 pub mod user_panel;
 pub mod users;
+pub mod redirect;
 
 pub use edit::Edit;
 pub use edit_upload::EditUpload;
@@ -23,6 +24,7 @@ pub use terms_of_service::*;
 pub use upload::Upload;
 pub use user_panel::UserPanel;
 pub use users::Users;
+pub use redirect::*;
 //pub use upload::Upload;
 
 use crate::components::Auth;
@@ -54,6 +56,8 @@ pub enum Route {
     Favo,
     #[at("/tos")]
     Tos,
+    #[at("redirect")]
+    Redirect,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -79,6 +83,7 @@ pub fn switch(routes: &Route) -> Html {
         },
         Route::Favo => html! { <Favo /> },
         Route::Tos => html! {<Tos />},
+        Route::Redirect => html!( <RedirectLocal />),
     }
 }
 
