@@ -29,9 +29,11 @@ pub fn user_panel() -> Html {
                     history.back();
                 }
                 wasm_bindgen_futures::spawn_local(async move {
-                    let Ok(users) = request::<(), Vec<UserListInfo>>(Method::GET, "users", ()).await else {
-                    return;
-                };
+                    let Ok(users) =
+                        request::<(), Vec<UserListInfo>>(Method::GET, "users", ()).await
+                    else {
+                        return;
+                    };
                     log::info!("users: {users:?}");
                     user_infos.set(Some(users));
                 });

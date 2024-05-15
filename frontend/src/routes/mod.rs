@@ -5,12 +5,12 @@ pub mod favo;
 pub mod htl_auth;
 pub mod logout;
 pub mod page_not_found;
+pub mod redirect;
 pub mod show_upload;
 pub mod terms_of_service;
 pub mod upload;
 pub mod user_panel;
 pub mod users;
-pub mod redirect;
 
 pub use edit::Edit;
 pub use edit_upload::EditUpload;
@@ -19,12 +19,12 @@ pub use favo::Favo;
 pub use htl_auth::OAuth2;
 pub use logout::Logout;
 pub use page_not_found::NotFound;
+pub use redirect::*;
 pub use show_upload::ShowUpload;
 pub use terms_of_service::*;
 pub use upload::Upload;
 pub use user_panel::UserPanel;
 pub use users::Users;
-pub use redirect::*;
 //pub use upload::Upload;
 
 use crate::components::Auth;

@@ -1,5 +1,4 @@
 use crate::{components::Auth, hooks::use_user_context};
-use yew_router::prelude::*;
 use gloo::file::File;
 use js_sys::Date;
 use reqwest::Method;
@@ -7,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_mount;
-
+use yew_router::prelude::*;
 
 use crate::request;
 
@@ -332,7 +331,7 @@ pub fn upload() -> Html {
                             </textarea>
                         </div>*/
 
-                        /* 
+                        /*
                         <div class="mb-3">
                             <h3>{"Lehrperson*"}</h3>
                             <h6>{"(Kürzel Ausgeschrieben)"}</h6>
@@ -403,13 +402,13 @@ pub fn upload() -> Html {
                             <p>
                             <span style="color: rgb(4, 167, 4);">{upload_msgs.successful_upload.clone()}</span>
                             </p>
-                            
+
                             <p>
                                 <button onclick={on_click_upload} class="btn btn-primary">
                                     {"Upload"}
                                 </button>
                             </p>
-                        
+
                             <span style="color: red; font-style: italic;">
                                 {"Die Abteilung des Uploaders wird automatisch als Tag hinzugefügt."}
                                 <br />

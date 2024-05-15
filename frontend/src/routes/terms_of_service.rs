@@ -38,7 +38,7 @@ pub fn tos() -> Html {
                         <li>{"Für einen für reguläre Nutzer anonymen Upload sollten Name aus bspw. der Kopfzeile entfernt werden."}</li>
                     </ul>
                 </h5>
-                
+
                 <h4>{"I: "}</h4>{"Mit dem Verwenden von holi. erklären Sie sich mit allen folgenden Punkten einverstanden."}<br /><br />
                 <h4>{"II: "}</h4>{"holi ist ein unabhängiges System, das einen Austausch von Lehrmitteln ermöglichen will. holi agiert als eigene Instanz, trotz Kooperation mit der HTL Hollabrunn und Ihrer Schülervertretung."}<br /><br />
                 <h4>{"III: "}</h4>{"(1.) Bei einem Verstoß gegen eine der angeführten Bedingungen behält sich holi vor Beiträge selbständig zu löschen bzw. NutzerInnen auszuschließen."}<br />

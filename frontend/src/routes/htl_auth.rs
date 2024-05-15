@@ -73,30 +73,34 @@ pub fn auth() -> Html {
 
                 if let Ok(val) = LocalStorage::get::<String>("req_local_redirect") {
                     if val == "true" {
-                        let href = format!("http://127.0.0.1:4932/authenticated?code={}", code_info.code);
+                        let href = format!(
+                            "http://127.0.0.1:4932/authenticated?code={}",
+                            code_info.code
+                        );
                         window().unwrap().location().set_href(&href).unwrap();
                     }
-                }
+                } else {
+                    wasm_bindgen_futures::spawn_local(async move {
+                        if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info).await {
+                            user_ctx.login(UserInfo {
+                                token: jwt.access_token,
+                                ..Default::default()
+                            });
 
-                wasm_bindgen_futures::spawn_local(async move {
-                    if let Ok(jwt) = request::<_, JWT>(Method::POST, "auth", code_info).await {
-                        user_ctx.login(UserInfo {
-                            token: jwt.access_token,
-                            ..Default::default()
-                        });
+                            if let Ok(user_info) =
+                                request::<_, UserInfo>(Method::GET, "user", ()).await
+                            {
+                                log::info!("user_info: {user_info:?}");
+                                user_ctx.inner.set(user_info);
+                            }
 
-                        if let Ok(user_info) = request::<_, UserInfo>(Method::GET, "user", ()).await
-                        {
-                            log::info!("user_info: {user_info:?}");
-                            user_ctx.inner.set(user_info);
+                            history.push(Route::Entries);
+                        } else {
+                            let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
+                            window().unwrap().location().set_href(&href).unwrap();
                         }
-
-                        history.push(Route::Entries);
-                    } else {
-                        let href = format!("https://auth.htl-hl.ac.at/authorize.php?response_type=code&client_id=holi.htl-hl.ac.at&redirect_uri={REDIRECT}&state=new");
-                        window().unwrap().location().set_href(&href).unwrap();
-                    }
-                });
+                    })
+                };
 
                 || ()
             },

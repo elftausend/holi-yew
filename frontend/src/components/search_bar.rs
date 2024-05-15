@@ -139,7 +139,7 @@ pub fn search_bar(props: &Props) -> Html {
 
     let on_search = on_search_callback(history.clone(), props.clone(), tag_input.clone());
 
-    // updates the search field for clicked tags in show_upload view and division 
+    // updates the search field for clicked tags in show_upload view and division
     update_bar_by_props(props.clone(), tag_input.clone());
     mount_tags(unique_tags.clone());
 
@@ -278,7 +278,9 @@ pub fn searchbar_keydown(
     current_focus: Rc<RefCell<i32>>,
 ) -> Closure<dyn FnMut(KeyboardEvent)> {
     Closure::wrap(Box::new(move |e: KeyboardEvent| {
-        let Some(list) = document().get_element_by_id(&format!("{}autocomplete-list", search_field.id())) else {
+        let Some(list) =
+            document().get_element_by_id(&format!("{}autocomplete-list", search_field.id()))
+        else {
             return;
         };
 
@@ -334,7 +336,7 @@ pub fn add_active(tags: &HtmlCollection, current_focus: &mut i32) {
     }
 
     let Some(tag) = tags.get_with_index(*current_focus as u32) else {
-        return
+        return;
     };
 
     tag.class_list()

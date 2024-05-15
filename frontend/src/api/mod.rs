@@ -19,7 +19,6 @@ where
     let mut builder = reqwest::Client::new()
         .request(method, url)
         .header("Content-Type", "application/json");
-        
 
     if let Some(token) = get_jwt() {
         builder = builder.header("Authorization", format!("Bearer {token}"));

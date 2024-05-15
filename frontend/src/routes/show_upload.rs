@@ -1,7 +1,7 @@
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-use yew_router::prelude::{use_history, use_location, History, Location, Link};
+use yew_router::prelude::{use_history, use_location, History, Link, Location};
 
 use crate::{
     components::{Auth, Tag},
@@ -128,19 +128,21 @@ pub fn show_upload() -> Html {
         );
     }
 
-    let edit_button = |uid: u32| if user_ctx.inner.is_editable(uid) {
-        html! {
-            <Link<Route, HashQuery>
-                to={Route::EditUpload}
-                query={Some(HashQuery{uid})}
-            >
-                <button class="btn btn-primary me-2 mt-1">
-                    {"editieren"}
-                </button>
-            </Link<Route, HashQuery>>
+    let edit_button = |uid: u32| {
+        if user_ctx.inner.is_editable(uid) {
+            html! {
+                <Link<Route, HashQuery>
+                    to={Route::EditUpload}
+                    query={Some(HashQuery{uid})}
+                >
+                    <button class="btn btn-primary me-2 mt-1">
+                        {"editieren"}
+                    </button>
+                </Link<Route, HashQuery>>
+            }
+        } else {
+            html!()
         }
-    } else {
-        html!()
     };
 
     match (*entry_info).clone() {
